@@ -32,8 +32,9 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
 1. Put this folder in a GitHub repository and push it to the `main` branch.
 2. The workflow in `.github/workflows/android.yml` builds a test APK automatically.
-3. Open the repository's Actions tab, open the latest run, and download `fuel-tracker-apk`.
-4. Copy `app-debug.apk` to your phone and open it to install (allow "install unknown apps").
+3. When it finishes, open the repository's **Releases** page on your phone and download
+   `fuel-tracker.apk` from the "latest" release.
+4. Open the downloaded file to install it (allow "install unknown apps" when asked).
 
 ## iOS (needs a Mac)
 

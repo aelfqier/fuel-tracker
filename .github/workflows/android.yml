@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
@@ -22,7 +25,19 @@ jobs:
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk fuel-tracker.apk
       - uses: actions/upload-artifact@v4
         with:
           name: fuel-tracker-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: fuel-tracker.apk
+      # Publish the APK as the "latest" release so it has a direct download link:
+      # https://github.com/<owner>/<repo>/releases/latest/download/fuel-tracker.apk
+      - name: Publish latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest fuel-tracker.apk \
+            --title "Fuel Tracker (latest build)" \
+            --notes "Android test build from commit ${GITHUB_SHA::7}. Download fuel-tracker.apk on your phone and open it to install." \
+            --latest
