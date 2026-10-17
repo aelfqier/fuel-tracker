@@ -392,6 +392,8 @@ test("booby-trapped settings come out clean", () => {
   assert.deepEqual(s.review, { at: "2026-01-01", count: 3 });
   assert.equal(FT.sanitizeSettings({ review: { at: "x", count: -1 } }).review, null);
   assert.equal(FT.sanitizeSettings({ lastBackup: "2026-10-17T08:00:00.000Z" }).lastBackup, "2026-10-17T08:00:00.000Z");
+  assert.equal(FT.sanitizeSettings({ theme: "dark" }).theme, "dark");
+  assert.equal(FT.sanitizeSettings({ theme: "neon" }).theme, "auto");
   // migrateSettings cleans first, then fills in rates and the active vehicle.
   const m = FT.migrateSettings(raw, [], "fr");
   assert.equal(m.rates.EUR, 10.8); assert.equal(m.lang, "fr"); assert.equal(m.activeVehicle, "car"); assert.ok(!("extra" in m));

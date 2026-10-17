@@ -26,6 +26,7 @@ const PLUGINS = {
   LocalNotifications: ["schedule", "getPending", "registerActionTypes", "cancel", "areEnabled", "getDeliveredNotifications", "removeDeliveredNotifications", "removeAllDeliveredNotifications", "createChannel", "deleteChannel", "listChannels", "checkPermissions", "requestPermissions", "changeExactNotificationSetting", "checkExactNotificationSetting", "removeAllListeners"],
   App: ["exitApp", "getInfo", "getLaunchUrl", "getState", "minimizeApp", "toggleBackButtonHandler", "getAppLanguage", "removeAllListeners"],
   SystemBars: ["setStyle", "show", "hide", "setAnimation"],
+  Haptics: ["vibrate", "impact", "notification", "selectionStart", "selectionChanged", "selectionEnd"],
   FuelNative: ["scanStatus", "recognizeText", "refreshWidget", "printHtml", "requestReview", "consumeLaunchAction", "removeAllListeners"],
 };
 // The same text JSExport.getPluginJS writes.
@@ -384,7 +385,26 @@ await check("electric car: labels switch to kWh and a charge saves with its unit
   await addFill(page, { end: "10250", price: "1.8", liters: "40" });
   const recs = records(phone);
   assert(recs.length === 2 && recs.every((r) => r.unit === "kWh" && r.fuel === "electric"), "records: " + JSON.stringify(recs));
-  assert((await page.textContent("#insights")).includes("kWh/100"), "insights not in kWh");
+  const ins = await page.textContent("#insights");
+  assert(ins.includes("kWh/100") && !ins.includes("L/100"), "insights not in kWh: " + ins);
+  await close(page);
+});
+
+await check("dark theme sets the status bar, buzzes on save and paints dark on the next start", async () => {
+  const phone = new Phone();
+  let page = await open(phone);
+  await onboard(page);
+  await addFill(page, { end: "45000", price: "14.5", liters: "30", unknown: true });
+  assert(phone.calls.some((c) => c.pluginId === "Haptics" && c.methodName === "notification"), "no haptic on save");
+  await page.click('nav button[data-tab="settings"]');
+  await page.click('label[for="theme-dark"]');
+  await page.waitForTimeout(200);
+  const bar = phone.calls.filter((c) => c.pluginId === "SystemBars" && c.methodName === "setStyle").pop();
+  assert(bar && bar.options.style === "DARK", "status bar: " + JSON.stringify(bar));
+  assert(settingsOf(phone).theme === "dark", "theme not saved");
+  await close(page);
+  page = await open(phone);
+  assert((await page.evaluate(() => document.documentElement.dataset.theme)) === "dark", "not dark after restart");
   await close(page);
 });
 

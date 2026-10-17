@@ -532,7 +532,7 @@
   function defaultSettings(lang) {
     return {
       version: 2, lang: lang || "en", home: "MAD", rates: defaultRates("MAD"), vehicles: [], budget: 0, driverMode: false,
-      reminders: [], onboarded: false, lastBackup: null, activeVehicle: null, priceAlerts: false, review: null,
+      reminders: [], onboarded: false, lastBackup: null, activeVehicle: null, priceAlerts: false, review: null, theme: "auto",
     };
   }
 
@@ -588,6 +588,7 @@
     flag("driverMode"); flag("onboarded"); flag("priceAlerts");
     if (typeof s.lastBackup === "string" && !isNaN(Date.parse(s.lastBackup))) out.lastBackup = s.lastBackup;
     if (typeof s.activeVehicle === "string") out.activeVehicle = s.activeVehicle;
+    if (["auto", "light", "dark"].includes(s.theme)) out.theme = s.theme;
     out.review = cleanReview(s.review);
     return out;
   }
