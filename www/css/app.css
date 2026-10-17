@@ -73,6 +73,7 @@ h1 {
   background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 4px; gap: 4px;
 }
 .seg.scroll { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.seg.two { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .seg input { position: absolute; opacity: 0; pointer-events: none; }
 .seg label {
   text-align: center; padding: 8px 10px; border-radius: 7px; cursor: pointer;
@@ -257,6 +258,19 @@ dialog {
 }
 dialog::backdrop { background: rgba(10, 14, 20, .55); }
 dialog form, dialog .body { display: grid; gap: 16px; }
+#askText { white-space: pre-line; color: var(--fg); }
+textarea.report {
+  font: .8rem/1.45 ui-monospace, "SFMono-Regular", Menlo, monospace; width: 100%; resize: vertical; min-height: 200px;
+  border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); padding: 10px;
+}
+pre.lic {
+  margin: 0; max-height: 60vh; overflow: auto; white-space: pre-wrap; word-break: break-word;
+  font: .72rem/1.45 ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--muted);
+  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+}
+a.linkbtn { color: var(--accent); font-weight: 600; text-decoration: none; justify-self: start; padding: 10px 0; min-height: 44px; display: inline-flex; align-items: center; }
+a.linkbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+#resetWrap { display: grid; gap: 12px; }
 
 /* First run. */
 .welcome { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow: auto; padding: calc(32px + var(--sa-top)) 16px calc(24px + var(--sa-bottom)); }

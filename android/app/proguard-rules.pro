@@ -5,17 +5,14 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# FuelNativePlugin needs no rule here: Capacitor's own consumer rules keep every public class that extends
+# com.getcapacitor.Plugin with all its members (the bridge finds @PluginMethod methods by reflection).
+# The widget provider and MainActivity are kept because the manifest names them.
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# WorkManager stores the worker's class name in its database and creates it by reflection, so keep the name
+# the same across updates: work queued by one version must still find its class after the next one installs.
+-keep class com.fueltracker.app.WidgetMidnightWorker { <init>(...); }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep line numbers so crashes from the shrunk test APK and Play Console reports stay readable.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

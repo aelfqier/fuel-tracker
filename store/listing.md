@@ -1,8 +1,13 @@
 # Store listing texts
 
 Copy each box into the matching field. The App Store version leaves out the Android-only features
-(scan, widget, app shortcut, PDF export), because Apple rejects listings that describe features the
-iPhone app doesn't have.
+(home-screen widget and long-press app shortcut), because Apple rejects listings that describe
+features the iPhone app doesn't have.
+
+No fuel brand, car brand or other company names in any field (store titles, descriptions, keywords
+or promotional text), apart from the services the app works with (Google Play services, Google Drive,
+WhatsApp, iCloud, Siri): Apple guidelines 2.3.7 and 5.2.1 bar third-party trademarks in metadata, and
+Google Play's metadata policy is similar. Station names stay what users type in the app.
 
 Screenshots and graphics are in [screenshots/](screenshots/) and [graphics/](graphics/).
 Links to use in both stores:
@@ -37,23 +42,25 @@ bnzn: Fuel Cost & L/100 km
 Fuel consumption per km and per 100 km, costs and reminders. No ads, no account.
 ```
 
-**Full description** (1953/4000)
+**Full description** (2342/4000)
 
 ```text
-bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
+bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams or any other currency, and the app does the rest.
 
 ACCURATE, EVEN WITH PARTIAL FILL-UPS
 • Consumption measured from full tank to full tank, the way it should be
 • Partial fill-ups are added to the next full tank
 • Forgot to log one? Mark it, and that stretch is left out instead of skewing your average
+• A warning before you save a number that looks wrong
+• Odometer rolled over or dashboard replaced? Mark the reset and your figures stay right. No working odometer? Use the trip meter instead
 • Edit any entry, undo a delete
 
 BUILT FOR MOROCCO
 • French, Arabic (right to left) and English
-• A reminder after the 1st and 16th of each month, when pump prices change
-• Remembers your stations (Afriquia, TotalEnergies, Shell, Winxo…) and shows your cheapest one
+• Optional "Pump price days" notification at 10:00 on the 1st and 16th of each month, when Moroccan pump prices may change (off until you turn it on)
+• Remembers your stations and shows your cheapest one
 • Trip cost from your own consumption, with presets like Casablanca–Marrakech and a split between passengers
-• Fill-ups abroad in euros or dollars, converted at the rate you confirm
+• Fill-ups abroad in euros, dollars or another currency, converted at the rate you confirm
 
 SEE WHERE YOUR MONEY GOES
 • This month against your average, a warning on unusual tanks, and an end-of-month projection
@@ -66,17 +73,17 @@ NEVER MISS THE PAPERWORK
 • Insurance, technical inspection and vignette by date, with a notification a week before and on the day
 
 ANDROID EXTRAS
-• Scan the pump display or a receipt: the numbers are read on your phone, even offline
+• Scan the pump display or a receipt: the numbers are read on your phone and the photo never leaves it (needs Google Play services)
 • Home-screen widget with your last consumption and a "+ Fill-up" button
 • Long-press the app icon to add a fill-up
 
 YOUR DATA STAYS ON YOUR PHONE
 • No ads, no subscription, no account
-• Everything is saved on your phone
+• Everything is saved on your phone, and in your phone's own Google backup if you have it turned on
 • Backup file to Google Drive, WhatsApp or email, and restore it on a new phone
 • Export to a spreadsheet (CSV) or a PDF history report, handy when you sell the car
 
-Cars and motorbikes, petrol or diesel, as many vehicles as you like.
+Cars and motorbikes: petrol, diesel, electric or plug-in hybrid (kWh), as many vehicles as you like.
 ```
 
 ### Google Play · Français (fr-FR)
@@ -93,23 +100,25 @@ bnzn : Conso Carburant
 Consommation au km et aux 100 km, dépenses et rappels. Sans pub, sans compte.
 ```
 
-**Full description** (2191/4000)
+**Full description** (2668/4000)
 
 ```text
-bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
+bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams ou dans n'importe quelle autre monnaie : l'application fait le reste.
 
 PRÉCIS, MÊME AVEC DES PLEINS PARTIELS
 • Consommation mesurée d'un plein complet au suivant, comme il se doit
 • Les pleins partiels s'ajoutent au prochain plein complet
 • Un plein oublié ? Signalez-le : ce trajet est ignoré au lieu de fausser votre moyenne
+• Un avertissement avant d'enregistrer un chiffre qui semble faux
+• Compteur revenu à zéro ou tableau de bord remplacé ? Signalez-le et vos chiffres restent justes. Compteur en panne ? Utilisez le compteur journalier
 • Modifiez n'importe quel plein, annulez une suppression
 
 PENSÉ POUR LE MAROC
 • Français, arabe (de droite à gauche) et anglais
-• Un rappel après le 1er et le 16 de chaque mois, quand les prix à la pompe changent
-• Mémorise vos stations (Afriquia, TotalEnergies, Shell, Winxo…) et indique la moins chère
+• Notification « Jours de changement des prix » en option, à 10 h le 1er et le 16 de chaque mois, quand les prix à la pompe peuvent changer au Maroc (désactivée tant que vous ne l'activez pas)
+• Mémorise vos stations et indique la moins chère
 • Coût d'un trajet d'après votre propre consommation, avec des trajets types comme Casablanca–Marrakech et le partage entre passagers
-• Pleins à l'étranger en euros ou en dollars, convertis au taux que vous confirmez
+• Pleins à l'étranger en euros, en dollars ou dans une autre monnaie, convertis au taux que vous confirmez
 
 VOYEZ OÙ PART VOTRE ARGENT
 • Ce mois-ci comparé à votre moyenne, alerte sur un plein inhabituel et projection de fin de mois
@@ -122,17 +131,17 @@ N'OUBLIEZ PLUS LES ÉCHÉANCES
 • Assurance, visite technique et vignette par date, avec une notification une semaine avant et le jour même
 
 EN PLUS SUR ANDROID
-• Scannez l'afficheur de la pompe ou un ticket : les chiffres sont lus sur le téléphone, même hors ligne
+• Scannez l'afficheur de la pompe ou un ticket : les chiffres sont lus sur le téléphone et la photo n'en sort pas (services Google Play nécessaires)
 • Widget d'écran d'accueil avec votre dernière consommation et un bouton « + Plein »
 • Appui long sur l'icône pour ajouter un plein
 
 VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 • Sans publicité, sans abonnement, sans compte
-• Tout est enregistré sur votre téléphone
+• Tout est enregistré sur votre téléphone, et dans la sauvegarde Google du téléphone si elle est activée
 • Fichier de sauvegarde vers Google Drive, WhatsApp ou e-mail, et restauration sur un nouveau téléphone
 • Export tableur (CSV) ou rapport d'historique en PDF, pratique pour vendre la voiture
 
-Voitures et motos, essence ou gasoil, autant de véhicules que vous voulez.
+Voitures et motos : essence, gasoil, électrique ou hybride rechargeable (kWh), autant de véhicules que vous voulez.
 ```
 
 ### Google Play · العربية (ar)
@@ -149,23 +158,25 @@ bnzn: استهلاك الوقود
 استهلاك الوقود لكل كم ولكل 100 كم، المصاريف والتذكيرات. بدون إعلانات ولا حساب.
 ```
 
-**Full description** (1788/4000)
+**Full description** (2114/4000)
 
 ```text
-يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
+يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو بأي عملة أخرى، والتطبيق يتكفّل بالباقي.
 
 دقيق حتى مع التعبئة الجزئية
 • يُحسب الاستهلاك من خزان ممتلئ إلى الخزان الممتلئ التالي، كما يجب
 • التعبئات الجزئية تُضاف إلى التعبئة الكاملة التالية
 • نسيت تسجيل تعبئة؟ أشِر إلى ذلك فتُستبعد تلك المسافة بدل أن تُفسد معدّلك
+• تنبيه قبل حفظ رقم يبدو غير صحيح
+• عاد العدّاد إلى الصفر أو تغيّرت لوحة القيادة؟ أشِر إلى ذلك وتبقى أرقامك صحيحة. العدّاد لا يعمل؟ استعمل عدّاد الرحلة
 • عدّل أي تعبئة، وتراجع عن الحذف
 
 مصمَّم للمغرب
 • العربية (من اليمين إلى اليسار) والفرنسية والإنجليزية
-• تذكير بعد يومي 1 و16 من كل شهر، عند تغيّر أسعار المحروقات
-• يحفظ محطاتك (Afriquia وTotalEnergies وShell وWinxo…) ويُظهر لك الأرخص
+• إشعار «أيام تغيّر الأثمان» اختياري، في الساعة 10:00 يومي 1 و16 من كل شهر، حين قد تتغيّر أسعار المحروقات في المغرب (متوقف إلى أن تفعّله)
+• يحفظ محطاتك ويُظهر لك أرخصها
 • تكلفة الرحلة حسب استهلاكك الحقيقي، مع رحلات جاهزة مثل الدار البيضاء–مراكش وتقسيم التكلفة بين الركاب
-• تعبئات في الخارج بالأورو أو الدولار، تُحوَّل بسعر الصرف الذي تؤكّده
+• تعبئات في الخارج بالأورو أو الدولار أو أي عملة أخرى، تُحوَّل بسعر الصرف الذي تؤكّده
 
 اعرف أين يذهب مالك
 • هذا الشهر مقارنة بمعدّلك، تنبيه عند تعبئة غير عادية، وتوقّع لنهاية الشهر
@@ -178,17 +189,17 @@ bnzn: استهلاك الوقود
 • التأمين والفحص التقني والضريبة على السيارات (الفينييت) حسب التاريخ، مع إشعار قبل أسبوع وفي اليوم نفسه
 
 إضافات أندرويد
-• امسح شاشة المضخة أو الوصل: تُقرأ الأرقام على هاتفك، حتى دون إنترنت
+• امسح شاشة المضخة أو الوصل: تُقرأ الأرقام على هاتفك ولا تغادره الصورة (يتطلب خدمات Google Play)
 • أداة على الشاشة الرئيسية بآخر استهلاك وزر «+ تعبئة»
 • اضغط مطوّلًا على أيقونة التطبيق لإضافة تعبئة
 
 بياناتك تبقى على هاتفك
 • بدون إعلانات، بدون اشتراك، بدون حساب
-• كل شيء محفوظ على هاتفك
+• كل شيء محفوظ على هاتفك، وفي النسخة الاحتياطية لـ Google على هاتفك إن كانت مفعّلة
 • ملف نسخة احتياطية إلى Google Drive أو واتساب أو البريد، واسترجاعه على هاتف جديد
 • تصدير إلى جدول (CSV) أو تقرير سجل بصيغة PDF، مفيد عند بيع السيارة
 
-سيارات ودراجات نارية، بنزين أو غازوال، وعدد غير محدود من المركبات.
+سيارات ودراجات نارية: بنزين أو غازوال أو كهربائية أو هجينة قابلة للشحن (kWh)، وعدد غير محدود من المركبات.
 ```
 
 ## App Store
@@ -201,6 +212,10 @@ The smaller iPhone sizes are generated from them. No iPad screenshots are needed
 
 App Store names must be unique. If the name is refused as taken, use **bnzn Maroc** or
 **bnzn – Conso & Budget** instead.
+
+Keywords are counted by Apple with the commas, so there are no spaces after them. Words already in the
+name or subtitle are left out, because Apple indexes those anyway. If App Store Connect says a keywords
+line is too long (accented and Arabic letters can count double), remove words from the end.
 
 ### App Store · English (English (U.S.))
 
@@ -216,29 +231,31 @@ bnzn: Fuel Cost & L/100 km
 Consumption, costs, reminders
 ```
 
-**Promotional text** (158/170)
+**Promotional text** (160/170)
 
 ```text
-Know what every kilometer costs you. Made for Morocco: dirhams, a reminder when pump prices change on the 1st and 16th, French and Arabic. No ads, no account.
+Know what every kilometer costs you. Made for Morocco: dirhams, French and Arabic, and an optional alert on the days pump prices may change. No ads, no account.
 ```
 
-**Description** (1743/4000)
+**Description** (2289/4000)
 
 ```text
-bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
+bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams or any other currency, and the app does the rest.
 
 ACCURATE, EVEN WITH PARTIAL FILL-UPS
 • Consumption measured from full tank to full tank, the way it should be
 • Partial fill-ups are added to the next full tank
 • Forgot to log one? Mark it, and that stretch is left out instead of skewing your average
+• A warning before you save a number that looks wrong
+• Odometer rolled over or dashboard replaced? Mark the reset and your figures stay right. No working odometer? Use the trip meter instead
 • Edit any entry, undo a delete
 
 BUILT FOR MOROCCO
 • French, Arabic (right to left) and English
-• A reminder after the 1st and 16th of each month, when pump prices change
-• Remembers your stations (Afriquia, TotalEnergies, Shell, Winxo…) and shows your cheapest one
+• Optional "Pump price days" notification at 10:00 on the 1st and 16th of each month, when Moroccan pump prices may change (off until you turn it on)
+• Remembers your stations and shows your cheapest one
 • Trip cost from your own consumption, with presets like Casablanca–Marrakech and a split between passengers
-• Fill-ups abroad in euros or dollars, converted at the rate you confirm
+• Fill-ups abroad in euros, dollars or another currency, converted at the rate you confirm
 
 SEE WHERE YOUR MONEY GOES
 • This month against your average, a warning on unusual tanks, and an end-of-month projection
@@ -250,19 +267,23 @@ NEVER MISS THE PAPERWORK
 • Oil change by kilometers
 • Insurance, technical inspection and vignette by date, with a notification a week before and on the day
 
+QUICK TO USE
+• Scan the pump display or a receipt: the numbers are read on your iPhone and the photo never leaves it
+• "Log a fill-up" shortcut for Siri, the Shortcuts app and the Action button (iOS 16 or later)
+
 YOUR DATA STAYS ON YOUR PHONE
 • No ads, no subscription, no account
-• Everything is saved on your phone
+• Everything is saved on your iPhone, and in your iCloud or computer backup if you use one
 • Backup file to Files, Google Drive, WhatsApp or email, and restore it on a new phone
-• Export to a spreadsheet (CSV) or share a history report, handy when you sell the car
+• Export to a spreadsheet (CSV) or a PDF history report, handy when you sell the car
 
-Cars and motorbikes, petrol or diesel, as many vehicles as you like.
+Cars and motorbikes: petrol, diesel, electric or plug-in hybrid (kWh), as many vehicles as you like.
 ```
 
-**Keywords** (96/100)
+**Keywords** (97/100)
 
 ```text
-tracker,log,gas,petrol,diesel,mileage,consumption,l/100km,car,motorbike,expense,trip,oil,morocco
+tracker,gas,petrol,diesel,mileage,log,car,motorbike,expense,trip,oil,morocco,ev,hybrid,kwh,budget
 ```
 
 **Support URL**
@@ -285,29 +306,31 @@ bnzn : Conso Carburant
 Consommation, budget, rappels
 ```
 
-**Promotional text** (163/170)
+**Promotional text** (164/170)
 
 ```text
-Sachez ce que vous coûte chaque kilomètre. Pensé pour le Maroc : dirhams, rappel quand les prix changent le 1er et le 16, français et arabe. Sans pub, sans compte.
+Ce que vous coûte chaque kilomètre. Pensé pour le Maroc : dirhams, français et arabe, alerte en option les jours où les prix peuvent changer. Sans pub, sans compte.
 ```
 
-**Description** (1947/4000)
+**Description** (2623/4000)
 
 ```text
-bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
+bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams ou dans n'importe quelle autre monnaie : l'application fait le reste.
 
 PRÉCIS, MÊME AVEC DES PLEINS PARTIELS
 • Consommation mesurée d'un plein complet au suivant, comme il se doit
 • Les pleins partiels s'ajoutent au prochain plein complet
 • Un plein oublié ? Signalez-le : ce trajet est ignoré au lieu de fausser votre moyenne
+• Un avertissement avant d'enregistrer un chiffre qui semble faux
+• Compteur revenu à zéro ou tableau de bord remplacé ? Signalez-le et vos chiffres restent justes. Compteur en panne ? Utilisez le compteur journalier
 • Modifiez n'importe quel plein, annulez une suppression
 
 PENSÉ POUR LE MAROC
 • Français, arabe (de droite à gauche) et anglais
-• Un rappel après le 1er et le 16 de chaque mois, quand les prix à la pompe changent
-• Mémorise vos stations (Afriquia, TotalEnergies, Shell, Winxo…) et indique la moins chère
+• Notification « Jours de changement des prix » en option, à 10 h le 1er et le 16 de chaque mois, quand les prix à la pompe peuvent changer au Maroc (désactivée tant que vous ne l'activez pas)
+• Mémorise vos stations et indique la moins chère
 • Coût d'un trajet d'après votre propre consommation, avec des trajets types comme Casablanca–Marrakech et le partage entre passagers
-• Pleins à l'étranger en euros ou en dollars, convertis au taux que vous confirmez
+• Pleins à l'étranger en euros, en dollars ou dans une autre monnaie, convertis au taux que vous confirmez
 
 VOYEZ OÙ PART VOTRE ARGENT
 • Ce mois-ci comparé à votre moyenne, alerte sur un plein inhabituel et projection de fin de mois
@@ -319,19 +342,23 @@ N'OUBLIEZ PLUS LES ÉCHÉANCES
 • Vidange selon le kilométrage
 • Assurance, visite technique et vignette par date, avec une notification une semaine avant et le jour même
 
+RAPIDE À UTILISER
+• Scannez l'afficheur de la pompe ou un ticket : les chiffres sont lus sur l'iPhone et la photo n'en sort pas
+• Raccourci pour noter un plein depuis l'app Raccourcis, Spotlight ou le bouton Action (iOS 16 ou plus récent)
+
 VOS DONNÉES RESTENT SUR VOTRE TÉLÉPHONE
 • Sans publicité, sans abonnement, sans compte
-• Tout est enregistré sur votre téléphone
+• Tout est enregistré sur votre iPhone, et dans votre sauvegarde iCloud ou sur ordinateur si vous en faites une
 • Fichier de sauvegarde vers Fichiers, Google Drive, WhatsApp ou e-mail, et restauration sur un nouveau téléphone
-• Export tableur (CSV) ou rapport d'historique à partager, pratique pour vendre la voiture
+• Export tableur (CSV) ou rapport d'historique en PDF, pratique pour vendre la voiture
 
-Voitures et motos, essence ou gasoil, autant de véhicules que vous voulez.
+Voitures et motos : essence, gasoil, électrique ou hybride rechargeable (kWh), autant de véhicules que vous voulez.
 ```
 
-**Keywords** (93/100)
+**Keywords** (100/100)
 
 ```text
-carburant,essence,gasoil,consommation,plein,voiture,moto,dépenses,trajet,vidange,maroc,budget
+essence,gasoil,plein,voiture,moto,dépenses,trajet,vidange,maroc,kilométrage,électrique,hybride,suivi
 ```
 
 **Support URL**
@@ -354,29 +381,31 @@ bnzn: استهلاك الوقود
 الاستهلاك والمصاريف والتذكيرات
 ```
 
-**Promotional text** (137/170)
+**Promotional text** (157/170)
 
 ```text
-اعرف كم يكلّفك كل كيلومتر. مصمَّم للمغرب: بالدرهم، تذكير عند تغيّر أسعار المحروقات يومي 1 و16، بالعربية والفرنسية. بدون إعلانات ولا حساب.
+اعرف كم يكلّفك كل كيلومتر. مصمَّم للمغرب: بالدرهم، بالعربية والفرنسية، مع تنبيه اختياري في الأيام التي قد تتغيّر فيها أسعار المحروقات. بدون إعلانات ولا حساب.
 ```
 
-**Description** (1612/4000)
+**Description** (2094/4000)
 
 ```text
-يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
+يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو بأي عملة أخرى، والتطبيق يتكفّل بالباقي.
 
 دقيق حتى مع التعبئة الجزئية
 • يُحسب الاستهلاك من خزان ممتلئ إلى الخزان الممتلئ التالي، كما يجب
 • التعبئات الجزئية تُضاف إلى التعبئة الكاملة التالية
 • نسيت تسجيل تعبئة؟ أشِر إلى ذلك فتُستبعد تلك المسافة بدل أن تُفسد معدّلك
+• تنبيه قبل حفظ رقم يبدو غير صحيح
+• عاد العدّاد إلى الصفر أو تغيّرت لوحة القيادة؟ أشِر إلى ذلك وتبقى أرقامك صحيحة. العدّاد لا يعمل؟ استعمل عدّاد الرحلة
 • عدّل أي تعبئة، وتراجع عن الحذف
 
 مصمَّم للمغرب
 • العربية (من اليمين إلى اليسار) والفرنسية والإنجليزية
-• تذكير بعد يومي 1 و16 من كل شهر، عند تغيّر أسعار المحروقات
-• يحفظ محطاتك (Afriquia وTotalEnergies وShell وWinxo…) ويُظهر لك الأرخص
+• إشعار «أيام تغيّر الأثمان» اختياري، في الساعة 10:00 يومي 1 و16 من كل شهر، حين قد تتغيّر أسعار المحروقات في المغرب (متوقف إلى أن تفعّله)
+• يحفظ محطاتك ويُظهر لك أرخصها
 • تكلفة الرحلة حسب استهلاكك الحقيقي، مع رحلات جاهزة مثل الدار البيضاء–مراكش وتقسيم التكلفة بين الركاب
-• تعبئات في الخارج بالأورو أو الدولار، تُحوَّل بسعر الصرف الذي تؤكّده
+• تعبئات في الخارج بالأورو أو الدولار أو أي عملة أخرى، تُحوَّل بسعر الصرف الذي تؤكّده
 
 اعرف أين يذهب مالك
 • هذا الشهر مقارنة بمعدّلك، تنبيه عند تعبئة غير عادية، وتوقّع لنهاية الشهر
@@ -388,19 +417,23 @@ bnzn: استهلاك الوقود
 • تغيير الزيت حسب الكيلومترات
 • التأمين والفحص التقني والضريبة على السيارات (الفينييت) حسب التاريخ، مع إشعار قبل أسبوع وفي اليوم نفسه
 
+سريع الاستعمال
+• امسح شاشة المضخة أو الوصل: تُقرأ الأرقام على الآيفون ولا تغادره الصورة
+• اختصار لتسجيل تعبئة من تطبيق الاختصارات أو Spotlight أو زر الإجراءات (iOS 16 أو أحدث)
+
 بياناتك تبقى على هاتفك
 • بدون إعلانات، بدون اشتراك، بدون حساب
-• كل شيء محفوظ على هاتفك
+• كل شيء محفوظ على الآيفون، وفي نسختك الاحتياطية على iCloud أو الكمبيوتر إن كنت تستعملها
 • ملف نسخة احتياطية إلى الملفات أو Google Drive أو واتساب أو البريد، واسترجاعه على هاتف جديد
-• تصدير إلى جدول (CSV) أو مشاركة تقرير السجل، مفيد عند بيع السيارة
+• تصدير إلى جدول (CSV) أو تقرير سجل بصيغة PDF، مفيد عند بيع السيارة
 
-سيارات ودراجات نارية، بنزين أو غازوال، وعدد غير محدود من المركبات.
+سيارات ودراجات نارية: بنزين أو غازوال أو كهربائية أو هجينة قابلة للشحن (kWh)، وعدد غير محدود من المركبات.
 ```
 
-**Keywords** (53/100)
+**Keywords** (99/100)
 
 ```text
-وقود,بنزين,غازوال,استهلاك,سيارة,مصاريف,المغرب,محروقات
+وقود,بنزين,غازوال,مازوط,محروقات,سيارة,مصاريف,المغرب,تعبئة,رحلة,زيت,فيدانج,صيانة,ميزانية,كهرباء,عداد
 ```
 
 **Support URL**

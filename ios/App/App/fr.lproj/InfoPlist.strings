@@ -1,0 +1,2 @@
+/* Shown when bnzn first asks for the camera (scan a pump or receipt). */
+"NSCameraUsageDescription" = "bnzn utilise l'appareil photo pour lire les chiffres d'une pompe ou d'un ticket. La photo reste sur votre iPhone.";

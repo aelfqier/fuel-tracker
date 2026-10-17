@@ -41,10 +41,17 @@ android {
         }
     }
     buildTypes {
+        // Test builds are shrunk exactly like store builds, so the phone test covers the code that ships.
+        debug {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
         release {
             if (uploadKeystore) signingConfig signingConfigs.release
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -60,9 +67,18 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    // EdgeToEdge in MainActivity (Capacitor only uses it internally)
+    implementation "androidx.activity:activity:$androidxActivityVersion"
     implementation project(':capacitor-android')
-    // On-device text recognition for the pump and receipt scan (Latin model bundled, works offline)
-    implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
+    // On-device text recognition for the pump and receipt scan. The Latin model comes from Google Play services
+    // (installed with the app, works offline afterwards), which keeps it out of the APK.
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition:$playServicesMlkitTextRecognitionVersion"
+    // ModuleInstallClient (18.2+) to make sure that model is on the phone before scanning
+    implementation "com.google.android.gms:play-services-base:$playServicesBaseVersion"
+    // Google Play in-app review prompt
+    implementation "com.google.android.play:review:$playReviewVersion"
+    // Redraws the widget after midnight so the month line changes on the 1st
+    implementation "androidx.work:work-runtime:$androidxWorkVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
