@@ -4,7 +4,8 @@
   "webDir": "www",
   "plugins": {
     "SystemBars": {
-      "initialViewportFitValueHint": "cover"
+      "initialViewportFitValueHint": "cover",
+      "insetsHandling": "native"
     }
   }
 }
