@@ -1,23 +1,40 @@
 apply plugin: 'com.android.application'
 
+// Store builds get their version from CI: VERSION_CODE must go up with every upload to Google Play.
+def appVersionCode = (System.getenv("VERSION_CODE") ?: "2") as Integer
+def appVersionName = System.getenv("VERSION_NAME") ?: "2.0.0"
+// Release signing with the Google Play upload key, when CI provides it (see docs/publishing.md).
+def uploadKeystore = System.getenv("ANDROID_KEYSTORE_PATH")
+
 android {
-    namespace "com.fueltracker.app"
-    compileSdk rootProject.ext.compileSdkVersion
+    namespace = "com.fueltracker.app"
+    compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "com.fueltracker.app"
+        applicationId "io.github.aelfqier.fueltracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "2.0"
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        if (uploadKeystore) {
+            release {
+                storeFile file(uploadKeystore)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            }
         }
     }
     buildTypes {
         release {
+            if (uploadKeystore) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

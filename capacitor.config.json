@@ -1,5 +1,10 @@
 {
-  "appId": "com.fueltracker.app",
+  "appId": "io.github.aelfqier.fueltracker",
   "appName": "Fuel Tracker",
-  "webDir": "www"
+  "webDir": "www",
+  "plugins": {
+    "SystemBars": {
+      "initialViewportFitValueHint": "cover"
+    }
+  }
 }
