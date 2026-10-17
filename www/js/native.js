@@ -5,7 +5,12 @@
   const isNative = !!(cap && cap.isNativePlatform && cap.isNativePlatform());
   const platform = isNative && cap.getPlatform ? cap.getPlatform() : "web";
   const has = (name) => isNative && cap.isPluginAvailable && cap.isPluginAvailable(name);
-  const plugin = (name) => (has(name) ? cap.registerPlugin(name) : null);
+  // The app has no JS bundler, so Capacitor's core (and its registerPlugin) isn't loaded: the Android and iOS
+  // bridges put each plugin on Capacitor.Plugins instead. registerPlugin is used when a bundle provides it.
+  const plugin = (name) => {
+    if (!has(name)) return null;
+    return typeof cap.registerPlugin === "function" ? cap.registerPlugin(name) : (cap.Plugins && cap.Plugins[name]) || null;
+  };
 
   const Preferences = plugin("Preferences");
   const Filesystem = plugin("Filesystem");
