@@ -1,9 +1,9 @@
-# Fuel Tracker: Android and iOS app
+# bnzn: Android and iOS app
 
-The same Fuel Tracker page, packaged as a native app with Capacitor.
+The same bnzn page, packaged as a native app with Capacitor.
 Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
-- App name: **Fuel Tracker**
+- App name: **bnzn**
 - App ID: `io.github.aelfqier.fueltracker` (the ID on Google Play and the App Store; it can't change after the first upload)
 - The app's screen is `www/index.html`, with styles in `www/css/` and code in `www/js/`
   (`logic.js` does the calculations, `i18n.js` holds the English, French and Arabic text,
@@ -50,7 +50,7 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 1. Put this folder in a GitHub repository and push it to the `main` branch.
 2. The workflow in `.github/workflows/android.yml` builds a test APK automatically.
 3. When it finishes, open the repository's **Releases** page on your phone and download
-   `fuel-tracker.apk` from the "latest" release.
+   `bnzn.apk` from the "latest" release.
 4. Open the downloaded file to install it (allow "install unknown apps" when asked).
 
 Pull requests get the same APK in the "test" pre-release, so a change can be tried before merging.

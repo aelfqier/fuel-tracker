@@ -1,4 +1,4 @@
-# Publishing Fuel Tracker on Google Play and the App Store
+# Publishing bnzn on Google Play and the App Store
 
 Everything that can be prepared without your store accounts is ready in this repository:
 
@@ -46,7 +46,7 @@ In the Play Console, **Create app**:
 
 | Field | Answer |
 | --- | --- |
-| App name | `Fuel Tracker: L/100 km & Cost` |
+| App name | `bnzn: Fuel Cost & L/100 km` |
 | Default language | English (United States) – en-US |
 | App or game | App |
 | Free or paid | Free |
@@ -113,10 +113,10 @@ takes from a few hours to a few days.
    https://developer.apple.com/programs/enroll/ (99 USD per year). You need an Apple ID with two-factor
    authentication. Apple can take up to 48 hours to approve.
 2. Register the app ID: https://developer.apple.com/account/resources/identifiers/list ›
-   **+** › **App IDs** › **App**. Description `Fuel Tracker`, **Explicit** bundle ID
+   **+** › **App IDs** › **App**. Description `bnzn`, **Explicit** bundle ID
    `io.github.aelfqier.fueltracker`, no extra capabilities › **Register**.
 3. In https://appstoreconnect.apple.com › **Apps › + › New App**: platform iOS, name
-   `Fuel Tracker: L/100 km & Cost` (Apple names must be unique; if it's taken use one of the
+   `bnzn: Fuel Cost & L/100 km` (Apple names must be unique; if it's taken use one of the
    alternatives in [listing.md](listing.md#app-store)), primary language English (U.S.), the bundle ID
    from step 2, SKU `fueltracker`.
 

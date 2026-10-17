@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Fuel Tracker</string>
-    <string name="title_activity_main">Fuel Tracker</string>
+    <string name="app_name">bnzn</string>
+    <string name="title_activity_main">bnzn</string>
     <string name="package_name">io.github.aelfqier.fueltracker</string>
     <string name="custom_url_scheme">io.github.aelfqier.fueltracker</string>
     <string name="widget_description">Last consumption and a quick fill-up button</string>

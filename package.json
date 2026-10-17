@@ -2,7 +2,7 @@
   "name": "fuel-tracker",
   "version": "2.0.0",
   "private": true,
-  "description": "Fuel Tracker: log fill-ups and track fuel consumption per 1 km and 100 km.",
+  "description": "bnzn: log fill-ups and track fuel consumption per 1 km and 100 km.",
   "scripts": {
     "test": "node --test tests/*.test.js",
     "sync": "cap sync",

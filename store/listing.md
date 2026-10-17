@@ -25,10 +25,10 @@ Graphics, for every language:
 
 ### Google Play · English (en-US)
 
-**App name** (29/30)
+**App name** (26/30)
 
 ```text
-Fuel Tracker: L/100 km & Cost
+bnzn: Fuel Cost & L/100 km
 ```
 
 **Short description** (80/80)
@@ -37,10 +37,10 @@ Fuel Tracker: L/100 km & Cost
 Fuel consumption per km and per 100 km, costs and reminders. No ads, no account.
 ```
 
-**Full description** (1961/4000)
+**Full description** (1953/4000)
 
 ```text
-Fuel Tracker tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
+bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
 
 ACCURATE, EVEN WITH PARTIAL FILL-UPS
 • Consumption measured from full tank to full tank, the way it should be
@@ -81,10 +81,10 @@ Cars and motorbikes, petrol or diesel, as many vehicles as you like.
 
 ### Google Play · Français (fr-FR)
 
-**App name** (30/30)
+**App name** (22/30)
 
 ```text
-Fuel Tracker : Conso Carburant
+bnzn : Conso Carburant
 ```
 
 **Short description** (77/80)
@@ -93,10 +93,10 @@ Fuel Tracker : Conso Carburant
 Consommation au km et aux 100 km, dépenses et rappels. Sans pub, sans compte.
 ```
 
-**Full description** (2199/4000)
+**Full description** (2191/4000)
 
 ```text
-Fuel Tracker vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
+bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
 
 PRÉCIS, MÊME AVEC DES PLEINS PARTIELS
 • Consommation mesurée d'un plein complet au suivant, comme il se doit
@@ -137,10 +137,10 @@ Voitures et motos, essence ou gasoil, autant de véhicules que vous voulez.
 
 ### Google Play · العربية (ar)
 
-**App name** (28/30)
+**App name** (20/30)
 
 ```text
-Fuel Tracker: استهلاك الوقود
+bnzn: استهلاك الوقود
 ```
 
 **Short description** (78/80)
@@ -149,10 +149,10 @@ Fuel Tracker: استهلاك الوقود
 استهلاك الوقود لكل كم ولكل 100 كم، المصاريف والتذكيرات. بدون إعلانات ولا حساب.
 ```
 
-**Full description** (1796/4000)
+**Full description** (1788/4000)
 
 ```text
-يخبرك Fuel Tracker بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
+يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
 
 دقيق حتى مع التعبئة الجزئية
 • يُحسب الاستهلاك من خزان ممتلئ إلى الخزان الممتلئ التالي، كما يجب
@@ -199,15 +199,15 @@ at the top right of the app's page).
 Screenshots: upload the 6 images from `screenshots/appstore/<language>/` in the **iPhone 6.9" Display** slot.
 The smaller iPhone sizes are generated from them. No iPad screenshots are needed (the app is iPhone only).
 
-App Store names must be unique. If the name is refused as taken, use **Fuel Tracker Maroc** or
-**Fuel Tracker – Conso & Budget** instead.
+App Store names must be unique. If the name is refused as taken, use **bnzn Maroc** or
+**bnzn – Conso & Budget** instead.
 
 ### App Store · English (English (U.S.))
 
-**Name** (29/30)
+**Name** (26/30)
 
 ```text
-Fuel Tracker: L/100 km & Cost
+bnzn: Fuel Cost & L/100 km
 ```
 
 **Subtitle** (29/30)
@@ -222,10 +222,10 @@ Consumption, costs, reminders
 Know what every kilometer costs you. Made for Morocco: dirhams, a reminder when pump prices change on the 1st and 16th, French and Arabic. No ads, no account.
 ```
 
-**Description** (1751/4000)
+**Description** (1743/4000)
 
 ```text
-Fuel Tracker tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
+bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams, euros or dollars, and the app does the rest.
 
 ACCURATE, EVEN WITH PARTIAL FILL-UPS
 • Consumption measured from full tank to full tank, the way it should be
@@ -259,10 +259,10 @@ YOUR DATA STAYS ON YOUR PHONE
 Cars and motorbikes, petrol or diesel, as many vehicles as you like.
 ```
 
-**Keywords** (94/100)
+**Keywords** (96/100)
 
 ```text
-fuel,gas,petrol,diesel,mileage,consumption,l/100km,car,motorbike,expense,trip,cost,oil,morocco
+tracker,log,gas,petrol,diesel,mileage,consumption,l/100km,car,motorbike,expense,trip,oil,morocco
 ```
 
 **Support URL**
@@ -273,10 +273,10 @@ https://aelfqier.github.io/fuel-tracker/
 
 ### App Store · Français (French)
 
-**Name** (30/30)
+**Name** (22/30)
 
 ```text
-Fuel Tracker : Conso Carburant
+bnzn : Conso Carburant
 ```
 
 **Subtitle** (29/30)
@@ -291,10 +291,10 @@ Consommation, budget, rappels
 Sachez ce que vous coûte chaque kilomètre. Pensé pour le Maroc : dirhams, rappel quand les prix changent le 1er et le 16, français et arabe. Sans pub, sans compte.
 ```
 
-**Description** (1955/4000)
+**Description** (1947/4000)
 
 ```text
-Fuel Tracker vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
+bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams, euros ou dollars : l'application fait le reste.
 
 PRÉCIS, MÊME AVEC DES PLEINS PARTIELS
 • Consommation mesurée d'un plein complet au suivant, comme il se doit
@@ -342,10 +342,10 @@ https://aelfqier.github.io/fuel-tracker/
 
 ### App Store · العربية (Arabic)
 
-**Name** (28/30)
+**Name** (20/30)
 
 ```text
-Fuel Tracker: استهلاك الوقود
+bnzn: استهلاك الوقود
 ```
 
 **Subtitle** (30/30)
@@ -360,10 +360,10 @@ Fuel Tracker: استهلاك الوقود
 اعرف كم يكلّفك كل كيلومتر. مصمَّم للمغرب: بالدرهم، تذكير عند تغيّر أسعار المحروقات يومي 1 و16، بالعربية والفرنسية. بدون إعلانات ولا حساب.
 ```
 
-**Description** (1620/4000)
+**Description** (1612/4000)
 
 ```text
-يخبرك Fuel Tracker بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
+يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو الأورو أو الدولار، والتطبيق يتكفّل بالباقي.
 
 دقيق حتى مع التعبئة الجزئية
 • يُحسب الاستهلاك من خزان ممتلئ إلى الخزان الممتلئ التالي، كما يجب

@@ -52,11 +52,11 @@ jobs:
         run: |
           mkdir -p out
           if [ "$HAS_KEYSTORE" = "true" ]; then
-            cp android/app/build/outputs/bundle/release/app-release.aab "out/fuel-tracker-$VERSION_NAME-$VERSION_CODE.aab"
-            cp android/app/build/outputs/apk/release/app-release.apk "out/fuel-tracker-$VERSION_NAME-$VERSION_CODE.apk"
+            cp android/app/build/outputs/bundle/release/app-release.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE.aab"
+            cp android/app/build/outputs/apk/release/app-release.apk "out/bnzn-$VERSION_NAME-$VERSION_CODE.apk"
             echo "### Android $VERSION_NAME (version code $VERSION_CODE) is signed and ready for Google Play" >> "$GITHUB_STEP_SUMMARY"
           else
-            cp android/app/build/outputs/bundle/release/app-release.aab "out/fuel-tracker-$VERSION_NAME-$VERSION_CODE-unsigned.aab"
+            cp android/app/build/outputs/bundle/release/app-release.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE-unsigned.aab"
             echo "::warning::ANDROID_KEYSTORE_BASE64 is not set, so the bundle is unsigned and Google Play will refuse it."
             echo "### Android $VERSION_NAME (version code $VERSION_CODE) built, but unsigned: add the upload key secrets" >> "$GITHUB_STEP_SUMMARY"
           fi
