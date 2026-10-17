@@ -7,6 +7,7 @@
     storeLocal: "Saved in this browser only. Use the same phone and browser to keep your history.",
     storeError: "Your saved records could not be loaded right now. Reload to try again.",
     tabHome: "Fill-up", tabHistory: "History", tabTools: "Tools", tabSettings: "Settings", mainMenu: "Main menu",
+    appearance: "Appearance", themeAuto: "Automatic", themeLight: "Light", themeDark: "Dark", avgShort: "Your average {v}", insightsTitle: "Insights",
 
     welcomeLead: "Know exactly what your car or motorbike costs you per kilometer, in two taps per fill-up.",
     wLang: "Choose your language", wVehicle: "What do you drive?", wVehicleHint: "You can add more vehicles later in Settings.",
@@ -112,6 +113,7 @@
     storeLocal: "Enregistré dans ce navigateur uniquement. Utilisez le même téléphone et le même navigateur pour garder votre historique.",
     storeError: "Impossible de charger vos données pour le moment. Rechargez pour réessayer.",
     tabHome: "Plein", tabHistory: "Historique", tabTools: "Outils", tabSettings: "Réglages", mainMenu: "Menu principal",
+    appearance: "Apparence", themeAuto: "Automatique", themeLight: "Clair", themeDark: "Sombre", avgShort: "Votre moyenne {v}", insightsTitle: "À retenir",
 
     welcomeLead: "Sachez exactement combien votre voiture ou votre moto vous coûte au kilomètre, en deux gestes à chaque plein.",
     wLang: "Choisissez votre langue", wVehicle: "Que conduisez-vous ?", wVehicleHint: "Vous pourrez ajouter d'autres véhicules dans Réglages.",
@@ -217,6 +219,7 @@
     storeLocal: "محفوظ في هذا المتصفح فقط. استعمل نفس الهاتف ونفس المتصفح للحفاظ على سجلك.",
     storeError: "تعذّر تحميل بياناتك الآن. أعد التحميل للمحاولة مجددًا.",
     tabHome: "التعبئة", tabHistory: "السجل", tabTools: "أدوات", tabSettings: "الإعدادات", mainMenu: "القائمة الرئيسية",
+    appearance: "المظهر", themeAuto: "تلقائي", themeLight: "فاتح", themeDark: "داكن", avgShort: "معدلك {v}", insightsTitle: "ملاحظات",
 
     welcomeLead: "اعرف بالضبط كم تكلفك سيارتك أو دراجتك النارية في كل كيلومتر، بلمستين عند كل تعبئة.",
     wLang: "اختر لغتك", wVehicle: "ماذا تسوق؟", wVehicleHint: "يمكنك إضافة مركبات أخرى لاحقًا من الإعدادات.",

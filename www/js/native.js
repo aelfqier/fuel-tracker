@@ -95,5 +95,23 @@
     } catch { /* ignore */ }
   }
 
-  root.Native = { isNative, platform, Preferences, saveFile, printHtml, canScan, recognize, refreshWidget, scheduleReminders, onDeepLink };
+  // A light tap under the finger for taps, choices, saves and warnings. Silent where the phone can't do it.
+  const Haptics = plugin("Haptics");
+  function haptic(kind) {
+    try {
+      if (Haptics) {
+        if (kind === "success" || kind === "warning") Haptics.notification({ type: kind === "success" ? "SUCCESS" : "WARNING" }).catch(() => {});
+        else Haptics.impact({ style: "LIGHT" }).catch(() => {});
+      } else if (isNative && navigator.vibrate) navigator.vibrate(kind === "success" ? [12, 60, 18] : 8);
+    } catch { /* haptics are a bonus */ }
+  }
+
+  // Status bar icons: light on the dark theme, dark on the light one, the phone's choice otherwise.
+  const SystemBars = plugin("SystemBars");
+  function setBarStyle(theme) {
+    if (!SystemBars) return;
+    SystemBars.setStyle({ style: theme === "dark" ? "DARK" : theme === "light" ? "LIGHT" : "DEFAULT" }).catch(() => {});
+  }
+
+  root.Native = { isNative, platform, Preferences, saveFile, printHtml, canScan, recognize, refreshWidget, scheduleReminders, onDeepLink, haptic, setBarStyle };
 })(typeof self !== "undefined" ? self : this);

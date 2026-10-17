@@ -195,6 +195,8 @@
 
   /* ---------- tabs ---------- */
   function switchTab(name) {
+    const was = document.querySelector('nav.tabbar button[aria-current="page"]');
+    if (was && was.dataset.tab !== name) Native.haptic("tap");
     for (const v of ["home", "history", "tools", "settings"]) $("view-" + v).hidden = v !== name;
     document.querySelectorAll("nav.tabbar button").forEach((b) => b.setAttribute("aria-current", b.dataset.tab === name ? "page" : "false"));
     window.scrollTo(0, 0);
@@ -207,33 +209,33 @@
   function renderWelcome() {
     const el = $("welcomeInner");
     const steps = `<div class="steps">${[0, 1, 2].map((i) => `<span class="${i <= wStep ? "on" : ""}"></span>`).join("")}</div>`;
+    const chev = `<svg class="chev"><use href="#i-chevron"/></svg>`;
+    const choice = (attr, badge, label) => `<button type="button" ${attr}><span class="bc-ico">${badge}</span><span>${label}</span>${chev}</button>`;
     if (wStep === 0) {
-      el.innerHTML = `<div class="logo"><svg><use href="#i-pump"/></svg></div>
-        <div><h1>${esc(t("appName"))}</h1></div>
-        <p class="lead">${esc(t("welcomeLead"))}</p>
+      el.innerHTML = `<div class="w-hero"><div class="logo"><svg><use href="#i-pump"/></svg></div>
+        <h1>${esc(t("appName"))}</h1>
+        <p class="lead">${esc(t("welcomeLead"))}</p></div>
         <ul class="promise"><li><svg><use href="#i-check"/></svg>${esc(t("p1"))}</li><li><svg><use href="#i-check"/></svg>${esc(t("p2"))}</li><li><svg><use href="#i-check"/></svg>${esc(t("p3"))}</li></ul>
         ${steps}
         <h2>${esc(t("wLang"))}</h2>
         <div class="bigchoice">
-          <button type="button" data-lang="fr">Français</button>
-          <button type="button" data-lang="ar">العربية</button>
-          <button type="button" data-lang="en">English</button>
+          ${choice('data-lang="fr"', "FR", "Français")}
+          ${choice('data-lang="ar"', "ع", "العربية")}
+          ${choice('data-lang="en"', "EN", "English")}
         </div>`;
     } else if (wStep === 1) {
-      el.innerHTML = `${steps}<h2>${esc(t("wVehicle"))}</h2>
+      el.innerHTML = `${steps}<div class="w-step"><h2>${esc(t("wVehicle"))}</h2><p class="hint">${esc(t("wVehicleHint"))}</p></div>
+        <div class="seg cards"><input type="radio" name="wType" id="wt-car" value="car" ${wDraft.type === "car" ? "checked" : ""}><label for="wt-car"><svg><use href="#i-car"/></svg>${esc(t("car"))}</label><input type="radio" name="wType" id="wt-bike" value="bike" ${wDraft.type === "bike" ? "checked" : ""}><label for="wt-bike"><svg><use href="#i-bike"/></svg>${esc(t("bike"))}</label></div>
         <div class="field"><label for="wName">${esc(t("vName"))}</label><div class="inp"><input id="wName" class="plain" type="text" maxlength="40" placeholder="${esc(t("vNamePh"))}" value="${esc(wDraft.name)}"></div></div>
-        <div class="seg"><input type="radio" name="wType" id="wt-car" value="car" ${wDraft.type === "car" ? "checked" : ""}><label for="wt-car">${esc(t("car"))}</label><input type="radio" name="wType" id="wt-bike" value="bike" ${wDraft.type === "bike" ? "checked" : ""}><label for="wt-bike">${esc(t("bike"))}</label></div>
-        <div class="seg"><input type="radio" name="wFuel" id="wf-e" value="essence" ${wDraft.fuel === "essence" ? "checked" : ""}><label for="wf-e">${esc(t("essence"))}</label><input type="radio" name="wFuel" id="wf-g" value="gasoil" ${wDraft.fuel === "gasoil" ? "checked" : ""}><label for="wf-g">${esc(t("gasoil"))}</label></div>
-        <p class="hint">${esc(t("wVehicleHint"))}</p>
+        <div class="field"><span class="flabel">${esc(t("fuelType"))}</span><div class="seg"><input type="radio" name="wFuel" id="wf-e" value="essence" ${wDraft.fuel === "essence" ? "checked" : ""}><label for="wf-e">${esc(t("essence"))}</label><input type="radio" name="wFuel" id="wf-g" value="gasoil" ${wDraft.fuel === "gasoil" ? "checked" : ""}><label for="wf-g">${esc(t("gasoil"))}</label></div></div>
         <div class="btnrow"><button type="button" data-w="back">${esc(t("back"))}</button><button type="button" class="primary" data-w="next">${esc(t("next"))}</button></div>`;
     } else {
-      el.innerHTML = `${steps}<h2>${esc(t("wCurrency"))}</h2>
+      el.innerHTML = `${steps}<div class="w-step"><h2>${esc(t("wCurrency"))}</h2><p class="hint">${esc(t("wCurrencyHint"))}</p></div>
         <div class="bigchoice">
-          <button type="button" data-cur="MAD">${esc(t("curMAD"))}</button>
-          <button type="button" data-cur="EUR">${esc(t("curEUR"))}</button>
-          <button type="button" data-cur="USD">${esc(t("curUSD"))}</button>
+          ${choice('data-cur="MAD"', "DH", esc(t("curMAD")))}
+          ${choice('data-cur="EUR"', "€", esc(t("curEUR")))}
+          ${choice('data-cur="USD"', "$", esc(t("curUSD")))}
         </div>
-        <p class="hint">${esc(t("wCurrencyHint"))}</p>
         <div class="btnrow"><button type="button" data-w="back">${esc(t("back"))}</button></div>`;
     }
   }
@@ -440,6 +442,7 @@
         resetForm();
       } else {
         await store.add(rec);
+        Native.haptic("success");
         $("saveMsg").className = "msg ok"; $("saveMsg").textContent = t("saved"); $("saveMsg").hidden = false;
         resetForm(true);
       }
@@ -532,17 +535,50 @@
     const rec = { kind: "income", date: $("incDate").value, vehicle: old ? old.vehicle : settings.activeVehicle, amount, currency: settings.home, createdAt: old ? old.createdAt : Date.now() };
     try {
       if (old) await store.update(old.id, rec); else await store.add(rec);
-      toast(t(old ? "updated" : "savedIncome")); resetIncome();
+      Native.haptic("success"); toast(t(old ? "updated" : "savedIncome")); resetIncome();
     } catch { toast(t("errSave")); }
   });
 
   /* ================= HOME: INSIGHTS AND REMINDERS ================= */
   const icon = (id) => `<span class="ico"><svg><use href="#${id}"/></svg></span>`;
+  const vehIcon = (id) => { const v = vehicleById(id); return v && v.type === "bike" ? "i-bike" : "i-car"; };
+  const vava = (id) => `<span class="vava" style="--vc:${esc(vehColor(id))}"><svg><use href="#${vehIcon(id)}"/></svg></span>`;
+
+  // The home screen's instrument cluster: this month's L/100 km on a 240° dial that runs from your best
+  // recent tank (green) to your worst (red), with your average marked, then the month's key numbers.
+  function gaugeSvg(v, lo, hi, avg) {
+    const cx = 120, cy = 112, r = 92, A0 = 150, SWEEP = 240;
+    const pt = (a, rr) => [cx + rr * Math.cos(a * Math.PI / 180), cy + rr * Math.sin(a * Math.PI / 180)];
+    const frac = (x) => Math.max(0, Math.min(1, (x - lo) / (hi - lo || 1)));
+    const [x0, y0] = pt(A0, r), [x1, y1] = pt(A0 + SWEEP, r);
+    const arc = `M${x0.toFixed(1)} ${y0.toFixed(1)}A${r} ${r} 0 1 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    let s = `<svg viewBox="0 0 240 184" aria-hidden="true"><defs><linearGradient id="gGrad" gradientUnits="userSpaceOnUse" x1="28" y1="0" x2="212" y2="0">
+      <stop offset="0" stop-color="#3ddc84"/><stop offset=".42" stop-color="#ffc53d"/><stop offset=".72" stop-color="#ff8a1f"/><stop offset="1" stop-color="#ff4d4d"/></linearGradient></defs>`;
+    for (let i = 0; i <= 24; i++) {
+      const a = A0 + SWEEP * i / 24, major = i % 6 === 0;
+      const [ax, ay] = pt(a, r + 13), [bx, by] = pt(a, r + (major ? 21 : 17));
+      s += `<line class="g-tick${major ? " major" : ""}" x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}"/>`;
+    }
+    s += `<path class="g-track" d="${arc}"/>`;
+    if (v != null) {
+      const f = frac(v);
+      s += `<path class="g-fill" d="${arc}" pathLength="100" stroke-dasharray="${(f * 100).toFixed(2)} 100"/>`;
+      if (avg != null) {
+        const a = A0 + SWEEP * frac(avg), [ax, ay] = pt(a, r - 11), [bx, by] = pt(a, r + 11);
+        s += `<line class="g-avg" x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}"/>`;
+      }
+      const [dx, dy] = pt(A0 + SWEEP * f, r);
+      s += `<circle class="g-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="7.5"/>`;
+      s += `<text class="g-end" x="${x0.toFixed(1)}" y="${(y0 + 22).toFixed(1)}" text-anchor="middle">${fmt(lo, 1)}</text><text class="g-end" x="${x1.toFixed(1)}" y="${(y1 + 22).toFixed(1)}" text-anchor="middle">${fmt(hi, 1)}</text>`;
+    }
+    return s + `</svg>`;
+  }
+
   function renderInsights() {
-    const el = $("insights");
+    const el = $("insights"), listEl = $("insightList");
     const vid = settings.activeVehicle;
+    if (!vid || !vehicleById(vid)) { el.hidden = true; listEl.hidden = true; return; }
     const vf = fills().filter((r) => r.vehicle === vid);
-    if (!vf.length) { el.hidden = true; return; }
     const day = today();
     const ins = FT.insights(records, settings, vid, day);
     const segs = FT.segments(vf, settings);
@@ -551,9 +587,39 @@
     const head = ins.monthL100 != null ? { lbl: t("thisMonth"), v: ins.monthL100 } : lastSeg ? { lbl: t("lastFullTank"), v: lastSeg.l100 } : null;
     let badge = "";
     if (ins.changePct != null && Math.abs(ins.changePct) >= 3) badge = `<span class="badge ${ins.changePct > 0 ? "up" : "down"}">${ins.changePct > 0 ? "+" : "−"}${fmt(Math.abs(ins.changePct), 0)}%</span>`;
-    parts.push(`<div class="card-head"><h2>${esc(vehName(vid))}</h2>${badge}</div>`);
-    if (head) parts.push(`<div class="hero calm"><span class="lbl">${esc(head.lbl)}</span><span class="val">${fmt(head.v, 2)}<small>L/100 km</small></span></div>`);
-    else parts.push(`<p class="hint">${esc(t("needTwoFull"))}</p>`);
+    const [, mNow] = day.split("-").map(Number);
+    parts.push(`<div class="c-head"><div class="c-veh">${vava(vid)}<div><div class="c-name">${esc(vehName(vid))}</div><div class="c-sub">${esc(monthName(mNow, "long"))}</div></div></div>${badge}</div>`);
+    // Dial scale: the spread of recent tanks, padded so the needle never sits on an end stop.
+    const avgRef = ins.avgL100 != null ? ins.avgL100 : FT.vehicleAverage(segs, vid);
+    if (head) {
+      const vals = ins.trend.map((p) => p.l100).concat(head.v, avgRef != null ? avgRef : []);
+      let lo = Math.min(...vals), hi = Math.max(...vals);
+      if (hi - lo < head.v * 0.2) { const mid = (hi + lo) / 2; lo = mid - head.v * 0.12; hi = mid + head.v * 0.12; }
+      lo = Math.max(0, lo - (hi - lo) * 0.08); hi += (hi - lo) * 0.08;
+      parts.push(`<div class="gauge">${gaugeSvg(head.v, lo, hi, avgRef)}<div class="g-read"><span class="g-lbl">${esc(head.lbl)}</span><span class="g-val">${fmt(head.v, 2)}</span><span class="g-unit">L/100 km</span>${avgRef != null ? `<span class="g-avgtxt">${esc(t("avgShort", { v: fmt(avgRef, 1) }))}</span>` : ""}</div></div>`);
+    } else {
+      parts.push(`<div class="gauge">${gaugeSvg(null, 0, 1)}<div class="g-read"><span class="g-lbl">L/100 km</span><span class="g-val">–</span></div></div><p class="c-empty">${esc(t("needTwoFull"))}</p>`);
+    }
+    const mon = day.slice(0, 7);
+    const monthKm = vf.filter((r) => r.date.startsWith(mon)).reduce((a, r) => a + Math.max(0, r.odo - r.prevOdo), 0);
+    const recent = segs.slice(-5).filter((s) => s.cost != null);
+    const recentKm = recent.reduce((a, s) => a + s.distance, 0);
+    const c100 = recentKm > 0 ? recent.reduce((a, s) => a + s.cost, 0) / recentKm * 100 : null;
+    const homeSym = esc(sym(settings.home));
+    if (vf.length) {
+      parts.push(`<div class="c-stats">
+        <div><span class="c-lbl">${esc(t("spent"))}</span><span class="c-val">${fmt(ins.monthSpent, 0)}<small>${homeSym}</small></span></div>
+        <div><span class="c-lbl">${esc(t("distance"))}</span><span class="c-val">${fmt(monthKm, 0)}<small>km</small></span></div>
+        <div><span class="c-lbl">${esc(t("per100"))}</span><span class="c-val">${c100 != null ? `${fmt(c100, 0)}<small>${homeSym}</small>` : "–"}</span></div>
+      </div>`);
+    }
+    if (ins.budget) {
+      const pct = Math.min(100, ins.budget.pct);
+      parts.push(`<div class="c-budget"><span>${esc(t("insBudget", { spent: money(ins.budget.spent, null, 0), budget: money(ins.budget.budget, null, 0) }))}</span><div class="bar ${ins.budget.pct > 100 ? "over" : ""}"><span style="width:${pct.toFixed(1)}%"></span></div></div>`);
+    }
+    if (ins.trend.length >= 3) parts.push(`<div class="c-trend"><span class="c-lbl">${esc(t("trendTitle", { n: ins.trend.length }))}</span>${trendSvg(ins.trend, ins.trendAvg)}</div>`);
+    el.innerHTML = parts.join("");
+    el.hidden = false;
 
     const rows = [];
     if (ins.changePct != null && ins.changePct >= 8) rows.push(`<div class="insight alert">${icon("i-trend")}<p>${esc(t("insMore", { pct: fmt(ins.changePct, 0), m: fmt(ins.monthL100, 1), avg: fmt(ins.avgL100, 1) }))}<small>${esc(t("insMoreWhy"))}</small></p></div>`);
@@ -563,49 +629,57 @@
       const proj = ins.monthProjection ? `<small>${esc(t("insProjection", { amount: money(ins.monthProjection, null, 0) }))}</small>` : "";
       rows.push(`<div class="insight">${icon("i-wallet")}<p>${esc(t("insSpent", { amount: money(ins.monthSpent, null, 0) }))}${proj}</p></div>`);
     }
-    if (ins.budget) {
-      const pct = Math.min(100, ins.budget.pct);
-      rows.push(`<div class="field"><div class="lbl">${esc(t("insBudget", { spent: money(ins.budget.spent, null, 0), budget: money(ins.budget.budget, null, 0) }))}</div><div class="bar ${ins.budget.pct > 100 ? "over" : ""}"><span style="width:${pct.toFixed(1)}%"></span></div></div>`);
-    }
     if (settings.driverMode) {
       const m = day.slice(0, 7);
       const inc = records.filter((r) => r.kind === "income" && r.vehicle === vid && r.date.startsWith(m)).reduce((a, r) => a + (FT.toHome(r.amount, r, settings) || 0), 0);
       const km = vf.filter((r) => r.date.startsWith(m)).reduce((a, r) => a + Math.max(0, r.odo - r.prevOdo), 0);
       if (inc > 0) rows.push(`<div class="insight good">${icon("i-wallet")}<p>${esc(t("insProfit", { profit: money(inc - ins.monthSpent, null, 0), income: money(inc, null, 0), fuel: money(ins.monthSpent, null, 0) }))}${km > 0 ? `<small>${esc(t("insProfitKm", { v: money((inc - ins.monthSpent) / km) }))}</small>` : ""}</p></div>`);
     }
-    if (ins.yearProjection) rows.push(`<div class="insight">${icon("i-chart")}<p>${esc(t("insYear", { amount: money(ins.yearProjection, null, 0) }))}</p></div>`);
+    if (ins.yearProjection) rows.push(`<div class="insight info">${icon("i-chart")}<p>${esc(t("insYear", { amount: money(ins.yearProjection, null, 0) }))}</p></div>`);
     const v = vehicleById(vid);
     const st = (ins.stations[(v && v.fuel) || "essence"] || []);
     if (st.length >= 2) {
       const best = st[0], worst = st[st.length - 1];
       const diff = worst.avgPrice - best.avgPrice;
-      if (diff >= 0.01) rows.push(`<div class="insight">${icon("i-pin")}<p>${esc(t("insStation", { name: best.station, diff: money(diff), worst: worst.station }))}</p></div>`);
+      if (diff >= 0.01) rows.push(`<div class="insight good">${icon("i-pin")}<p>${esc(t("insStation", { name: best.station, diff: money(diff), worst: worst.station }))}</p></div>`);
     }
-    if (rows.length) parts.push(`<div class="field" style="gap:12px">${rows.join("")}</div>`);
-    if (ins.trend.length >= 3) parts.push(`<div><h3 style="margin-bottom:6px">${esc(t("trendTitle", { n: ins.trend.length }))}</h3>${trendSvg(ins.trend, ins.trendAvg)}</div>`);
-    el.innerHTML = parts.join("");
-    el.hidden = false;
+    listEl.innerHTML = rows.length ? `<h2>${esc(t("insightsTitle"))}</h2><div class="insights">${rows.join("")}</div>` : "";
+    listEl.hidden = !rows.length;
+  }
+
+  // Smooth line through the points (Catmull-Rom turned into cubic Béziers).
+  function smoothPath(pts) {
+    if (pts.length < 3) return pts.map(([px, py], i) => `${i ? "L" : "M"}${px.toFixed(1)} ${py.toFixed(1)}`).join("");
+    let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+      d += `C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d;
   }
 
   function trendSvg(points, avg) {
-    const W = 520, H = 150, padX = 14, top = 16, bottom = 24;
+    const W = 520, H = 150, padX = 10, top = 22, bottom = 26;
     const vals = points.map((p) => p.l100).concat(avg);
-    const lo = Math.min(...vals) * 0.92, hi = Math.max(...vals) * 1.05;
+    const lo = Math.min(...vals) * 0.9, hi = Math.max(...vals) * 1.06;
     const x = (i) => padX + (W - padX * 2) * (points.length === 1 ? 0.5 : i / (points.length - 1));
     const y = (v) => top + (H - top - bottom) * (1 - (v - lo) / (hi - lo || 1));
-    const path = (arr) => arr.map((v, i) => `${i ? "L" : "M"}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join("");
-    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trendAria"))}">`;
-    s += `<line class="grid-line" x1="${padX}" x2="${W - padX}" y1="${H - bottom}" y2="${H - bottom}"/>`;
-    s += `<path class="line" d="${path(points.map((p) => p.l100))}"/>`;
-    s += `<path class="avg" d="${path(avg)}"/>`;
-    points.forEach((p, i) => { s += `<circle class="pt" cx="${x(i).toFixed(1)}" cy="${y(p.l100).toFixed(1)}" r="3"/>`; });
+    const raw = points.map((p, i) => [x(i), y(p.l100)]), line = avg.map((v, i) => [x(i), y(v)]);
     const lastI = points.length - 1;
-    s += `<text class="v" x="${x(lastI).toFixed(1)}" y="${(y(avg[lastI]) - 8).toFixed(1)}" text-anchor="end">${fmt(avg[lastI], 1)}</text>`;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trendAria"))}"><defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a2e" stop-opacity=".38"/><stop offset="1" stop-color="#ff9a2e" stop-opacity="0"/></linearGradient></defs>`;
+    s += `<path class="area" d="${smoothPath(line)}L${x(lastI).toFixed(1)} ${H - bottom}L${x(0).toFixed(1)} ${H - bottom}Z"/>`;
+    s += `<path class="raw" d="${smoothPath(raw)}"/>`;
+    s += `<path class="avg" d="${smoothPath(line)}"/>`;
+    raw.forEach(([px, py], i) => { if (i < lastI) s += `<circle class="pt" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.6"/>`; });
+    s += `<circle class="pt last" cx="${line[lastI][0].toFixed(1)}" cy="${line[lastI][1].toFixed(1)}" r="5"/>`;
+    s += `<text class="v" x="${(x(lastI) - 10).toFixed(1)}" y="${(line[lastI][1] - 11).toFixed(1)}" text-anchor="end">${fmt(avg[lastI], 1)}</text>`;
     s += `<text x="${padX}" y="${H - 6}">${esc(dayLabel(points[0].date))}</text><text x="${W - padX}" y="${H - 6}" text-anchor="end">${esc(dayLabel(points[lastI].date))}</text>`;
     return s + `</svg>`;
   }
 
   const remTitle = (r) => (r.kind === "other" ? r.label || t("rOther") : t({ oil: "rOil", insurance: "rInsurance", inspection: "rInspection", vignette: "rVignette" }[r.kind]));
+  const remIcon = (r, st) => `<span class="rico${st && st.overdue ? " late" : ""}"><svg><use href="#${{ oil: "i-wrench", insurance: "i-shield", inspection: "i-check", vignette: "i-file" }[r.kind] || "i-calendar"}"/></svg></span>`;
   function remStatusText(st) {
     if (st.kind === "km") {
       if (st.left == null) return t("remAtKm", { km: fmt(st.dueKm, 0) });
@@ -621,12 +695,12 @@
     const el = $("dueSoon");
     const day = today();
     const due = settings.reminders.map((r) => ({ r, st: FT.reminderStatus(r, FT.latestOdo(records, r.vehicle), day) })).filter((x) => x.st.soon || x.st.overdue);
-    const items = due.map(({ r, st }) => `<div class="due ${st.overdue ? "over" : ""}" style="padding-inline-start:10px"><div><div class="name">${esc(remTitle(r))}<span class="chip quiet">${esc(vehName(r.vehicle))}</span></div><div class="sub">${esc(remStatusText(st))}</div></div><button type="button" class="small" data-done="${esc(r.id)}">${esc(t("markDone"))}</button></div>`);
+    const items = due.map(({ r, st }) => `<div class="due ${st.overdue ? "over" : ""}"><div class="main">${remIcon(r, st)}<div><div class="name">${esc(remTitle(r))}<span class="chip quiet">${esc(vehName(r.vehicle))}</span></div><div class="sub ${st.overdue ? "late" : "soon"}">${esc(remStatusText(st))}</div></div></div><button type="button" class="small" data-done="${esc(r.id)}">${esc(t("markDone"))}</button></div>`);
     // A gentle nudge to back up once there is history worth keeping.
     const nf = fills().length;
     const ageDays = settings.lastBackup ? FT.daysBetween(settings.lastBackup.slice(0, 10), day) : null;
     if (store && store.kind !== "db" && nf >= 5 && (ageDays == null || ageDays > 30)) {
-      items.push(`<div class="due"><div><div class="name">${esc(t("backupNudge"))}</div><div class="sub">${esc(ageDays == null ? t("backupNever") : t("backupAgo", { n: ageDays }))}</div></div><button type="button" class="small" data-backup="1">${esc(t("saveBackupShort"))}</button></div>`);
+      items.push(`<div class="due"><div class="main"><span class="rico blue"><svg><use href="#i-download"/></svg></span><div><div class="name">${esc(t("backupNudge"))}</div><div class="sub">${esc(ageDays == null ? t("backupNever") : t("backupAgo", { n: ageDays }))}</div></div></div><button type="button" class="small" data-backup="1">${esc(t("saveBackupShort"))}</button></div>`);
     }
     el.hidden = !items.length;
     el.innerHTML = items.length ? `<h2>${esc(t("needsAttention"))}</h2><div class="list">${items.join("")}</div>` : "";
@@ -655,22 +729,26 @@
 
   function chartSvg(groups, per) {
     const data = groups.filter((g) => g.l100 != null).slice(0, 12).reverse();
-    const W = 520, H = 190, padL = 8, padR = 8, top = 22, bottom = 34;
-    const max = Math.max(...data.map((g) => g.l100)) * 1.15 || 1;
+    const W = 520, H = 200, padL = 4, padR = 4, top = 24, bottom = 30;
+    const max = Math.max(...data.map((g) => g.l100)) * 1.12 || 1;
     const bw = (W - padL - padR) / data.length;
     const y = (v) => top + (H - top - bottom) * (1 - v / max);
-    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("chartAria"))}">`;
+    const avg = data.reduce((a, g) => a + g.l100, 0) / data.length;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("chartAria"))}"><defs><linearGradient id="gCol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb547"/><stop offset="1" stop-color="#f26b0f"/></linearGradient></defs>`;
     s += `<line class="grid-line" x1="${padL}" x2="${W - padR}" y1="${H - bottom}" y2="${H - bottom}"/>`;
     data.forEach((g, i) => {
       const v = g.l100;
-      const x = padL + i * bw + bw * 0.18, w = bw * 0.64;
-      const last = i === data.length - 1 ? " last" : "";
-      s += `<rect class="bar${last}" x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${w.toFixed(1)}" height="${(H - bottom - y(v)).toFixed(1)}" rx="3"/>`;
-      s += `<text class="v" x="${(x + w / 2).toFixed(1)}" y="${(y(v) - 5).toFixed(1)}" text-anchor="middle">${fmt(v, 1)}</text>`;
+      const w = Math.min(44, bw * 0.62), x = padL + i * bw + (bw - w) / 2;
+      const last = i === data.length - 1;
+      const h = H - bottom - y(v), rr = Math.min(8, w / 2, h);
+      // Rounded top, square bottom.
+      s += `<path class="col${last ? " last" : ""}" style="animation-delay:${(i * 0.04).toFixed(2)}s" d="M${x.toFixed(1)} ${(H - bottom).toFixed(1)}V${(y(v) + rr).toFixed(1)}q0 ${-rr} ${rr} ${-rr}h${(w - 2 * rr).toFixed(1)}q${rr} 0 ${rr} ${rr}V${(H - bottom).toFixed(1)}Z"/>`;
+      s += `<text class="${last ? "v" : ""}" x="${(x + w / 2).toFixed(1)}" y="${(y(v) - 7).toFixed(1)}" text-anchor="middle">${fmt(v, 1)}</text>`;
       const p = g.label;
       const short = per === "day" ? `${p.d}/${p.m}` : per === "week" ? `W${p.w}` : per === "month" ? `${monthName(p.m)} ’${String(p.y).slice(2)}` : per === "quarter" ? `Q${p.q} ’${String(p.y).slice(2)}` : per === "half" ? `H${p.h} ’${String(p.y).slice(2)}` : String(p.y);
-      s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - bottom + 16}" text-anchor="middle">${esc(short)}</text>`;
+      s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - bottom + 18}" text-anchor="middle">${esc(short)}</text>`;
     });
+    if (data.length > 1) s += `<line class="avg-line" x1="${padL}" x2="${W - padR}" y1="${y(avg).toFixed(1)}" y2="${y(avg).toFixed(1)}"/>`;
     return s + `</svg>`;
   }
 
@@ -683,16 +761,19 @@
     const cur = groups[0];
     const tile = (lbl, val) => `<div class="tile"><span class="lbl">${esc(lbl)}</span><span class="val">${val}</span></div>`;
     const m = (v) => `${fmt(v, 2)}<small>${esc(sym(settings.home))}</small>`;
-    let h = `<div class="grid">
-      <div class="hero" style="grid-column: 1 / -1"><span class="lbl">${esc(periodLabel(cur.label))}</span>
+    const tiles = [
+      tile(t("distance"), `${fmt(cur.distance, 0)}<small>km</small>`),
+      tile(t("fuelUsed"), `${fmt(cur.liters, 1)}<small>L</small>`),
+      tile(t("spent"), cur.spentOk ? m(cur.spent) : "–"),
+      tile(t("cost100"), cur.cost100 != null ? m(cur.cost100) : "–"),
+    ];
+    if (settings.driverMode) { tiles.push(tile(t("earned"), m(cur.income)), tile(t("profit"), m(cur.profit))); if (cur.distance > 0) tiles.push(tile(t("profitKm"), m(cur.profit / cur.distance))); }
+    let h = `<div class="result">
+      <div class="hero"><span class="lbl">${esc(periodLabel(cur.label))}</span>
       <span class="val">${cur.l100 != null ? `${fmt(cur.l100, 2)}<small>L/100 km</small>` : "–"}</span>${cur.l100 == null ? `<span class="hint">${esc(t("needTwoFull"))}</span>` : ""}</div>
-      ${tile(t("distance"), `${fmt(cur.distance, 0)}<small>km</small>`)}
-      ${tile(t("fuelUsed"), `${fmt(cur.liters, 1)}<small>L</small>`)}
-      ${tile(t("spent"), cur.spentOk ? m(cur.spent) : "–")}
-      ${tile(t("cost100"), cur.cost100 != null ? m(cur.cost100) : "–")}
-      ${settings.driverMode ? tile(t("earned"), m(cur.income)) + tile(t("profit"), m(cur.profit)) + (cur.distance > 0 ? tile(t("profitKm"), m(cur.profit / cur.distance)) : "") : ""}
+      <div class="stats two">${tiles.join("")}${tiles.length % 2 ? `<div class="tile"></div>` : ""}</div>
     </div>`;
-    if (groups.filter((g) => g.l100 != null).length > 1) h += `<div><h3 style="margin-bottom:6px">${esc(t("litersPer100"))}</h3>${chartSvg(groups, per)}</div>`;
+    if (groups.filter((g) => g.l100 != null).length > 1) h += `<div class="chartbox"><h3><svg><use href="#i-chart"/></svg><span>${esc(t("litersPer100"))}</span></h3>${chartSvg(groups, per)}</div>`;
     h += `<div class="tablewrap"><table><thead><tr><th>${esc(t("period"))}</th><th>km</th><th>L</th><th>L/100</th><th>${esc(t("spent"))}</th><th>${esc(t("per100"))}</th>${settings.driverMode ? `<th>${esc(t("earned"))}</th><th>${esc(t("profit"))}</th>` : ""}</tr></thead><tbody>`;
     for (const g of groups) {
       h += `<tr><td>${esc(periodLabel(g.label))}</td><td>${fmt(g.distance, 0)}</td><td>${fmt(g.liters, 1)}</td>
@@ -708,20 +789,26 @@
     const list = [...records].sort(sortRecs).reverse();
     if (!list.length) { el.innerHTML = `<li><p class="empty">${esc(t("emptyLog"))}</p></li>`; return; }
     const segMap = new Map(FT.segments(fills(), settings).map((s) => [s.endId, s]));
+    const multi = vehicles().length > 1;
     el.innerHTML = list.slice(0, 300).map((r) => {
-      let top, det;
+      let ava, top, sub, amt, side = "";
       if (r.kind === "income") {
-        top = `<span class="chip">${esc(t("earningsChip"))}</span>${esc(dayLabel(r.date))}`;
-        det = `${money(r.amount, r.currency)} · ${esc(vehName(r.vehicle))}`;
+        ava = `<span class="vava money"><svg><use href="#i-wallet"/></svg></span>`;
+        top = `${esc(t("earningsChip"))} · ${esc(dayLabel(r.date))}`;
+        sub = esc(vehName(r.vehicle));
+        amt = `<span class="e-amt plus">+${money(r.amount, r.currency)}</span>`;
       } else {
         const dist = r.odo - r.prevOdo;
         const seg = segMap.get(r.id);
         const tags = (r.full === false ? `<span class="chip quiet">${esc(t("partialChip"))}</span>` : "") + (r.missed ? `<span class="chip quiet">${esc(t("missedChip"))}</span>` : "");
-        top = `<span class="chip" style="background:${esc(vehColor(r.vehicle))}22">${esc(vehName(r.vehicle))}</span>${esc(dayLabel(r.date))} ${tags}`;
-        det = [dist > 0 ? `${fmt(dist, 0)} km` : t("startPoint"), `${fmt(r.liters, 2)} L`, money(r.cost, r.currency), seg ? `${fmt(seg.l100, 2)} L/100 km` : "", r.station ? esc(r.station) : "", `${t("odometer")} ${fmt(r.odo, 0)}`].filter(Boolean).join(" · ");
+        ava = vava(r.vehicle);
+        top = `${esc(dayLabel(r.date))}${tags}`;
+        sub = [multi ? esc(vehName(r.vehicle)) : "", r.station ? esc(r.station) : "", dist > 0 ? `${fmt(dist, 0)} km` : esc(t("startPoint")), `${fmt(r.liters, 2)} L`, `${esc(t("odometer"))} ${fmt(r.odo, 0)}`].filter(Boolean).join(" · ");
+        amt = `<span class="e-amt">${money(r.cost, r.currency)}</span>`;
+        if (seg) side = `<span class="e-l100">${fmt(seg.l100, 2)} L/100</span>`;
       }
-      return `<li><span class="top">${top}</span><span class="det">${det}</span>
-        <span class="act"><button type="button" class="small" data-edit="${esc(r.id)}">${esc(t("edit"))}</button><button type="button" class="small" data-del="${esc(r.id)}" aria-label="${esc(t("delete"))}">${esc(t("delete"))}</button></span></li>`;
+      return `<li>${ava}<span class="e-top">${top}</span>${amt}<span class="e-sub">${sub}</span>${side}
+        <span class="e-act"><button type="button" class="iconbtn" data-edit="${esc(r.id)}" aria-label="${esc(t("edit"))}" title="${esc(t("edit"))}"><svg><use href="#i-edit"/></svg></button><button type="button" class="iconbtn del" data-del="${esc(r.id)}" aria-label="${esc(t("delete"))}" title="${esc(t("delete"))}"><svg><use href="#i-trash"/></svg></button></span></li>`;
     }).join("");
   }
   $("log").addEventListener("click", async (e) => {
@@ -732,6 +819,7 @@
       b.disabled = true;
       try {
         await store.remove(r.id);
+        Native.haptic("warning");
         if (editingId === r.id) resetForm();
         toast(t(r.kind === "income" ? "deletedIncome" : "deleted"), t("undo"), async () => { try { await store.add({ ...r }); } catch { toast(t("errSave")); } });
       } catch { b.disabled = false; toast(t("errSave")); }
@@ -742,7 +830,7 @@
   /* ================= TOOLS: TRIP COST ================= */
   const ROUTES = [["Casablanca", "Rabat", 87], ["Casablanca", "Marrakech", 240], ["Rabat", "Tanger", 250], ["Casablanca", "Fès", 290], ["Marrakech", "Agadir", 250], ["Casablanca", "Agadir", 470]];
   function renderTripPresets() {
-    $("tripPresets").innerHTML = ROUTES.map(([a, b, km]) => `<button type="button" data-km="${km}">${esc(a)} – ${esc(b)} · ≈${km} km</button>`).join("");
+    $("tripPresets").innerHTML = ROUTES.map(([a, b, km]) => `<button type="button" data-km="${km}"><svg><use href="#i-pin"/></svg>${esc(a)} – ${esc(b)} <b>${km} km</b></button>`).join("");
   }
   $("tripPresets").addEventListener("click", (e) => { const b = e.target.closest("button[data-km]"); if (!b) return; $("tripKm").value = b.dataset.km; renderTrip(); });
   function prefillTrip() {
@@ -760,9 +848,9 @@
     const r = FT.tripCost({ km: num("tripKm"), roundTrip: $("tripRound").checked, l100: num("tripL100"), price: num("tripPrice"), people: num("tripPeople") });
     const el = $("tripOut");
     if (!r) { el.innerHTML = `<p class="hint">${esc(num("tripL100") > 0 ? t("tripNeed") : t("tripNoAvg"))}</p>`; return; }
-    el.innerHTML = `<div class="grid"><div class="hero" style="grid-column:1/-1"><span class="lbl">${esc(t("tripCostLbl", { km: fmt(r.distance, 0) }))}</span><span class="val">${fmt(r.cost, 0)}<small>${esc(sym(settings.home))}</small></span></div>
-      <div class="tile"><span class="lbl">${esc(t("fuelNeeded"))}</span><span class="val">${fmt(r.liters, 1)}<small>L</small></span></div>
-      <div class="tile"><span class="lbl">${esc(t("perPerson", { n: r.people }))}</span><span class="val">${fmt(r.perPerson, 0)}<small>${esc(sym(settings.home))}</small></span></div></div>`;
+    el.innerHTML = `<div class="result"><div class="hero"><span class="lbl">${esc(t("tripCostLbl", { km: fmt(r.distance, 0) }))}</span><span class="val">${fmt(r.cost, 0)}<small>${esc(sym(settings.home))}</small></span></div>
+      <div class="stats two"><div class="tile"><span class="lbl">${esc(t("fuelNeeded"))}</span><span class="val">${fmt(r.liters, 1)}<small>L</small></span></div>
+      <div class="tile"><span class="lbl">${esc(t("perPerson", { n: r.people }))}</span><span class="val">${fmt(r.perPerson, 0)}<small>${esc(sym(settings.home))}</small></span></div></div></div>`;
   }
   let tripTouched = false; // once the user types their own consumption or price, new saves don't overwrite it
   $("tripVeh").addEventListener("change", () => { tripTouched = false; prefillTrip(); });
@@ -776,7 +864,7 @@
     const list = settings.reminders;
     $("remList").innerHTML = list.length ? list.map((r) => {
       const st = FT.reminderStatus(r, FT.latestOdo(records, r.vehicle), day);
-      return `<div><div><div class="name">${esc(remTitle(r))}<span class="chip quiet">${esc(vehName(r.vehicle))}</span></div><div class="sub">${esc(remStatusText(st))}</div></div><button type="button" class="small" data-rem="${esc(r.id)}">${esc(t("edit"))}</button></div>`;
+      return `<div><div class="main">${remIcon(r, st)}<div><div class="name">${esc(remTitle(r))}<span class="chip quiet">${esc(vehName(r.vehicle))}</span></div><div class="sub ${st.overdue ? "late" : st.soon ? "soon" : ""}">${esc(remStatusText(st))}</div></div></div><button type="button" class="iconbtn" data-rem="${esc(r.id)}" aria-label="${esc(t("edit"))}" title="${esc(t("edit"))}"><svg><use href="#i-edit"/></svg></button></div>`;
     }).join("") : `<p class="empty">${esc(t("remEmpty"))}</p>`;
   }
   function openRem(r) {
@@ -832,12 +920,22 @@
   /* ================= SETTINGS ================= */
   document.addEventListener("change", async (e) => {
     if (e.target.name === "lang") { settings.lang = e.target.value; applyLang(); await saveSettings(); resetForm(true); }
+    if (e.target.name === "theme") { settings.theme = e.target.value; applyTheme(); await saveSettings(); }
+    if (e.target.matches(".seg input, .chips input, .switch input, .check input")) Native.haptic("select");
   });
+  // Light or dark: the phone's choice unless the user picked one. Remembered locally so the next start paints in the right theme.
+  function applyTheme() {
+    const th = settings.theme === "light" || settings.theme === "dark" ? settings.theme : null;
+    if (th) document.documentElement.dataset.theme = th; else delete document.documentElement.dataset.theme;
+    try { if (th) localStorage.setItem("bnzn-theme", th); else localStorage.removeItem("bnzn-theme"); } catch { /* private mode */ }
+    const r = $("theme-" + (th || "auto")); if (r) r.checked = true;
+    Native.setBarStyle(th);
+  }
   function renderVehList() {
     $("vehList").innerHTML = vehicles().map((v) => {
       const n = fills().filter((r) => r.vehicle === v.id).length;
       const sub = [t(v.type === "bike" ? "bike" : "car"), t(v.fuel === "gasoil" ? "gasoil" : "essence"), v.tank ? `${fmt(v.tank, 0)} L` : "", t("nFills", { n })].filter(Boolean).join(" · ");
-      return `<div><div><div class="name"><span class="dot" style="--vc:${esc(v.color || COLORS[0])}"></span>${esc(v.name)}</div><div class="sub">${esc(sub)}</div></div><button type="button" class="small" data-veh="${esc(v.id)}">${esc(t("edit"))}</button></div>`;
+      return `<div><div class="main">${vava(v.id)}<div><div class="name">${esc(v.name)}</div><div class="sub">${esc(sub)}</div></div></div><button type="button" class="iconbtn" data-veh="${esc(v.id)}" aria-label="${esc(t("edit"))}" title="${esc(t("edit"))}"><svg><use href="#i-edit"/></svg></button></div>`;
     }).join("");
   }
   let editingVeh = null;
@@ -1002,6 +1100,7 @@
   function saveSettingsQuiet() { clearTimeout(saveQuietTimer); saveQuietTimer = setTimeout(() => store && store.saveSettings(settings).catch(() => {}), 500); }
 
   function onData() {
+    applyTheme();
     if (!settings.onboarded) { wStep = 0; renderWelcome(); $("welcome").hidden = false; }
     renderVehChips(); renderVehSelects();
     if (firstLoad) {

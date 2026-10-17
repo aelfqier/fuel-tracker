@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#d97a06">
+<meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0b0e" media="(prefers-color-scheme: dark)">
 <title>bnzn</title>
+<script>/* Apply the saved light or dark choice before the first paint. */ try { var th = localStorage.getItem("bnzn-theme"); if (th === "light" || th === "dark") document.documentElement.dataset.theme = th; } catch (e) {}</script>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -19,20 +21,44 @@
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3.5a1 1 0 0 1-1-1v-3.2a2 2 0 0 1 .6-1.4L5 9.5l1.6-3.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.8 1.2L19 9.5l1.9 1.9a2 2 0 0 1 .6 1.4V16a1 1 0 0 1-1 1H19M9 17h6M5 9.5h14"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
+  <symbol id="i-bike" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="16.5" r="3"/><circle cx="19" cy="16.5" r="3"/><path d="M5 16.5h4.5l3-5H8M19 16.5 15.5 8H13M15.5 8h2.5M12.5 11.5h3.6"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="M14 6l3 3"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M18 7l-.8 12.2a2 2 0 0 1-2 1.8H8.8a2 2 0 0 1-2-1.8L6 7M10 11v6M14 11v6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-coins" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7.5-3.6 7.5-9.5V5.5L12 2.8 4.5 5.5V12c0 5.9 7.5 9.5 7.5 9.5z"/><path d="M9 12l2.2 2.2L15.5 10"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5M4.5 19.5h15"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5v-11M7.5 9 12 4.5 16.5 9M4.5 19.5h15"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M3.5 14.5h17M9.5 4v16"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7.5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7.5z"/><path d="M14 3v4.5h4.5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9"/><path d="M10.2 20.5a2 2 0 0 0 3.6 0"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.4-3.4a6 6 0 0 1-7.9 7.9l-6.5 6.5a2.1 2.1 0 0 1-3-3l6.5-6.5a6 6 0 0 1 7.9-7.9z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M16 3v4M8 3v4M3.5 10h17"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s-6 6.4-6 11a6 6 0 0 0 12 0c0-4.6-6-11-6-11z"/></symbol>
+  <symbol id="i-road" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16a8.5 8.5 0 1 1 17 0"/><path d="M12 16l4.2-5"/><circle cx="12" cy="16" r="1.5"/><path d="M6.5 16h1M16.5 16h1M12 8.5v1"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/></symbol>
 </svg>
 
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <h1 data-i18n="appName">bnzn</h1>
-      <p class="status" id="storeStatus" data-i18n="loading">Loading your records…</p>
+      <span class="mark" aria-hidden="true"><svg><use href="#i-pump"/></svg></span>
+      <div class="brand-text">
+        <h1 data-i18n="appName">bnzn</h1>
+        <p class="status" id="storeStatus" data-i18n="loading">Loading your records…</p>
+      </div>
     </div>
   </header>
 
   <!-- ================= HOME ================= -->
   <section class="view" id="view-home" aria-labelledby="formTitle">
+    <div id="insights" class="cluster" hidden></div>
     <div id="dueSoon" class="card" hidden></div>
-    <div id="insights" class="card" hidden></div>
+    <div id="insightList" class="card" hidden></div>
 
     <form class="card" id="form" novalidate>
       <div class="card-head">
@@ -63,7 +89,7 @@
         <p class="hint" data-i18n="rateHint">Check today's rate. It is saved with this fill-up so your totals stay correct.</p>
       </div>
 
-      <h3 data-i18n="distance">Distance</h3>
+      <h3><svg><use href="#i-road"/></svg><span data-i18n="distance">Distance</span></h3>
       <div class="row">
         <div class="field">
           <label for="odoStart" data-i18n="odoLast">Odometer at last fill-up</label>
@@ -77,7 +103,7 @@
         </div>
       </div>
 
-      <h3 data-i18n="fuel">Fuel</h3>
+      <h3><svg><use href="#i-drop"/></svg><span data-i18n="fuel">Fuel</span></h3>
       <div class="seg" role="radiogroup" data-i18n-aria="whatKnow">
         <input type="radio" name="mode" id="mode-l" value="liters" checked><label for="mode-l" data-i18n="litersFilled">Liters filled</label>
         <input type="radio" name="mode" id="mode-m" value="money"><label for="mode-m" data-i18n="amountPaid">Amount paid</label>
@@ -104,30 +130,34 @@
         <datalist id="stationList"></datalist>
       </div>
 
-      <label class="switch">
-        <span class="s-title" data-i18n="fullTank">I filled the tank to full</span>
-        <span class="s-sub" data-i18n="fullTankSub">Turn off for a partial fill. It is added to your next full tank.</span>
-        <input type="checkbox" id="full" checked>
-      </label>
-      <label class="switch">
-        <span class="s-title" data-i18n="missed">I missed logging a fill-up before this one</span>
-        <span class="s-sub" data-i18n="missedSub">Your consumption skips this stretch instead of showing a wrong number.</span>
-        <input type="checkbox" id="missed">
-      </label>
+      <div class="switches">
+        <label class="switch">
+          <span class="s-title" data-i18n="fullTank">I filled the tank to full</span>
+          <span class="s-sub" data-i18n="fullTankSub">Turn off for a partial fill. It is added to your next full tank.</span>
+          <input type="checkbox" id="full" checked>
+        </label>
+        <label class="switch">
+          <span class="s-title" data-i18n="missed">I missed logging a fill-up before this one</span>
+          <span class="s-sub" data-i18n="missedSub">Your consumption skips this stretch instead of showing a wrong number.</span>
+          <input type="checkbox" id="missed">
+        </label>
+      </div>
 
       <p class="msg" id="calcMsg" hidden></p>
-      <div id="calcOut" class="grid">
-        <div class="hero" style="grid-column: 1 / -1">
+      <div id="calcOut" class="result">
+        <div class="hero">
           <span class="lbl" data-i18n="thisFill">This fill-up</span>
           <span class="val" id="r-l100">–</span>
           <span class="hint" id="r-note"></span>
         </div>
-        <div class="tile"><span class="lbl" data-i18n="per1km">Per 1 km</span><span class="val" id="r-l1">–</span></div>
-        <div class="tile"><span class="lbl" data-i18n="kmPerL">Distance per liter</span><span class="val" id="r-kml">–</span></div>
-        <div class="tile"><span class="lbl" data-i18n="cost100">Cost per 100 km</span><span class="val" id="r-c100">–</span></div>
-        <div class="tile"><span class="lbl" data-i18n="cost1">Cost per 1 km</span><span class="val" id="r-c1">–</span></div>
-        <div class="tile"><span class="lbl" data-i18n="distDriven">Distance driven</span><span class="val" id="r-dist">–</span></div>
-        <div class="tile"><span class="lbl" id="r-totlbl" data-i18n="totalCost">Total cost</span><span class="val" id="r-tot">–</span></div>
+        <div class="stats">
+          <div class="tile"><span class="lbl" data-i18n="per1km">Per 1 km</span><span class="val" id="r-l1">–</span></div>
+          <div class="tile"><span class="lbl" data-i18n="kmPerL">Distance per liter</span><span class="val" id="r-kml">–</span></div>
+          <div class="tile"><span class="lbl" data-i18n="cost100">Cost per 100 km</span><span class="val" id="r-c100">–</span></div>
+          <div class="tile"><span class="lbl" data-i18n="cost1">Cost per 1 km</span><span class="val" id="r-c1">–</span></div>
+          <div class="tile"><span class="lbl" data-i18n="distDriven">Distance driven</span><span class="val" id="r-dist">–</span></div>
+          <div class="tile"><span class="lbl" id="r-totlbl" data-i18n="totalCost">Total cost</span><span class="val" id="r-tot">–</span></div>
+        </div>
       </div>
       <div class="btnrow">
         <button type="button" id="cancelEdit" hidden data-i18n="cancel">Cancel</button>
@@ -182,8 +212,7 @@
   <!-- ================= TOOLS ================= -->
   <section class="view" id="view-tools" hidden>
     <section class="card" aria-labelledby="tripTitle">
-      <h2 id="tripTitle" data-i18n="tripTitle">Trip cost</h2>
-      <p class="hint" data-i18n="tripLead">Uses your own consumption, not the maker's figure.</p>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-tools"/></svg></span><div><h2 id="tripTitle" data-i18n="tripTitle">Trip cost</h2><p class="hint" data-i18n="tripLead">Uses your own consumption, not the maker's figure.</p></div></div>
       <div class="presets" id="tripPresets"></div>
       <div class="row">
         <div class="field">
@@ -207,14 +236,14 @@
           <div class="inp"><input id="tripPeople" type="number" inputmode="numeric" min="1" max="9" step="1" value="1"></div>
         </div>
         <div class="field" style="align-content:end">
-          <label class="check"><input type="checkbox" id="tripRound"><span data-i18n="roundTrip">Round trip</span></label>
+          <label class="check box"><input type="checkbox" id="tripRound"><span data-i18n="roundTrip">Round trip</span></label>
         </div>
       </div>
       <div id="tripOut"></div>
     </section>
 
     <section class="card" aria-labelledby="remTitle">
-      <div class="card-head"><h2 id="remTitle" data-i18n="remTitle">Reminders</h2><button type="button" class="small" id="addRem" data-i18n="add">Add</button></div>
+      <div class="card-head"><div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-bell"/></svg></span><h2 id="remTitle" data-i18n="remTitle">Reminders</h2></div><button type="button" class="small icon" id="addRem"><svg><use href="#i-plus"/></svg><span data-i18n="add">Add</span></button></div>
       <div class="list" id="remList"></div>
     </section>
   </section>
@@ -222,7 +251,7 @@
   <!-- ================= SETTINGS ================= -->
   <section class="view" id="view-settings" hidden>
     <section class="card">
-      <h2 data-i18n="language">Language</h2>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-globe"/></svg></span><h2 data-i18n="language">Language</h2></div>
       <div class="seg" role="radiogroup" data-i18n-aria="language">
         <input type="radio" name="lang" id="lang-fr" value="fr"><label for="lang-fr">Français</label>
         <input type="radio" name="lang" id="lang-ar" value="ar"><label for="lang-ar">العربية</label>
@@ -230,11 +259,19 @@
       </div>
     </section>
     <section class="card">
-      <div class="card-head"><h2 data-i18n="vehicles">Vehicles</h2><button type="button" class="small" id="addVeh" data-i18n="add">Add</button></div>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-moon"/></svg></span><h2 data-i18n="appearance">Appearance</h2></div>
+      <div class="seg" role="radiogroup" data-i18n-aria="appearance">
+        <input type="radio" name="theme" id="theme-auto" value="auto" checked><label for="theme-auto" data-i18n="themeAuto">Automatic</label>
+        <input type="radio" name="theme" id="theme-light" value="light"><label for="theme-light" data-i18n="themeLight">Light</label>
+        <input type="radio" name="theme" id="theme-dark" value="dark"><label for="theme-dark" data-i18n="themeDark">Dark</label>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-head"><div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-car"/></svg></span><h2 data-i18n="vehicles">Vehicles</h2></div><button type="button" class="small icon" id="addVeh"><svg><use href="#i-plus"/></svg><span data-i18n="add">Add</span></button></div>
       <div class="list" id="vehList"></div>
     </section>
     <section class="card">
-      <h2 data-i18n="money">Money</h2>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-coins"/></svg></span><h2 data-i18n="money">Money</h2></div>
       <div class="field">
         <label for="homeCur" data-i18n="homeCur">Home currency</label>
         <div class="inp"><select id="homeCur">
@@ -256,26 +293,25 @@
       </label>
     </section>
     <section class="card">
-      <h2 data-i18n="backup">Backup</h2>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-download"/></svg></span><h2 data-i18n="backup">Backup</h2></div>
       <p class="hint" id="backupInfo"></p>
-      <div class="btnrow">
-        <button type="button" id="exportBtn" data-i18n="saveBackup">Save backup file</button>
-        <button type="button" id="importBtn" data-i18n="restore">Restore from file</button>
+      <div class="actions">
+        <button type="button" class="action" id="exportBtn"><span class="ico"><svg><use href="#i-download"/></svg></span><span data-i18n="saveBackup">Save backup file</span><svg class="chev"><use href="#i-chevron"/></svg></button>
+        <button type="button" class="action" id="importBtn"><span class="ico"><svg><use href="#i-upload"/></svg></span><span data-i18n="restore">Restore from file</span><svg class="chev"><use href="#i-chevron"/></svg></button>
+        <button type="button" class="action" id="csvBtn"><span class="ico"><svg><use href="#i-table"/></svg></span><span data-i18n="exportCsv">Export to spreadsheet (CSV)</span><svg class="chev"><use href="#i-chevron"/></svg></button>
       </div>
-      <button type="button" id="csvBtn" data-i18n="exportCsv">Export to spreadsheet (CSV)</button>
       <input type="file" id="importFile" accept="application/json,.json" hidden>
     </section>
     <section class="card">
-      <h2 data-i18n="historyReport">Car history report</h2>
-      <p class="hint" data-i18n="historyReportSub">Every fill-up, service and your real consumption in one clean page. Handy when you sell the car.</p>
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-file"/></svg></span><div><h2 data-i18n="historyReport">Car history report</h2><p class="hint" data-i18n="historyReportSub">Every fill-up, service and your real consumption in one clean page. Handy when you sell the car.</p></div></div>
       <div class="field">
         <label for="pdfVeh" data-i18n="vehicle">Vehicle</label>
         <div class="inp"><select id="pdfVeh"></select></div>
       </div>
-      <button type="button" id="pdfBtn" data-i18n="makePdf">Create PDF report</button>
+      <button type="button" class="icon wide" id="pdfBtn"><svg><use href="#i-file"/></svg><span data-i18n="makePdf">Create PDF report</span></button>
     </section>
     <section class="card">
-      <h2 data-i18n="privacy">Privacy</h2>
+      <div class="sec-head"><span class="hico ok" aria-hidden="true"><svg><use href="#i-shield"/></svg></span><h2 data-i18n="privacy">Privacy</h2></div>
       <ul class="promise">
         <li><svg><use href="#i-check"/></svg><span data-i18n="p1">No ads, no subscription.</span></li>
         <li><svg><use href="#i-check"/></svg><span data-i18n="p2">No account and no tracking.</span></li>
