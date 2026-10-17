@@ -11,12 +11,17 @@
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		9582B6852FE996820072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6842FE996800072D4E8 /* SceneDelegate.swift */; };
+		DA520CF143289A55DED5A97E /* FuelNativePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6B62E23B57FE153FAB605B /* FuelNativePlugin.swift */; };
+		658D4FE86CEFBF4FA85EEDEE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2F959844B9D04F72FCD7E9F /* MainViewController.swift */; };
+		3017F58D4ACF87BF06378113 /* LogFillUpIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 465A506F141E009FDC99E792 /* LogFillUpIntent.swift */; };
+		61A1C5BE48FDB7AFC9C1100E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F6B60697CAC30014E83D16BA /* InfoPlist.strings */; };
 		F7A1C0022FF0A00100B1D2E3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F7A1C0012FF0A00100B1D2E3 /* PrivacyInfo.xcprivacy */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */; };
+		F47852F83C27903545FC709C /* AppIntents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B904F1A0BC2D5A983103057C /* AppIntents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +30,11 @@
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9582B6842FE996800072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		CF6B62E23B57FE153FAB605B /* FuelNativePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FuelNativePlugin.swift; sourceTree = "<group>"; };
+		B2F959844B9D04F72FCD7E9F /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		465A506F141E009FDC99E792 /* LogFillUpIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFillUpIntent.swift; sourceTree = "<group>"; };
+		9F9330E6BD6408559F6739CA /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F21F9085D0D74849CAF20382 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7A1C0012FF0A00100B1D2E3 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -32,6 +42,7 @@
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B904F1A0BC2D5A983103057C /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		AF51FD2D460BCFE21FA515B2 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		FC68EB0AF532CFC21C3344DD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Pods/Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -42,6 +53,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A084ECDBA7D38E1E42DFC39D /* Pods_App.framework in Frameworks */,
+				F47852F83C27903545FC709C /* AppIntents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				AF277DCFFFF123FFC6DF26C7 /* Pods_App.framework */,
+				B904F1A0BC2D5A983103057C /* AppIntents.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -80,10 +93,14 @@
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
 				9582B6842FE996800072D4E8 /* SceneDelegate.swift */,
+				B2F959844B9D04F72FCD7E9F /* MainViewController.swift */,
+				CF6B62E23B57FE153FAB605B /* FuelNativePlugin.swift */,
+				465A506F141E009FDC99E792 /* LogFillUpIntent.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
+				F6B60697CAC30014E83D16BA /* InfoPlist.strings */,
 				F7A1C0012FF0A00100B1D2E3 /* PrivacyInfo.xcprivacy */,
 				2FAD9762203C412B000D30F8 /* config.xml */,
 				50B271D01FEDC1A000F3C39B /* public */,
@@ -145,6 +162,8 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
+				ar,
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
@@ -170,6 +189,7 @@
 				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
 				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
 				F7A1C0022FF0A00100B1D2E3 /* PrivacyInfo.xcprivacy in Resources */,
+				61A1C5BE48FDB7AFC9C1100E /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +238,9 @@
 			files = (
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				9582B6852FE996820072D4E8 /* SceneDelegate.swift in Sources */,
+				658D4FE86CEFBF4FA85EEDEE /* MainViewController.swift in Sources */,
+				DA520CF143289A55DED5A97E /* FuelNativePlugin.swift in Sources */,
+				3017F58D4ACF87BF06378113 /* LogFillUpIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +261,15 @@
 				504EC3111FED79650016851F /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		F6B60697CAC30014E83D16BA /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9F9330E6BD6408559F6739CA /* fr */,
+				F21F9085D0D74849CAF20382 /* ar */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0b0e" media="(prefers-color-scheme: dark)">
 <title>bnzn</title>
-<script>/* Apply the saved light or dark choice before the first paint. */ try { var th = localStorage.getItem("bnzn-theme"); if (th === "light" || th === "dark") document.documentElement.dataset.theme = th; } catch (e) {}</script>
+<script src="js/theme.js"></script>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -21,6 +22,7 @@
   <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H5a2 2 0 0 1 0-4h13v4M3 5v14a2 2 0 0 0 2 2h15V7M16 14h.01"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
   <symbol id="i-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3.5a1 1 0 0 1-1-1v-3.2a2 2 0 0 1 .6-1.4L5 9.5l1.6-3.3A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.8 1.2L19 9.5l1.9 1.9a2 2 0 0 1 .6 1.4V16a1 1 0 0 1-1 1H19M9 17h6M5 9.5h14"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></symbol>
   <symbol id="i-bike" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="16.5" r="3"/><circle cx="19" cy="16.5" r="3"/><path d="M5 16.5h4.5l3-5H8M19 16.5 15.5 8H13M15.5 8h2.5M12.5 11.5h3.6"/></symbol>
@@ -67,6 +69,10 @@
         <button type="button" class="small ghost icon" id="scanBtn" hidden><svg><use href="#i-camera"/></svg><span data-i18n="scan">Scan</span></button>
       </div>
       <div class="chips" id="vehChips" role="radiogroup" data-i18n-aria="vehicle"></div>
+      <div class="seg" id="energySeg" role="radiogroup" data-i18n-aria="energyKind" hidden>
+        <input type="radio" name="energy" id="en-l" value="L" checked><label for="en-l" data-i18n="energyFuel">Fuel</label>
+        <input type="radio" name="energy" id="en-k" value="kWh"><label for="en-k" data-i18n="energyCharge">Charge</label>
+      </div>
 
       <div class="row">
         <div class="field">
@@ -86,41 +92,54 @@
       </div>
       <div class="field" id="rateField" hidden>
         <label for="rate" id="rateLabel"></label>
-        <div class="inp"><input id="rate" type="number" inputmode="decimal" min="0" step="any"><span class="unit homecur">MAD</span></div>
+        <div class="inp"><input id="rate" type="text" inputmode="decimal" autocomplete="off"><span class="unit homecur">MAD</span></div>
         <p class="hint" data-i18n="rateHint">Check today's rate. It is saved with this fill-up so your totals stay correct.</p>
       </div>
 
       <h3><svg><use href="#i-road"/></svg><span data-i18n="distance">Distance</span></h3>
-      <div class="row">
+      <div class="row" id="odoRow">
         <div class="field">
-          <label for="odoStart" data-i18n="odoLast">Odometer at last fill-up</label>
-          <div class="inp"><input id="odoStart" type="number" inputmode="decimal" min="0" step="any" placeholder="45200"><span class="unit">km</span></div>
-          <label class="check" id="unknownWrap" hidden><input type="checkbox" id="unknownStart"><span data-i18n="firstFill">First fill-up, I don't know</span></label>
+          <label for="odoStart" data-i18n="odoLast" data-i18n-kwh="odoLastCharge">Odometer at last fill-up</label>
+          <div class="inp"><input id="odoStart" type="text" inputmode="numeric" autocomplete="off" placeholder="45200"><span class="unit">km</span></div>
           <p class="hint" id="odoStartHint"></p>
         </div>
         <div class="field">
           <label for="odoEnd" data-i18n="odoNow">Odometer now</label>
-          <div class="inp"><input id="odoEnd" type="number" inputmode="decimal" min="0" step="any" placeholder="45650"><span class="unit">km</span></div>
+          <div class="inp"><input id="odoEnd" type="text" inputmode="numeric" autocomplete="off" placeholder="45650"><span class="unit">km</span></div>
+        </div>
+      </div>
+      <div class="field" id="sinceField" hidden>
+        <label for="sinceKm" data-i18n="sinceKm" data-i18n-kwh="sinceKmCharge">Kilometers since the last fill-up</label>
+        <div class="inp"><input id="sinceKm" type="text" inputmode="numeric" autocomplete="off" placeholder="420"><span class="unit">km</span></div>
+        <p class="hint" data-i18n="sinceKmHint">Read it from the trip meter, then reset the trip meter.</p>
+      </div>
+      <label class="check" id="unknownWrap" hidden><input type="checkbox" id="unknownStart"><span data-i18n="firstFill" data-i18n-kwh="firstCharge">First fill-up, I don't know</span></label>
+      <div id="resetWrap" hidden>
+        <label class="check"><input type="checkbox" id="odoReset"><span data-i18n="odoResetLbl">The odometer went back to zero or was replaced</span></label>
+        <div class="field" id="resetKmField" hidden>
+          <label for="resetKm" data-i18n="resetKm">Kilometers driven since the last fill-up</label>
+          <div class="inp"><input id="resetKm" type="text" inputmode="numeric" autocomplete="off"><span class="unit">km</span></div>
+          <p class="hint" data-i18n="resetKmHint">The new reading starts a new count. Your history and reminders carry on.</p>
         </div>
       </div>
 
-      <h3><svg><use href="#i-drop"/></svg><span data-i18n="fuel">Fuel</span></h3>
+      <h3><svg><use href="#i-drop"/></svg><span data-i18n="fuel" data-i18n-kwh="energy">Fuel</span></h3>
       <div class="seg" role="radiogroup" data-i18n-aria="whatKnow">
-        <input type="radio" name="mode" id="mode-l" value="liters" checked><label for="mode-l" data-i18n="litersFilled">Liters filled</label>
+        <input type="radio" name="mode" id="mode-l" value="liters" checked><label for="mode-l" data-i18n="litersFilled" data-i18n-kwh="kwhCharged">Liters filled</label>
         <input type="radio" name="mode" id="mode-m" value="money"><label for="mode-m" data-i18n="amountPaid">Amount paid</label>
       </div>
       <div class="row">
         <div class="field">
-          <label for="price" data-i18n="pricePerL">Price per liter</label>
-          <div class="inp"><input id="price" type="number" inputmode="decimal" min="0" step="any" placeholder="14.50"><span class="unit cur">MAD</span></div>
+          <label for="price" data-i18n="pricePerL" data-i18n-kwh="pricePerKwh">Price per liter</label>
+          <div class="inp"><input id="price" type="text" inputmode="decimal" autocomplete="off" placeholder="14.50"><span class="unit cur">MAD</span></div>
         </div>
         <div class="field" id="litersField">
-          <label for="liters" data-i18n="litersFilled">Liters filled</label>
-          <div class="inp"><input id="liters" type="number" inputmode="decimal" min="0" step="any" placeholder="32"><span class="unit">L</span></div>
+          <label for="liters" data-i18n="litersFilled" data-i18n-kwh="kwhCharged">Liters filled</label>
+          <div class="inp"><input id="liters" type="text" inputmode="decimal" autocomplete="off" placeholder="32"><span class="unit eunit">L</span></div>
         </div>
         <div class="field" id="moneyField" hidden>
           <label for="amount" data-i18n="amountPaid">Amount paid</label>
-          <div class="inp"><input id="amount" type="number" inputmode="decimal" min="0" step="any" placeholder="400"><span class="unit cur">MAD</span></div>
+          <div class="inp"><input id="amount" type="text" inputmode="decimal" autocomplete="off" placeholder="400"><span class="unit cur">MAD</span></div>
         </div>
       </div>
       <p class="hint warn" id="priceStale" hidden></p>
@@ -133,8 +152,8 @@
 
       <div class="switches">
         <label class="switch">
-          <span class="s-title" data-i18n="fullTank">I filled the tank to full</span>
-          <span class="s-sub" data-i18n="fullTankSub">Turn off for a partial fill. It is added to your next full tank.</span>
+          <span class="s-title" data-i18n="fullTank" data-i18n-kwh="fullCharge">I filled the tank to full</span>
+          <span class="s-sub" data-i18n="fullTankSub" data-i18n-kwh="fullChargeSub">Turn off for a partial fill. It is added to your next full tank.</span>
           <input type="checkbox" id="full" checked>
         </label>
         <label class="switch">
@@ -147,13 +166,13 @@
       <p class="msg" id="calcMsg" hidden></p>
       <div id="calcOut" class="result">
         <div class="hero">
-          <span class="lbl" data-i18n="thisFill">This fill-up</span>
+          <span class="lbl" data-i18n="thisFill" data-i18n-kwh="thisCharge">This fill-up</span>
           <span class="val" id="r-l100">–</span>
           <span class="hint" id="r-note"></span>
         </div>
         <div class="stats">
           <div class="tile"><span class="lbl" data-i18n="per1km">Per 1 km</span><span class="val" id="r-l1">–</span></div>
-          <div class="tile"><span class="lbl" data-i18n="kmPerL">Distance per liter</span><span class="val" id="r-kml">–</span></div>
+          <div class="tile"><span class="lbl" data-i18n="kmPerL" data-i18n-kwh="kmPerKwh">Distance per liter</span><span class="val" id="r-kml">–</span></div>
           <div class="tile"><span class="lbl" data-i18n="cost100">Cost per 100 km</span><span class="val" id="r-c100">–</span></div>
           <div class="tile"><span class="lbl" data-i18n="cost1">Cost per 1 km</span><span class="val" id="r-c1">–</span></div>
           <div class="tile"><span class="lbl" data-i18n="distDriven">Distance driven</span><span class="val" id="r-dist">–</span></div>
@@ -176,7 +195,7 @@
         </div>
         <div class="field">
           <label for="incAmount" data-i18n="earned">Earned</label>
-          <div class="inp"><input id="incAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="600"><span class="unit homecur">MAD</span></div>
+          <div class="inp"><input id="incAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="600"><span class="unit homecur">MAD</span></div>
         </div>
       </div>
       <div class="btnrow">
@@ -218,7 +237,7 @@
       <div class="row">
         <div class="field">
           <label for="tripKm" data-i18n="tripKm">Distance one way</label>
-          <div class="inp"><input id="tripKm" type="number" inputmode="decimal" min="0" step="any" placeholder="240"><span class="unit">km</span></div>
+          <div class="inp"><input id="tripKm" type="text" inputmode="numeric" autocomplete="off" placeholder="240"><span class="unit">km</span></div>
         </div>
         <div class="field">
           <label for="tripVeh" data-i18n="vehicle">Vehicle</label>
@@ -226,11 +245,11 @@
         </div>
         <div class="field">
           <label for="tripL100" data-i18n="consumption">Consumption</label>
-          <div class="inp"><input id="tripL100" type="number" inputmode="decimal" min="0" step="any"><span class="unit">L/100</span></div>
+          <div class="inp"><input id="tripL100" type="text" inputmode="decimal" autocomplete="off"><span class="unit" id="tripL100Unit">L/100</span></div>
         </div>
         <div class="field">
-          <label for="tripPrice" data-i18n="pricePerL">Price per liter</label>
-          <div class="inp"><input id="tripPrice" type="number" inputmode="decimal" min="0" step="any"><span class="unit homecur">MAD</span></div>
+          <label for="tripPrice" id="tripPriceLbl">Price per liter</label>
+          <div class="inp"><input id="tripPrice" type="text" inputmode="decimal" autocomplete="off"><span class="unit homecur">MAD</span></div>
         </div>
         <div class="field">
           <label for="tripPeople" data-i18n="people">People sharing</label>
@@ -246,6 +265,11 @@
     <section class="card" aria-labelledby="remTitle">
       <div class="card-head"><div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-bell"/></svg></span><h2 id="remTitle" data-i18n="remTitle">Reminders</h2></div><button type="button" class="small icon" id="addRem"><svg><use href="#i-plus"/></svg><span data-i18n="add">Add</span></button></div>
       <div class="list" id="remList"></div>
+      <label class="switch" id="priceAlertsWrap" hidden>
+        <span class="s-title" data-i18n="priceAlerts">Pump price days</span>
+        <span class="s-sub" data-i18n="priceAlertsSub">A reminder on the 1st and 16th of each month, when pump prices can change.</span>
+        <input type="checkbox" id="priceAlerts">
+      </label>
     </section>
   </section>
 
@@ -285,7 +309,7 @@
       <div class="row" id="rateInputs"></div>
       <div class="field">
         <label for="budget" data-i18n="budget">Monthly fuel budget</label>
-        <div class="inp"><input id="budget" type="number" inputmode="decimal" min="0" step="any" data-i18n-ph="optional" placeholder="Optional"><span class="unit homecur">MAD</span></div>
+        <div class="inp"><input id="budget" type="text" inputmode="decimal" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"><span class="unit homecur">MAD</span></div>
       </div>
       <label class="switch">
         <span class="s-title" data-i18n="driverMode">Driver mode</span>
@@ -296,6 +320,7 @@
     <section class="card">
       <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-download"/></svg></span><h2 data-i18n="backup">Backup</h2></div>
       <p class="hint" id="backupInfo"></p>
+      <p class="hint" id="backupPhone" hidden></p>
       <div class="actions">
         <button type="button" class="action" id="exportBtn"><span class="ico"><svg><use href="#i-download"/></svg></span><span data-i18n="saveBackup">Save backup file</span><svg class="chev"><use href="#i-chevron"/></svg></button>
         <button type="button" class="action" id="importBtn"><span class="ico"><svg><use href="#i-upload"/></svg></span><span data-i18n="restore">Restore from file</span><svg class="chev"><use href="#i-chevron"/></svg></button>
@@ -318,6 +343,14 @@
         <li><svg><use href="#i-check"/></svg><span data-i18n="p2">No account and no tracking.</span></li>
         <li><svg><use href="#i-check"/></svg><span data-i18n="p3">Your data stays on this phone until you back it up.</span></li>
       </ul>
+      <a class="linkbtn" id="privacyLink" href="#" target="_blank" rel="noopener" data-i18n="privacyPolicy">Privacy policy</a>
+    </section>
+    <section class="card">
+      <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-logo"/></svg></span><div><h2 data-i18n="about">About bnzn</h2><p class="hint" id="aboutVersion"></p></div></div>
+      <div class="btnrow">
+        <button type="button" id="problemBtn" data-i18n="problemBtn">Report a problem</button>
+        <button type="button" id="licBtn" data-i18n="licBtn">Open-source licenses</button>
+      </div>
     </section>
   </section>
 </div>
@@ -348,20 +381,27 @@
       <input type="radio" name="vType" id="vt-car" value="car" checked><label for="vt-car" data-i18n="car">Car</label>
       <input type="radio" name="vType" id="vt-bike" value="bike"><label for="vt-bike" data-i18n="bike">Motorbike</label>
     </div>
-    <div class="seg" role="radiogroup" data-i18n-aria="fuelType">
+    <div class="seg two" role="radiogroup" data-i18n-aria="fuelType">
       <input type="radio" name="vFuel" id="vf-essence" value="essence" checked><label for="vf-essence" data-i18n="essence">Petrol</label>
       <input type="radio" name="vFuel" id="vf-gasoil" value="gasoil"><label for="vf-gasoil" data-i18n="gasoil">Diesel</label>
+      <input type="radio" name="vFuel" id="vf-electric" value="electric"><label for="vf-electric" data-i18n="electric">Electric</label>
+      <input type="radio" name="vFuel" id="vf-hybrid" value="hybrid"><label for="vf-hybrid" data-i18n="hybrid">Plug-in hybrid</label>
     </div>
     <div class="row">
       <div class="field">
-        <label for="vTank" data-i18n="tank">Tank size</label>
-        <div class="inp"><input id="vTank" type="number" inputmode="decimal" min="0" step="any" data-i18n-ph="optional" placeholder="Optional"><span class="unit">L</span></div>
+        <label for="vTank" id="vTankLbl">Tank size</label>
+        <div class="inp"><input id="vTank" type="text" inputmode="decimal" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"><span class="unit" id="vTankUnit">L</span></div>
       </div>
       <div class="field">
         <label for="vColor" data-i18n="color">Color</label>
         <div class="inp"><select id="vColor"></select></div>
       </div>
     </div>
+    <label class="switch">
+      <span class="s-title" data-i18n="tripMeter">No working odometer</span>
+      <span class="s-sub" data-i18n="tripMeterSub">Type the kilometers from the trip meter at each fill-up instead.</span>
+      <input type="checkbox" id="vTrip">
+    </label>
     <p class="msg err" id="vMsg" hidden></p>
     <div class="btnrow">
       <button type="button" class="danger" id="vDelete" hidden data-i18n="delete">Delete</button>
@@ -398,11 +438,11 @@
     <div class="row" id="rKmFields">
       <div class="field">
         <label for="rEvery" data-i18n="rEvery">Every</label>
-        <div class="inp"><input id="rEvery" type="number" inputmode="decimal" min="0" step="any" placeholder="10000"><span class="unit">km</span></div>
+        <div class="inp"><input id="rEvery" type="text" inputmode="numeric" autocomplete="off" placeholder="10000"><span class="unit">km</span></div>
       </div>
       <div class="field">
         <label for="rLast" data-i18n="rLast">Last done at</label>
-        <div class="inp"><input id="rLast" type="number" inputmode="decimal" min="0" step="any"><span class="unit">km</span></div>
+        <div class="inp"><input id="rLast" type="text" inputmode="numeric" autocomplete="off"><span class="unit">km</span></div>
       </div>
     </div>
     <div class="field" id="rDateField" hidden>
@@ -443,6 +483,29 @@
     <h2 id="askTitle"></h2>
     <p class="msg" id="askText"></p>
     <div class="btnrow" id="askBtns"></div>
+  </div>
+</dialog>
+
+<!-- Report a problem -->
+<dialog id="problemDialog">
+  <div class="body">
+    <h2 data-i18n="problemTitle">Report a problem</h2>
+    <p class="hint" data-i18n="problemLead">Describe what happened at the top. The details below help find the cause; nothing is sent until you choose.</p>
+    <textarea id="problemText" class="report" rows="10" spellcheck="false"></textarea>
+    <div class="btnrow">
+      <button type="button" id="problemClose" data-i18n="close">Close</button>
+      <button type="button" id="problemCopy" data-i18n="copy">Copy</button>
+      <button type="button" class="primary" id="problemSend" data-i18n="send">Send</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Open-source licenses -->
+<dialog id="licDialog">
+  <div class="body">
+    <h2 data-i18n="licBtn">Open-source licenses</h2>
+    <pre class="lic" id="licText"></pre>
+    <div class="btnrow"><button type="button" class="primary" id="licClose" data-i18n="close">Close</button></div>
   </div>
 </dialog>
 

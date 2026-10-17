@@ -196,6 +196,8 @@ h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 }
 .seg input:checked + label { background: var(--seg-on); color: var(--fg); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 4px 12px -4px rgba(0, 0, 0, .14); }
 .seg input:focus-visible + label { box-shadow: var(--ring); }
+/* Four options: two rows of two. */
+.seg.two { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 /* Many options: one row of pills that scrolls sideways. */
 .seg.scroll {
   display: flex; background: transparent; padding: 2px 18px; gap: 8px; margin-inline: -18px; border-radius: 0;
@@ -613,3 +615,18 @@ dialog h2 { font-size: 1.3rem; }
 @media print { nav.tabbar, .toast { display: none !important; } }
 /* The first-run screen sits on the page background, so its fields and secondary buttons use the card surface. */
 .welcome .inp input, .welcome .btnrow > button:not(.primary) { background: var(--surface); border-color: var(--line); }
+
+/* Problem report, licences, About. */
+#askText { white-space: pre-line; color: var(--fg); }
+textarea.report {
+  font: .8rem/1.45 ui-monospace, "SFMono-Regular", Menlo, monospace; width: 100%; resize: vertical; min-height: 200px;
+  border: 1.5px solid var(--line); border-radius: 14px; background: var(--surface-2); color: var(--fg); padding: 12px;
+}
+pre.lic {
+  margin: 0; max-height: 60vh; overflow: auto; white-space: pre-wrap; word-break: break-word;
+  font: .72rem/1.45 ui-monospace, "SFMono-Regular", Menlo, monospace; color: var(--muted);
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+}
+a.linkbtn { color: var(--accent-ink); font-weight: 700; text-decoration: none; justify-self: start; padding: 10px 0; min-height: 44px; display: inline-flex; align-items: center; }
+a.linkbtn:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 8px; }
+#resetWrap { display: grid; gap: 12px; }

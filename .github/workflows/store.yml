@@ -1,10 +1,13 @@
 name: Store builds
 
-# Run it from the Actions tab ("Store builds" > "Run workflow") to get:
+# Run it from the Actions tab ("Store builds" > "Run workflow", branch main) to get:
 #   - Android: a signed .aab to upload in the Google Play Console (download it from the run's Artifacts)
 #   - iOS: a build sent straight to App Store Connect / TestFlight
-# The secrets it needs are listed in store/README.md. Without them it still checks that both apps compile.
-# On pull requests it only checks that both release builds compile; nothing is uploaded.
+# The secrets it needs are listed in store/README.md; they live in the "store" environment.
+# Building and signing are separate jobs: the build jobs install and run the project's code but get no
+# secrets; the signing jobs get the secrets but only take the built files, never running project code.
+# Signing runs only from a manual run on main. Without the secrets it still checks that both apps compile.
+# On pull requests it only checks that both release builds compile; nothing is signed or uploaded.
 
 on:
   workflow_dispatch:
@@ -15,83 +18,164 @@ permissions:
 
 jobs:
   android:
-    name: Android (Google Play)
+    name: Android build
     runs-on: ubuntu-latest
     env:
       VERSION_CODE: ${{ github.run_number }}
-      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    outputs:
+      version_name: ${{ steps.version.outputs.name }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: 21
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm test
       - run: npx cap sync android
       - name: Read the version from package.json
-        run: echo "VERSION_NAME=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
-      - name: Unpack the upload key
-        if: env.HAS_KEYSTORE == 'true'
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        id: version
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/upload.jks"
-          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
-      - name: Build the release bundle and APK
+          VERSION_NAME=$(node -p "require('./package.json').version")
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+      # ANDROID_KEYSTORE_PATH is not set, so build.gradle leaves the release unsigned.
+      - name: Build the unsigned release bundle and APK
         working-directory: android
-        env:
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew bundleRelease assembleRelease
       - name: Collect the files
         run: |
           mkdir -p out
-          if [ "$HAS_KEYSTORE" = "true" ]; then
-            cp android/app/build/outputs/bundle/release/app-release.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE.aab"
-            cp android/app/build/outputs/apk/release/app-release.apk "out/bnzn-$VERSION_NAME-$VERSION_CODE.apk"
-            echo "### Android $VERSION_NAME (version code $VERSION_CODE) is signed and ready for Google Play" >> "$GITHUB_STEP_SUMMARY"
-          else
-            cp android/app/build/outputs/bundle/release/app-release.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE-unsigned.aab"
-            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set, so the bundle is unsigned and Google Play will refuse it."
-            echo "### Android $VERSION_NAME (version code $VERSION_CODE) built, but unsigned: add the upload key secrets" >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - uses: actions/upload-artifact@v4
+          cp android/app/build/outputs/bundle/release/app-release.aab out/bnzn-unsigned.aab
+          cp android/app/build/outputs/apk/release/app-release-unsigned.apk out/bnzn-unsigned.apk
+          echo "### Android $VERSION_NAME (version code $VERSION_CODE) compiles" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-unsigned
+          path: out/
+          retention-days: 7
+
+  android-sign:
+    name: Android (Google Play)
+    needs: android
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: store
+    env:
+      VERSION_CODE: ${{ github.run_number }}
+      VERSION_NAME: ${{ needs.android.outputs.version_name }}
+      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: android-unsigned
+          path: unsigned
+      # Uses the runner's preinstalled JDK and Android SDK, so nothing is installed next to the key.
+      - name: Sign with the upload key
+        if: env.HAS_KEYSTORE == 'true'
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          KEYSTORE="$RUNNER_TEMP/upload.jks"
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)"
+          mkdir -p out
+          AAB="out/bnzn-$VERSION_NAME-$VERSION_CODE.aab"
+          APK="out/bnzn-$VERSION_NAME-$VERSION_CODE.apk"
+          # Google Play takes the bundle signed as a jar.
+          "$JAVA_HOME/bin/jarsigner" -keystore "$KEYSTORE" \
+            -storepass:env ANDROID_KEYSTORE_PASSWORD -keypass:env ANDROID_KEY_PASSWORD \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            -signedjar "$AAB" unsigned/bnzn-unsigned.aab "$ANDROID_KEY_ALIAS"
+          # The APK must be aligned before apksigner signs it (16 KB pages for Android 15+ devices).
+          "$BUILD_TOOLS/zipalign" -P 16 -f 4 unsigned/bnzn-unsigned.apk "$RUNNER_TEMP/aligned.apk"
+          "$BUILD_TOOLS/apksigner" sign --ks "$KEYSTORE" \
+            --ks-pass env:ANDROID_KEYSTORE_PASSWORD --ks-key-alias "$ANDROID_KEY_ALIAS" \
+            --key-pass env:ANDROID_KEY_PASSWORD --out "$APK" "$RUNNER_TEMP/aligned.apk"
+          rm -f "$KEYSTORE"
+          # jarsigner -verify exits 0 on an unsigned file too, so check what it says.
+          "$JAVA_HOME/bin/jarsigner" -verify "$AAB" | tee "$RUNNER_TEMP/verify.txt"
+          grep -q '^jar verified' "$RUNNER_TEMP/verify.txt"
+          "$BUILD_TOOLS/apksigner" verify --verbose "$APK"
+          echo "### Android $VERSION_NAME (version code $VERSION_CODE) is signed and ready for Google Play" >> "$GITHUB_STEP_SUMMARY"
+      - name: Keep the bundle unsigned
+        if: env.HAS_KEYSTORE != 'true'
+        run: |
+          mkdir -p out
+          cp unsigned/bnzn-unsigned.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE-unsigned.aab"
+          echo "::warning::ANDROID_KEYSTORE_BASE64 is not set, so the bundle is unsigned and Google Play will refuse it."
+          echo "### Android $VERSION_NAME (version code $VERSION_CODE) built, but unsigned: add the upload key secrets" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: android-google-play
           path: out/
 
   ios:
-    name: iOS (App Store)
+    name: iOS build
     runs-on: macos-26
     env:
       BUILD_NUMBER: ${{ github.run_number }}
-      # Uploads happen only from a manual run with the App Store Connect key in place.
-      UPLOAD: ${{ github.event_name == 'workflow_dispatch' && secrets.APPSTORE_API_PRIVATE_KEY != '' }}
+    outputs:
+      version_name: ${{ steps.version.outputs.name }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - name: Sync the web app and install CocoaPods
         run: npx cap sync ios
       - name: Read the version from package.json
+        id: version
         run: |
-          echo "VERSION_NAME=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
+          VERSION_NAME=$(node -p "require('./package.json').version")
+          echo "VERSION_NAME=$VERSION_NAME" >> "$GITHUB_ENV"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "Built with $(xcodebuild -version | head -n 1)" >> "$GITHUB_STEP_SUMMARY"
       - name: Archive
         run: |
-          # The archive is left unsigned; the export below signs it with Apple's cloud-managed distribution certificate.
+          # The archive is left unsigned; the upload job signs it with Apple's cloud-managed distribution certificate.
           xcodebuild -quiet -workspace ios/App/App.xcworkspace -scheme App -configuration Release \
             -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" \
             MARKETING_VERSION="$VERSION_NAME" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
             CODE_SIGNING_ALLOWED=NO archive
           test -d "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
+          # ditto keeps the archive's symlinks and permissions, which a plain zip would break.
+          ditto -c -k --keepParent "$RUNNER_TEMP/App.xcarchive" "$RUNNER_TEMP/App.xcarchive.zip"
+          echo "### iOS $VERSION_NAME (build $BUILD_NUMBER) compiles" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ios-archive
+          path: ${{ runner.temp }}/App.xcarchive.zip
+          retention-days: 7
+
+  ios-upload:
+    name: iOS (App Store)
+    needs: ios
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: macos-26
+    environment: store
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+      VERSION_NAME: ${{ needs.ios.outputs.version_name }}
+      # Uploads happen only with the App Store Connect key in place.
+      UPLOAD: ${{ secrets.APPSTORE_API_PRIVATE_KEY != '' }}
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: env.UPLOAD == 'true'
+        with:
+          name: ios-archive
+          path: ${{ runner.temp }}
       - name: Sign and upload to App Store Connect
         if: env.UPLOAD == 'true'
         env:
@@ -100,6 +184,8 @@ jobs:
           ASC_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
           ASC_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
+          ditto -x -k "$RUNNER_TEMP/App.xcarchive.zip" "$RUNNER_TEMP"
+          test -d "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app"
           KEY_PATH="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
           printf '%s\n' "$ASC_PRIVATE_KEY" > "$KEY_PATH"
           cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
@@ -124,4 +210,4 @@ jobs:
           echo "### iOS $VERSION_NAME (build $BUILD_NUMBER) was sent to App Store Connect. It shows in TestFlight after Apple finishes processing it." >> "$GITHUB_STEP_SUMMARY"
       - name: Note that nothing was uploaded
         if: env.UPLOAD != 'true'
-        run: echo "### iOS $VERSION_NAME (build $BUILD_NUMBER) compiles. Nothing was uploaded (run it manually with the App Store Connect secrets to upload)." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "### iOS $VERSION_NAME (build $BUILD_NUMBER) compiles. Nothing was uploaded (add the App Store Connect secrets to the store environment to upload)." >> "$GITHUB_STEP_SUMMARY"
