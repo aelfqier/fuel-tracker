@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -21,23 +22,41 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
+      - run: npm test
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
-      - run: cp android/app/build/outputs/apk/debug/app-debug.apk fuel-tracker.apk
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk bnzn.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: fuel-tracker-apk
-          path: fuel-tracker.apk
+          name: bnzn-apk
+          path: bnzn.apk
       # Publish the APK as the "latest" release so it has a direct download link:
-      # https://github.com/<owner>/<repo>/releases/latest/download/fuel-tracker.apk
+      # https://github.com/<owner>/<repo>/releases/latest/download/bnzn.apk
       - name: Publish latest release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete latest --yes --cleanup-tag || true
-          gh release create latest fuel-tracker.apk \
-            --title "Fuel Tracker (latest build)" \
-            --notes "Android test build from commit ${GITHUB_SHA::7}. Download fuel-tracker.apk on your phone and open it to install." \
+          gh release create latest bnzn.apk \
+            --title "bnzn (latest build)" \
+            --notes "Android test build from commit ${GITHUB_SHA::7}. Download bnzn.apk on your phone and open it to install." \
             --latest
+      # Pull requests from this repository publish their APK as the "test" pre-release, so a change can be
+      # tried on a phone before it is merged:
+      # https://github.com/<owner>/<repo>/releases/download/test/bnzn.apk
+      - name: Publish test pre-release
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          gh release delete test --yes --cleanup-tag || true
+          gh release create test bnzn.apk \
+            --target "$HEAD_SHA" \
+            --title "bnzn (test build)" \
+            --notes "Test build from pull request #$PR_NUMBER (commit ${HEAD_SHA::7}), not merged yet. Download bnzn.apk on your phone and open it to install." \
+            --prerelease --latest=false

@@ -1,22 +1,27 @@
 {
   "name": "fuel-tracker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Fuel Tracker: log fill-ups and track fuel consumption per 1 km and 100 km.",
+  "description": "bnzn: log fill-ups and track fuel consumption per 1 km and 100 km.",
   "scripts": {
+    "test": "node --test tests/*.test.js",
     "sync": "cap sync",
     "android": "cap open android",
     "ios": "cap open ios"
   },
   "dependencies": {
-    "@capacitor/android": "^7.6.9",
-    "@capacitor/core": "^7.6.9",
-    "@capacitor/ios": "^7.6.9",
-    "@capacitor/preferences": "^7.0.4"
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/share": "^8.0.3"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
-    "@capacitor/cli": "^7.6.9",
+    "@capacitor/cli": "^8.5.3",
     "@fontsource/barlow": "^5.3.0",
     "@fontsource/barlow-condensed": "^5.3.0"
   }

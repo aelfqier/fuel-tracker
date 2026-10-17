@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_fill"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/shortcut_add"
+        android:shortcutLongLabel="@string/shortcut_add">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="fueltracker://add"
+            android:targetPackage="io.github.aelfqier.fueltracker"
+            android:targetClass="com.fueltracker.app.MainActivity" />
+    </shortcut>
+</shortcuts>

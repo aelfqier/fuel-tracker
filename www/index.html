@@ -4,586 +4,414 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#d97a06">
-<title>Fuel Tracker</title>
-<style>
-@font-face { font-family: "Barlow"; font-weight: 400; font-style: normal; font-display: swap; src: url("fonts/barlow-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Barlow"; font-weight: 500; font-style: normal; font-display: swap; src: url("fonts/barlow-latin-500-normal.woff2") format("woff2"); }
-@font-face { font-family: "Barlow"; font-weight: 600; font-style: normal; font-display: swap; src: url("fonts/barlow-latin-600-normal.woff2") format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 500; font-style: normal; font-display: swap; src: url("fonts/barlow-condensed-latin-500-normal.woff2") format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 600; font-style: normal; font-display: swap; src: url("fonts/barlow-condensed-latin-600-normal.woff2") format("woff2"); }
-@font-face { font-family: "Barlow Condensed"; font-weight: 700; font-style: normal; font-display: swap; src: url("fonts/barlow-condensed-latin-700-normal.woff2") format("woff2"); }
-html { color-scheme: light; -webkit-text-size-adjust: 100%; }
-[hidden] { display: none !important; }
-/* Layout: one narrow column like a phone dashboard: add-a-fill-up card, period report (tabs, tiles, bars, table), fill-up log */
-:root {
-  --bg: #eef1f4;
-  --surface: #ffffff;
-  --fg: #16202b;
-  --muted: #5b6876;
-  --line: #d5dce3;
-  --accent: #d97a06;
-  --accent-soft: #fbead2;
-  --on-accent: #1a1205;
-  --danger: #b4321f;
-  --ok: #2f7a4a;
-  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
-  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #10161d; --surface: #18212b; --fg: #e7edf3; --muted: #93a1b0;
-    --line: #2a3644; --accent: #f5a33a; --accent-soft: #3a2a14; --on-accent: #1a1205;
-    --danger: #f07a66; --ok: #6fcf93;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #10161d; --surface: #18212b; --fg: #e7edf3; --muted: #93a1b0;
-  --line: #2a3644; --accent: #f5a33a; --accent-soft: #3a2a14; --on-accent: #1a1205;
-  --danger: #f07a66; --ok: #6fcf93;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body {
-  background: var(--bg); color: var(--fg);
-  font-family: var(--body); font-size: 16px; line-height: 1.45;
-  margin: 0;
-  padding: calc(24px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(48px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
-}
-.wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 24px; }
-header { display: grid; gap: 4px; }
-h1 {
-  font-family: var(--display); font-weight: 700; font-size: 2.1rem;
-  letter-spacing: .01em; margin: 0; line-height: 1; text-wrap: balance;
-}
-.sub { color: var(--muted); margin: 0; font-size: .95rem; }
-.status { font-size: .8rem; color: var(--muted); margin: 0; }
-.status b { color: var(--ok); font-weight: 600; }
-
-.seg {
-  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
-  background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 4px; gap: 4px;
-}
-.seg.scroll { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg label {
-  text-align: center; padding: 8px 10px; border-radius: 7px; cursor: pointer;
-  font-weight: 600; color: var(--muted); font-size: .92rem; white-space: nowrap;
-}
-.seg input:checked + label { background: var(--accent); color: var(--on-accent); }
-.seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
-  padding: 18px 16px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; min-width: 0;
-}
-h2 {
-  font-family: var(--display); font-weight: 700; font-size: 1.45rem; margin: 0; line-height: 1.1;
-}
-h3 {
-  font-family: var(--display); font-weight: 600; font-size: .9rem;
-  text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0;
-}
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.field { display: grid; gap: 6px; min-width: 0; align-content: start; }
-.field > label { font-size: .9rem; font-weight: 500; }
-.inp { position: relative; }
-.inp input, .inp select {
-  width: 100%; font: inherit; font-size: 1.1rem; font-variant-numeric: tabular-nums;
-  padding: 10px 44px 10px 12px; border-radius: 9px; min-height: 46px;
-  border: 1px solid var(--line); background: var(--bg); color: var(--fg);
-}
-.inp select, .inp input[type="date"] { padding-right: 12px; }
-.inp input:focus, .inp select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
-.inp .unit {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  color: var(--muted); font-size: .85rem; font-weight: 600; pointer-events: none;
-}
-.hint { font-size: .8rem; color: var(--muted); margin: 0; }
-.msg { font-size: .9rem; margin: 0; color: var(--muted); }
-.msg.err { color: var(--danger); }
-.msg.ok { color: var(--ok); }
-
-.hero {
-  background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 12px;
-  padding: 14px 16px; display: grid; gap: 2px;
-}
-.lbl { font-size: .8rem; color: var(--muted); }
-.hero .lbl { font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
-.hero .val { font-family: var(--display); font-weight: 700; font-size: 2.6rem; line-height: 1; font-variant-numeric: tabular-nums; }
-.val small { font-size: .5em; font-weight: 600; color: var(--muted); margin-left: 4px; }
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.tile {
-  background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
-  padding: 10px 12px; display: grid; gap: 2px; min-width: 0;
-}
-.tile .val { font-family: var(--display); font-weight: 600; font-size: 1.45rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; line-height: 1.15; }
-.tile .val small { font-size: .62em; font-weight: 500; }
-
-button {
-  font: inherit; font-weight: 600; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
-  background: var(--surface); color: var(--fg); padding: 10px 14px;
-}
-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-button.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-size: 1.05rem; padding: 13px 16px; }
-button.primary:disabled { opacity: .55; cursor: not-allowed; }
-button.small { padding: 6px 10px; font-size: .85rem; }
-button.danger { color: var(--danger); border-color: var(--danger); background: transparent; }
-
-.chart { width: 100%; height: auto; display: block; }
-.chart text { fill: var(--muted); font-family: var(--body); font-size: 11px; }
-.chart .bar { fill: var(--accent); }
-.chart .bar.last { fill: var(--fg); }
-.chart .grid-line { stroke: var(--line); stroke-width: 1; }
-.chart .v { fill: var(--fg); font-weight: 600; }
-
-.tablewrap { overflow-x: auto; margin: 0 -4px; }
-table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
-th, td { padding: 8px 6px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
-th:first-child, td:first-child { text-align: left; }
-th { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
-td.strong { font-weight: 600; }
-
-.log { list-style: none; margin: 0; padding: 0; display: grid; }
-.log li { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; }
-.log li:last-child { border-bottom: 0; }
-.log .top { font-weight: 600; }
-.log .det { font-size: .85rem; color: var(--muted); grid-column: 1; }
-.log .act { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 6px; }
-.chip { display: inline-block; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; padding: 2px 7px; border-radius: 99px; background: var(--accent-soft); color: var(--fg); margin-right: 6px; vertical-align: 1px; }
-.empty { color: var(--muted); font-size: .95rem; margin: 0; padding: 8px 0; }
-@media (max-width: 380px) { .row { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: no-preference) { button { transition: filter .15s; } button:hover { filter: brightness(1.05); } }
-</style>
+<title>bnzn</title>
+<link rel="stylesheet" href="css/app.css">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pump" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M3 21h13M7 7h5v4H7z"/><path d="M15 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V8l-3-3"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/></symbol>
+  <symbol id="i-tools" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19c4-1 4-6 8-7s4-6 8-7"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="5" r="2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M15 7h6v6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H5a2 2 0 0 1 0-4h13v4M3 5v14a2 2 0 0 0 2 2h15V7M16 14h.01"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></symbol>
+</svg>
 
 <div class="wrap">
-  <header>
-    <h1>Fuel Tracker</h1>
-    <p class="sub">Log each fill-up to track your consumption and spending by day, week, month, quarter, half-year and year.</p>
-    <p class="status" id="storeStatus">Loading your records…</p>
+  <header class="top">
+    <div class="brand">
+      <h1 data-i18n="appName">bnzn</h1>
+      <p class="status" id="storeStatus" data-i18n="loading">Loading your records…</p>
+    </div>
   </header>
 
-  <form class="card" id="form" novalidate>
-    <h2>Add a fill-up</h2>
-    <div class="seg" role="radiogroup" aria-label="Vehicle">
-      <input type="radio" name="veh" id="veh-car" value="car" checked><label for="veh-car">Car</label>
-      <input type="radio" name="veh" id="veh-bike" value="bike"><label for="veh-bike">Motorbike</label>
-    </div>
+  <!-- ================= HOME ================= -->
+  <section class="view" id="view-home" aria-labelledby="formTitle">
+    <div id="dueSoon" class="card" hidden></div>
+    <div id="insights" class="card" hidden></div>
 
-    <div class="row">
-      <div class="field">
-        <label for="date">Date</label>
-        <div class="inp"><input id="date" type="date"></div>
+    <form class="card" id="form" novalidate>
+      <div class="card-head">
+        <h2 id="formTitle" data-i18n="addFill">Add a fill-up</h2>
+        <button type="button" class="small ghost icon" id="scanBtn" hidden><svg><use href="#i-camera"/></svg><span data-i18n="scan">Scan</span></button>
       </div>
-      <div class="field">
-        <label for="currency">Currency</label>
-        <div class="inp">
-          <select id="currency">
-            <option value="MAD" selected>Dirham (MAD)</option>
-            <option value="EUR">Euro (EUR)</option>
-            <option value="USD">Dollar (USD)</option>
-          </select>
+      <div class="chips" id="vehChips" role="radiogroup" data-i18n-aria="vehicle"></div>
+
+      <div class="row">
+        <div class="field">
+          <label for="date" data-i18n="date">Date</label>
+          <div class="inp"><input id="date" type="date"></div>
+        </div>
+        <div class="field">
+          <label for="currency" data-i18n="currency">Currency</label>
+          <div class="inp">
+            <select id="currency">
+              <option value="MAD" data-i18n="curMAD">Dirham (MAD)</option>
+              <option value="EUR" data-i18n="curEUR">Euro (EUR)</option>
+              <option value="USD" data-i18n="curUSD">Dollar (USD)</option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
+      <div class="field" id="rateField" hidden>
+        <label for="rate" id="rateLabel"></label>
+        <div class="inp"><input id="rate" type="number" inputmode="decimal" min="0" step="any"><span class="unit homecur">MAD</span></div>
+        <p class="hint" data-i18n="rateHint">Check today's rate. It is saved with this fill-up so your totals stay correct.</p>
+      </div>
 
-    <h3>Distance</h3>
-    <div class="row">
+      <h3 data-i18n="distance">Distance</h3>
+      <div class="row">
+        <div class="field">
+          <label for="odoStart" data-i18n="odoLast">Odometer at last fill-up</label>
+          <div class="inp"><input id="odoStart" type="number" inputmode="decimal" min="0" step="any" placeholder="45200"><span class="unit">km</span></div>
+          <label class="check" id="unknownWrap" hidden><input type="checkbox" id="unknownStart"><span data-i18n="firstFill">First fill-up, I don't know</span></label>
+          <p class="hint" id="odoStartHint"></p>
+        </div>
+        <div class="field">
+          <label for="odoEnd" data-i18n="odoNow">Odometer now</label>
+          <div class="inp"><input id="odoEnd" type="number" inputmode="decimal" min="0" step="any" placeholder="45650"><span class="unit">km</span></div>
+        </div>
+      </div>
+
+      <h3 data-i18n="fuel">Fuel</h3>
+      <div class="seg" role="radiogroup" data-i18n-aria="whatKnow">
+        <input type="radio" name="mode" id="mode-l" value="liters" checked><label for="mode-l" data-i18n="litersFilled">Liters filled</label>
+        <input type="radio" name="mode" id="mode-m" value="money"><label for="mode-m" data-i18n="amountPaid">Amount paid</label>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="price" data-i18n="pricePerL">Price per liter</label>
+          <div class="inp"><input id="price" type="number" inputmode="decimal" min="0" step="any" placeholder="14.50"><span class="unit cur">MAD</span></div>
+        </div>
+        <div class="field" id="litersField">
+          <label for="liters" data-i18n="litersFilled">Liters filled</label>
+          <div class="inp"><input id="liters" type="number" inputmode="decimal" min="0" step="any" placeholder="32"><span class="unit">L</span></div>
+        </div>
+        <div class="field" id="moneyField" hidden>
+          <label for="amount" data-i18n="amountPaid">Amount paid</label>
+          <div class="inp"><input id="amount" type="number" inputmode="decimal" min="0" step="any" placeholder="400"><span class="unit cur">MAD</span></div>
+        </div>
+      </div>
+      <p class="hint warn" id="priceStale" hidden></p>
+
       <div class="field">
-        <label for="odoStart">Odometer at last fill-up</label>
-        <div class="inp"><input id="odoStart" type="number" inputmode="decimal" min="0" step="any" value="45200"><span class="unit">km</span></div>
-        <p class="hint" id="odoStartHint"></p>
+        <label for="station" data-i18n="station">Station</label>
+        <div class="inp"><input id="station" class="plain" type="text" list="stationList" autocomplete="off" data-i18n-ph="stationPh" placeholder="Afriquia, Shell, Winxo…"></div>
+        <datalist id="stationList"></datalist>
       </div>
-      <div class="field">
-        <label for="odoEnd">Odometer now</label>
-        <div class="inp"><input id="odoEnd" type="number" inputmode="decimal" min="0" step="any" value="45650"><span class="unit">km</span></div>
-      </div>
-    </div>
 
-    <h3>Fuel</h3>
-    <div class="seg" role="radiogroup" aria-label="What do you know">
-      <input type="radio" name="mode" id="mode-l" value="liters" checked><label for="mode-l">Liters filled</label>
-      <input type="radio" name="mode" id="mode-m" value="money"><label for="mode-m">Amount paid</label>
-    </div>
-    <div class="row">
-      <div class="field">
-        <label for="price">Price per liter</label>
-        <div class="inp"><input id="price" type="number" inputmode="decimal" min="0" step="any" value="12.50"><span class="unit cur">MAD</span></div>
-      </div>
-      <div class="field" id="litersField">
-        <label for="liters">Liters filled</label>
-        <div class="inp"><input id="liters" type="number" inputmode="decimal" min="0" step="any" value="32"><span class="unit">L</span></div>
-      </div>
-      <div class="field" id="moneyField" hidden>
-        <label for="amount">Amount paid</label>
-        <div class="inp"><input id="amount" type="number" inputmode="decimal" min="0" step="any" value="400"><span class="unit cur">MAD</span></div>
-      </div>
-    </div>
-    <p class="hint">For the most accurate result, fill the tank to full each time. The fuel you put in now is what you used since the last fill-up.</p>
+      <label class="switch">
+        <span class="s-title" data-i18n="fullTank">I filled the tank to full</span>
+        <span class="s-sub" data-i18n="fullTankSub">Turn off for a partial fill. It is added to your next full tank.</span>
+        <input type="checkbox" id="full" checked>
+      </label>
+      <label class="switch">
+        <span class="s-title" data-i18n="missed">I missed logging a fill-up before this one</span>
+        <span class="s-sub" data-i18n="missedSub">Your consumption skips this stretch instead of showing a wrong number.</span>
+        <input type="checkbox" id="missed">
+      </label>
 
-    <p class="msg" id="calcMsg" hidden></p>
-    <div id="calcOut" class="grid">
-      <div class="hero" style="grid-column: 1 / -1">
-        <span class="lbl">This fill-up</span>
-        <span class="val" id="r-l100">–</span>
+      <p class="msg" id="calcMsg" hidden></p>
+      <div id="calcOut" class="grid">
+        <div class="hero" style="grid-column: 1 / -1">
+          <span class="lbl" data-i18n="thisFill">This fill-up</span>
+          <span class="val" id="r-l100">–</span>
+          <span class="hint" id="r-note"></span>
+        </div>
+        <div class="tile"><span class="lbl" data-i18n="per1km">Per 1 km</span><span class="val" id="r-l1">–</span></div>
+        <div class="tile"><span class="lbl" data-i18n="kmPerL">Distance per liter</span><span class="val" id="r-kml">–</span></div>
+        <div class="tile"><span class="lbl" data-i18n="cost100">Cost per 100 km</span><span class="val" id="r-c100">–</span></div>
+        <div class="tile"><span class="lbl" data-i18n="cost1">Cost per 1 km</span><span class="val" id="r-c1">–</span></div>
+        <div class="tile"><span class="lbl" data-i18n="distDriven">Distance driven</span><span class="val" id="r-dist">–</span></div>
+        <div class="tile"><span class="lbl" id="r-totlbl" data-i18n="totalCost">Total cost</span><span class="val" id="r-tot">–</span></div>
       </div>
-      <div class="tile"><span class="lbl">Per 1 km</span><span class="val" id="r-l1">–</span></div>
-      <div class="tile"><span class="lbl">Distance per liter</span><span class="val" id="r-kml">–</span></div>
-      <div class="tile"><span class="lbl">Cost per 100 km</span><span class="val" id="r-c100">–</span></div>
-      <div class="tile"><span class="lbl">Cost per 1 km</span><span class="val" id="r-c1">–</span></div>
-      <div class="tile"><span class="lbl">Distance driven</span><span class="val" id="r-dist">–</span></div>
-      <div class="tile"><span class="lbl" id="r-totlbl">Total cost</span><span class="val" id="r-tot">–</span></div>
-    </div>
-    <button type="submit" class="primary" id="saveBtn">Save fill-up</button>
-    <p class="msg" id="saveMsg" hidden></p>
-  </form>
+      <div class="btnrow">
+        <button type="button" id="cancelEdit" hidden data-i18n="cancel">Cancel</button>
+        <button type="submit" class="primary" id="saveBtn" data-i18n="saveFill">Save fill-up</button>
+      </div>
+      <p class="msg" id="saveMsg" hidden></p>
+    </form>
 
-  <section class="card" aria-labelledby="repTitle">
-    <h2 id="repTitle">Your consumption</h2>
-    <div class="seg scroll" role="radiogroup" aria-label="Period">
-      <input type="radio" name="per" id="per-day" value="day"><label for="per-day">Daily</label>
-      <input type="radio" name="per" id="per-week" value="week"><label for="per-week">Weekly</label>
-      <input type="radio" name="per" id="per-month" value="month" checked><label for="per-month">Monthly</label>
-      <input type="radio" name="per" id="per-quarter" value="quarter"><label for="per-quarter">Quarterly</label>
-      <input type="radio" name="per" id="per-half" value="half"><label for="per-half">Half-yearly</label>
-      <input type="radio" name="per" id="per-year" value="year"><label for="per-year">Yearly</label>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Vehicle filter">
-      <input type="radio" name="vf" id="vf-all" value="all" checked><label for="vf-all">All</label>
-      <input type="radio" name="vf" id="vf-car" value="car"><label for="vf-car">Car</label>
-      <input type="radio" name="vf" id="vf-bike" value="bike"><label for="vf-bike">Motorbike</label>
-    </div>
-    <div id="report"></div>
+    <form class="card" id="incomeForm" novalidate hidden>
+      <div class="card-head"><h2 id="incomeTitle" data-i18n="addIncome">Add earnings</h2><span class="badge" id="todayIncome"></span></div>
+      <div class="row">
+        <div class="field">
+          <label for="incDate" data-i18n="date">Date</label>
+          <div class="inp"><input id="incDate" type="date"></div>
+        </div>
+        <div class="field">
+          <label for="incAmount" data-i18n="earned">Earned</label>
+          <div class="inp"><input id="incAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="600"><span class="unit homecur">MAD</span></div>
+        </div>
+      </div>
+      <div class="btnrow">
+        <button type="button" id="cancelIncome" hidden data-i18n="cancel">Cancel</button>
+        <button type="submit" class="primary" id="saveIncome" data-i18n="saveIncome">Save earnings</button>
+      </div>
+    </form>
   </section>
 
-  <section class="card" aria-labelledby="logTitle">
-    <h2 id="logTitle">Fill-up log</h2>
-    <ul class="log" id="log"></ul>
+  <!-- ================= HISTORY ================= -->
+  <section class="view" id="view-history" hidden>
+    <section class="card" aria-labelledby="repTitle">
+      <h2 id="repTitle" data-i18n="yourConsumption">Your consumption</h2>
+      <div class="seg scroll" role="radiogroup" data-i18n-aria="period">
+        <input type="radio" name="per" id="per-day" value="day"><label for="per-day" data-i18n="daily">Daily</label>
+        <input type="radio" name="per" id="per-week" value="week"><label for="per-week" data-i18n="weekly">Weekly</label>
+        <input type="radio" name="per" id="per-month" value="month" checked><label for="per-month" data-i18n="monthly">Monthly</label>
+        <input type="radio" name="per" id="per-quarter" value="quarter"><label for="per-quarter" data-i18n="quarterly">Quarterly</label>
+        <input type="radio" name="per" id="per-half" value="half"><label for="per-half" data-i18n="halfYearly">Half-yearly</label>
+        <input type="radio" name="per" id="per-year" value="year"><label for="per-year" data-i18n="yearly">Yearly</label>
+      </div>
+      <div class="field">
+        <label for="vf" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="vf"></select></div>
+      </div>
+      <div id="report"></div>
+    </section>
+    <section class="card" aria-labelledby="logTitle">
+      <h2 id="logTitle" data-i18n="log">Fill-up log</h2>
+      <ul class="log" id="log"></ul>
+    </section>
+  </section>
+
+  <!-- ================= TOOLS ================= -->
+  <section class="view" id="view-tools" hidden>
+    <section class="card" aria-labelledby="tripTitle">
+      <h2 id="tripTitle" data-i18n="tripTitle">Trip cost</h2>
+      <p class="hint" data-i18n="tripLead">Uses your own consumption, not the maker's figure.</p>
+      <div class="presets" id="tripPresets"></div>
+      <div class="row">
+        <div class="field">
+          <label for="tripKm" data-i18n="tripKm">Distance one way</label>
+          <div class="inp"><input id="tripKm" type="number" inputmode="decimal" min="0" step="any" placeholder="240"><span class="unit">km</span></div>
+        </div>
+        <div class="field">
+          <label for="tripVeh" data-i18n="vehicle">Vehicle</label>
+          <div class="inp"><select id="tripVeh"></select></div>
+        </div>
+        <div class="field">
+          <label for="tripL100" data-i18n="consumption">Consumption</label>
+          <div class="inp"><input id="tripL100" type="number" inputmode="decimal" min="0" step="any"><span class="unit">L/100</span></div>
+        </div>
+        <div class="field">
+          <label for="tripPrice" data-i18n="pricePerL">Price per liter</label>
+          <div class="inp"><input id="tripPrice" type="number" inputmode="decimal" min="0" step="any"><span class="unit homecur">MAD</span></div>
+        </div>
+        <div class="field">
+          <label for="tripPeople" data-i18n="people">People sharing</label>
+          <div class="inp"><input id="tripPeople" type="number" inputmode="numeric" min="1" max="9" step="1" value="1"></div>
+        </div>
+        <div class="field" style="align-content:end">
+          <label class="check"><input type="checkbox" id="tripRound"><span data-i18n="roundTrip">Round trip</span></label>
+        </div>
+      </div>
+      <div id="tripOut"></div>
+    </section>
+
+    <section class="card" aria-labelledby="remTitle">
+      <div class="card-head"><h2 id="remTitle" data-i18n="remTitle">Reminders</h2><button type="button" class="small" id="addRem" data-i18n="add">Add</button></div>
+      <div class="list" id="remList"></div>
+    </section>
+  </section>
+
+  <!-- ================= SETTINGS ================= -->
+  <section class="view" id="view-settings" hidden>
+    <section class="card">
+      <h2 data-i18n="language">Language</h2>
+      <div class="seg" role="radiogroup" data-i18n-aria="language">
+        <input type="radio" name="lang" id="lang-fr" value="fr"><label for="lang-fr">Français</label>
+        <input type="radio" name="lang" id="lang-ar" value="ar"><label for="lang-ar">العربية</label>
+        <input type="radio" name="lang" id="lang-en" value="en"><label for="lang-en">English</label>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-head"><h2 data-i18n="vehicles">Vehicles</h2><button type="button" class="small" id="addVeh" data-i18n="add">Add</button></div>
+      <div class="list" id="vehList"></div>
+    </section>
+    <section class="card">
+      <h2 data-i18n="money">Money</h2>
+      <div class="field">
+        <label for="homeCur" data-i18n="homeCur">Home currency</label>
+        <div class="inp"><select id="homeCur">
+          <option value="MAD" data-i18n="curMAD">Dirham (MAD)</option>
+          <option value="EUR" data-i18n="curEUR">Euro (EUR)</option>
+          <option value="USD" data-i18n="curUSD">Dollar (USD)</option>
+        </select></div>
+        <p class="hint" data-i18n="homeCurHint">Totals are shown in this currency. Fill-ups abroad are converted at the rate you confirm.</p>
+      </div>
+      <div class="row" id="rateInputs"></div>
+      <div class="field">
+        <label for="budget" data-i18n="budget">Monthly fuel budget</label>
+        <div class="inp"><input id="budget" type="number" inputmode="decimal" min="0" step="any" data-i18n-ph="optional" placeholder="Optional"><span class="unit homecur">MAD</span></div>
+      </div>
+      <label class="switch">
+        <span class="s-title" data-i18n="driverMode">Driver mode</span>
+        <span class="s-sub" data-i18n="driverModeSub">For taxi, delivery and ride-hailing: log earnings and see your profit per km.</span>
+        <input type="checkbox" id="driverMode">
+      </label>
+    </section>
+    <section class="card">
+      <h2 data-i18n="backup">Backup</h2>
+      <p class="hint" id="backupInfo"></p>
+      <div class="btnrow">
+        <button type="button" id="exportBtn" data-i18n="saveBackup">Save backup file</button>
+        <button type="button" id="importBtn" data-i18n="restore">Restore from file</button>
+      </div>
+      <button type="button" id="csvBtn" data-i18n="exportCsv">Export to spreadsheet (CSV)</button>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </section>
+    <section class="card">
+      <h2 data-i18n="historyReport">Car history report</h2>
+      <p class="hint" data-i18n="historyReportSub">Every fill-up, service and your real consumption in one clean page. Handy when you sell the car.</p>
+      <div class="field">
+        <label for="pdfVeh" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="pdfVeh"></select></div>
+      </div>
+      <button type="button" id="pdfBtn" data-i18n="makePdf">Create PDF report</button>
+    </section>
+    <section class="card">
+      <h2 data-i18n="privacy">Privacy</h2>
+      <ul class="promise">
+        <li><svg><use href="#i-check"/></svg><span data-i18n="p1">No ads, no subscription.</span></li>
+        <li><svg><use href="#i-check"/></svg><span data-i18n="p2">No account and no tracking.</span></li>
+        <li><svg><use href="#i-check"/></svg><span data-i18n="p3">Your data stays on this phone until you back it up.</span></li>
+      </ul>
+    </section>
   </section>
 </div>
 
-<script>
-/* ---------- pure logic ---------- */
-function computeFuel({ odoStart, odoEnd, price, mode, liters, amount }) {
-  if (!(odoEnd >= 0) || isNaN(odoEnd)) return { error: "Enter the odometer reading now." };
-  if (!(odoStart >= 0) || isNaN(odoStart)) return { error: "Enter the odometer reading at your last fill-up." };
-  const distance = odoEnd - odoStart;
-  if (!(distance > 0)) return { error: "Odometer now must be higher than the reading at your last fill-up." };
-  if (!(price > 0)) return { error: "Enter the price per liter." };
-  let L, cost;
-  if (mode === "money") {
-    if (!(amount > 0)) return { error: "Enter the amount you paid." };
-    cost = amount; L = amount / price;
-  } else {
-    if (!(liters > 0)) return { error: "Enter how many liters you filled." };
-    L = liters; cost = liters * price;
-  }
-  return {
-    distance, liters: L, cost,
-    litersPerKm: L / distance, litersPer100: L / distance * 100, kmPerLiter: distance / L,
-    costPerKm: cost / distance, costPer100: cost / distance * 100,
-  };
-}
+<nav class="tabbar" data-i18n-aria="mainMenu">
+  <button type="button" data-tab="home" aria-current="page"><svg><use href="#i-pump"/></svg><span data-i18n="tabHome">Fill-up</span></button>
+  <button type="button" data-tab="history"><svg><use href="#i-chart"/></svg><span data-i18n="tabHistory">History</span></button>
+  <button type="button" data-tab="tools"><svg><use href="#i-tools"/></svg><span data-i18n="tabTools">Tools</span></button>
+  <button type="button" data-tab="settings"><svg><use href="#i-gear"/></svg><span data-i18n="tabSettings">Settings</span></button>
+</nav>
 
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const pad = (n) => String(n).padStart(2, "0");
-function isoWeek(y, m, d) {
-  const t = new Date(Date.UTC(y, m - 1, d));
-  t.setUTCDate(t.getUTCDate() + 3 - ((t.getUTCDay() + 6) % 7));
-  const wy = t.getUTCFullYear();
-  const jan4 = new Date(Date.UTC(wy, 0, 4));
-  const wk = 1 + Math.round(((t - jan4) / 864e5 - 3 + ((jan4.getUTCDay() + 6) % 7)) / 7);
-  return [wy, wk];
-}
-// Returns [sortable key, label] for a YYYY-MM-DD date.
-function periodOf(date, per) {
-  const [y, m, d] = date.split("-").map(Number);
-  switch (per) {
-    case "day": return [date, `${d} ${MONTHS[m - 1]} ${y}`];
-    case "week": { const [wy, wk] = isoWeek(y, m, d); return [`${wy}-W${pad(wk)}`, `Week ${wk}, ${wy}`]; }
-    case "month": return [`${y}-${pad(m)}`, `${MONTHS[m - 1]} ${y}`];
-    case "quarter": { const q = Math.ceil(m / 3); return [`${y}-Q${q}`, `Q${q} ${y}`]; }
-    case "half": { const h = m <= 6 ? 1 : 2; return [`${y}-H${h}`, `H${h} ${y}`]; }
-    default: return [`${y}`, `${y}`];
-  }
-}
-function aggregate(records, per, vehicle) {
-  const groups = new Map();
-  for (const r of records) {
-    if (vehicle !== "all" && r.vehicle !== vehicle) continue;
-    const dist = r.odo - r.prevOdo;
-    if (!(dist > 0) || !(r.liters > 0)) continue;
-    const [key, label] = periodOf(r.date, per);
-    let g = groups.get(key);
-    if (!g) groups.set(key, (g = { key, label, distance: 0, liters: 0, cost: {}, count: 0 }));
-    g.distance += dist; g.liters += r.liters; g.count++;
-    g.cost[r.currency] = (g.cost[r.currency] || 0) + r.cost;
-  }
-  return [...groups.values()].sort((a, b) => (a.key < b.key ? 1 : -1));
-}
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button type="button" id="toastBtn" hidden></button></div>
 
-/* ---------- storage: private per-person store when available, this browser otherwise ---------- */
-const LOCAL_KEY = "fuel-tracker-records-v1";
-let records = [];
-let store = null;
+<!-- First run -->
+<div class="welcome" id="welcome" hidden>
+  <div class="inner" id="welcomeInner"></div>
+</div>
 
-function localStore() {
-  const read = () => { try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); } catch { return []; } };
-  const write = (list) => { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); return true; } catch { return false; } };
-  let cb = () => {};
-  return {
-    kind: "local",
-    subscribe(fn) { cb = fn; fn(read()); },
-    async add(rec) {
-      const list = read(); list.push({ ...rec, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7) });
-      if (!write(list)) throw new Error("This browser is not letting the page save data.");
-      cb(list);
-    },
-    async remove(id) { const list = read().filter((r) => r.id !== id); write(list); cb(list); },
-  };
-}
-// Inside the Android/iOS app: the app's own storage on the phone (Capacitor Preferences).
-function nativeStore(prefs) {
-  const read = async () => { try { const { value } = await prefs.get({ key: LOCAL_KEY }); return JSON.parse(value || "[]"); } catch { return []; } };
-  const write = (list) => prefs.set({ key: LOCAL_KEY, value: JSON.stringify(list) });
-  let cb = () => {};
-  return {
-    kind: "native",
-    async subscribe(fn) {
-      cb = fn;
-      let list = await read();
-      // Move anything saved by an earlier version into app storage.
-      if (!list.length) { try { const old = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); if (old.length) { list = old; await write(list); } } catch {} }
-      fn(list);
-    },
-    async add(rec) {
-      const list = await read();
-      list.push({ ...rec, id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7) });
-      await write(list); cb(list);
-    },
-    async remove(id) { const list = (await read()).filter((r) => r.id !== id); await write(list); cb(list); },
-  };
-}
-function dbStore(db, uid) {
-  const col = db.collection("data/users/" + uid);
-  return {
-    kind: "db",
-    subscribe(fn, onErr) {
-      col.onSnapshot((snap) => {
-        fn(snap.docs.map((d) => ({ ...d.data(), id: d.id })).filter((r) => r.kind === "fill"));
-      }, onErr);
-    },
-    async add(rec) { await col.add({ ...rec, kind: "fill" }); },
-    async remove(id) { await col.doc(id).delete(); },
-  };
-}
+<!-- Vehicle editor -->
+<dialog id="vehDialog">
+  <form method="dialog" id="vehForm">
+    <h2 id="vehDialogTitle" data-i18n="vehicle">Vehicle</h2>
+    <div class="field">
+      <label for="vName" data-i18n="vName">Name</label>
+      <div class="inp"><input id="vName" class="plain" type="text" maxlength="40" data-i18n-ph="vNamePh" placeholder="Dacia Logan"></div>
+    </div>
+    <div class="seg" role="radiogroup" data-i18n-aria="vType">
+      <input type="radio" name="vType" id="vt-car" value="car" checked><label for="vt-car" data-i18n="car">Car</label>
+      <input type="radio" name="vType" id="vt-bike" value="bike"><label for="vt-bike" data-i18n="bike">Motorbike</label>
+    </div>
+    <div class="seg" role="radiogroup" data-i18n-aria="fuelType">
+      <input type="radio" name="vFuel" id="vf-essence" value="essence" checked><label for="vf-essence" data-i18n="essence">Petrol</label>
+      <input type="radio" name="vFuel" id="vf-gasoil" value="gasoil"><label for="vf-gasoil" data-i18n="gasoil">Diesel</label>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="vTank" data-i18n="tank">Tank size</label>
+        <div class="inp"><input id="vTank" type="number" inputmode="decimal" min="0" step="any" data-i18n-ph="optional" placeholder="Optional"><span class="unit">L</span></div>
+      </div>
+      <div class="field">
+        <label for="vColor" data-i18n="color">Color</label>
+        <div class="inp"><select id="vColor"></select></div>
+      </div>
+    </div>
+    <p class="msg err" id="vMsg" hidden></p>
+    <div class="btnrow">
+      <button type="button" class="danger" id="vDelete" hidden data-i18n="delete">Delete</button>
+      <button type="button" id="vCancel" data-i18n="cancel">Cancel</button>
+      <button type="submit" class="primary" id="vSave" data-i18n="save">Save</button>
+    </div>
+  </form>
+</dialog>
 
-async function initStore() {
-  let s = null;
-  const cap = window.Capacitor;
-  if (cap && cap.isNativePlatform && cap.isNativePlatform()) {
-    try { s = nativeStore(cap.registerPlugin("Preferences")); } catch { s = null; }
-  }
-  try {
-    if (!s && window.claude && typeof window.claude.use === "function") {
-      const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
-      const uid = user ? await user.id() : null;
-      if (db && uid) s = dbStore(db, uid);
-    }
-  } catch { s = null; }
-  if (!s) s = localStore();
-  store = s;
-  $("storeStatus").innerHTML = s.kind === "db"
-    ? "<b>●</b> Saved to your account, private to you and available on all your devices."
-    : s.kind === "native"
-    ? "<b>●</b> Saved on this phone."
-    : "Saved in this browser only. Use the same phone and browser to keep your history.";
-  s.subscribe((list) => { records = list.filter(valid); onRecords(); }, () => {
-    $("storeStatus").textContent = "Your saved records could not be loaded right now. Reload the page to try again.";
-  });
-}
-function valid(r) {
-  return r && /^\d{4}-\d{2}-\d{2}$/.test(r.date) && ["car", "bike"].includes(r.vehicle) &&
-    ["MAD", "EUR", "USD"].includes(r.currency) && [r.odo, r.prevOdo, r.liters, r.cost, r.price].every((n) => typeof n === "number" && isFinite(n));
-}
+<!-- Reminder editor -->
+<dialog id="remDialog">
+  <form method="dialog" id="remForm">
+    <h2 data-i18n="reminder">Reminder</h2>
+    <div class="row">
+      <div class="field">
+        <label for="rKind" data-i18n="rKind">Type</label>
+        <div class="inp"><select id="rKind">
+          <option value="oil" data-i18n="rOil">Oil change</option>
+          <option value="insurance" data-i18n="rInsurance">Insurance</option>
+          <option value="inspection" data-i18n="rInspection">Technical inspection</option>
+          <option value="vignette" data-i18n="rVignette">Vignette (road tax)</option>
+          <option value="other" data-i18n="rOther">Other</option>
+        </select></div>
+      </div>
+      <div class="field">
+        <label for="rVeh" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="rVeh"></select></div>
+      </div>
+    </div>
+    <div class="field" id="rLabelField" hidden>
+      <label for="rLabel" data-i18n="rLabel">What</label>
+      <div class="inp"><input id="rLabel" class="plain" type="text" maxlength="40"></div>
+    </div>
+    <div class="row" id="rKmFields">
+      <div class="field">
+        <label for="rEvery" data-i18n="rEvery">Every</label>
+        <div class="inp"><input id="rEvery" type="number" inputmode="decimal" min="0" step="any" placeholder="10000"><span class="unit">km</span></div>
+      </div>
+      <div class="field">
+        <label for="rLast" data-i18n="rLast">Last done at</label>
+        <div class="inp"><input id="rLast" type="number" inputmode="decimal" min="0" step="any"><span class="unit">km</span></div>
+      </div>
+    </div>
+    <div class="field" id="rDateField" hidden>
+      <label for="rDate" data-i18n="rDue">Due date</label>
+      <div class="inp"><input id="rDate" type="date"></div>
+      <p class="hint" data-i18n="rDateHint">You get a notification a week before and on the day.</p>
+    </div>
+    <p class="msg err" id="rMsg" hidden></p>
+    <div class="btnrow">
+      <button type="button" class="danger" id="rDelete" hidden data-i18n="delete">Delete</button>
+      <button type="button" id="rCancel" data-i18n="cancel">Cancel</button>
+      <button type="submit" class="primary" data-i18n="save">Save</button>
+    </div>
+  </form>
+</dialog>
 
-/* ---------- UI ---------- */
-const $ = (id) => document.getElementById(id);
-const num = (id) => parseFloat(($(id).value || "").replace(",", "."));
-const fmt = (n, d) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
-const radio = (name) => document.querySelector(`input[name="${name}"]:checked`).value;
-const VEH = { car: "Car", bike: "Motorbike" };
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const today = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
-const sortRecs = (a, b) => (a.date === b.date ? (a.createdAt || 0) - (b.createdAt || 0) : a.date < b.date ? -1 : 1);
-const costText = (cost) => Object.entries(cost).map(([c, v]) => `${fmt(v, 2)} ${c}`).join(" + ") || "–";
+<!-- Pump or receipt scan -->
+<dialog id="scanDialog">
+  <div class="body">
+    <h2 data-i18n="scanTitle">Use numbers from the photo</h2>
+    <img id="scanImg" class="scanimg" alt="">
+    <p class="msg" id="scanMsg"></p>
+    <div class="seg scroll" role="radiogroup" id="scanTargets" data-i18n-aria="scanTarget">
+      <input type="radio" name="scanT" id="st-amount" value="amount" checked><label for="st-amount" data-i18n="amountPaid">Amount paid</label>
+      <input type="radio" name="scanT" id="st-liters" value="liters"><label for="st-liters" data-i18n="litersFilled">Liters filled</label>
+      <input type="radio" name="scanT" id="st-price" value="price"><label for="st-price" data-i18n="pricePerL">Price per liter</label>
+      <input type="radio" name="scanT" id="st-odo" value="odoEnd"><label for="st-odo" data-i18n="odoNow">Odometer now</label>
+    </div>
+    <div class="numchips" id="scanNums"></div>
+    <div class="btnrow"><button type="button" class="primary" id="scanDone" data-i18n="done">Done</button></div>
+  </div>
+</dialog>
+<input type="file" id="scanFile" accept="image/*" capture="environment" hidden>
 
-function lastFor(vehicle) {
-  return records.filter((r) => r.vehicle === vehicle).sort(sortRecs).pop() || null;
-}
-function fillPrevOdo() {
-  const last = lastFor(radio("veh"));
-  if (last) {
-    $("odoStart").value = last.odo;
-    $("odoStartHint").textContent = `From your last ${VEH[last.vehicle].toLowerCase()} fill-up on ${periodOf(last.date, "day")[1]}.`;
-  } else {
-    $("odoStartHint").textContent = records.length ? "No earlier fill-up for this vehicle. Enter the reading yourself." : "";
-  }
-}
+<!-- Generic question -->
+<dialog id="askDialog">
+  <div class="body">
+    <h2 id="askTitle"></h2>
+    <p class="msg" id="askText"></p>
+    <div class="btnrow" id="askBtns"></div>
+  </div>
+</dialog>
 
-function readForm() {
-  return {
-    odoStart: num("odoStart"), odoEnd: num("odoEnd"), price: num("price"),
-    mode: radio("mode"), liters: num("liters"), amount: num("amount"),
-  };
-}
-function renderCalc() {
-  const mode = radio("mode");
-  const cur = $("currency").value;
-  document.querySelectorAll(".cur").forEach((el) => (el.textContent = cur));
-  $("litersField").hidden = mode !== "liters";
-  $("moneyField").hidden = mode !== "money";
-  $("r-totlbl").textContent = mode === "money" ? "Liters bought" : "Total cost";
-  const r = computeFuel(readForm());
-  $("calcMsg").hidden = !r.error; $("calcOut").hidden = !!r.error;
-  $("saveBtn").disabled = !!r.error || !store || !$("date").value;
-  if (r.error) { $("calcMsg").textContent = r.error; return; }
-  $("r-l100").innerHTML = `${fmt(r.litersPer100, 2)}<small>L/100 km</small>`;
-  $("r-l1").innerHTML = `${fmt(r.litersPerKm, 3)}<small>L</small>`;
-  $("r-kml").innerHTML = `${fmt(r.kmPerLiter, 1)}<small>km/L</small>`;
-  $("r-c100").innerHTML = `${fmt(r.costPer100, 2)}<small>${cur}</small>`;
-  $("r-c1").innerHTML = `${fmt(r.costPerKm, 2)}<small>${cur}</small>`;
-  $("r-dist").innerHTML = `${fmt(r.distance, 0)}<small>km</small>`;
-  $("r-tot").innerHTML = mode === "money" ? `${fmt(r.liters, 2)}<small>L</small>` : `${fmt(r.cost, 2)}<small>${cur}</small>`;
-}
-
-function chartSvg(groups, per) {
-  const data = groups.slice(0, 12).reverse();
-  const W = 520, H = 190, padL = 8, padR = 8, top = 22, bottom = 34;
-  const max = Math.max(...data.map((g) => g.liters / g.distance * 100)) * 1.15 || 1;
-  const bw = (W - padL - padR) / data.length;
-  const y = (v) => top + (H - top - bottom) * (1 - v / max);
-  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Liters per 100 km by period">`;
-  s += `<line class="grid-line" x1="${padL}" x2="${W - padR}" y1="${H - bottom}" y2="${H - bottom}"/>`;
-  data.forEach((g, i) => {
-    const v = g.liters / g.distance * 100;
-    const x = padL + i * bw + bw * 0.18, w = bw * 0.64;
-    const last = i === data.length - 1 ? " last" : "";
-    s += `<rect class="bar${last}" x="${x.toFixed(1)}" y="${y(v).toFixed(1)}" width="${w.toFixed(1)}" height="${(H - bottom - y(v)).toFixed(1)}" rx="3"/>`;
-    s += `<text class="v" x="${(x + w / 2).toFixed(1)}" y="${(y(v) - 5).toFixed(1)}" text-anchor="middle">${fmt(v, 1)}</text>`;
-    const short = per === "day" ? g.key.slice(8) + "/" + g.key.slice(5, 7) : g.label.replace(/^Week (\d+), \d+$/, "W$1").replace(/ (\d{2})(\d{2})$/, " ’$2");
-    s += `<text x="${(x + w / 2).toFixed(1)}" y="${H - bottom + 16}" text-anchor="middle">${esc(short)}</text>`;
-  });
-  return s + `</svg>`;
-}
-
-function renderReport() {
-  const per = radio("per"), vf = radio("vf");
-  const groups = aggregate(records, per, vf);
-  const el = $("report");
-  if (!records.length) {
-    el.innerHTML = `<p class="empty">No fill-ups saved yet. Fill in the form above and press <b>Save fill-up</b>. Your totals for each day, week, month, quarter, half-year and year will appear here.</p>`;
-    return;
-  }
-  if (!groups.length) { el.innerHTML = `<p class="empty">No fill-ups for this vehicle yet.</p>`; return; }
-  const cur = groups[0];
-  const curCost = Object.keys(cur.cost).length === 1 ? Object.entries(cur.cost)[0] : null;
-  let h = `<div class="grid">
-    <div class="hero" style="grid-column: 1 / -1"><span class="lbl">${esc(cur.label)}</span>
-      <span class="val">${fmt(cur.liters / cur.distance * 100, 2)}<small>L/100 km</small></span></div>
-    <div class="tile"><span class="lbl">Distance</span><span class="val">${fmt(cur.distance, 0)}<small>km</small></span></div>
-    <div class="tile"><span class="lbl">Fuel used</span><span class="val">${fmt(cur.liters, 1)}<small>L</small></span></div>
-    <div class="tile"><span class="lbl">Spent</span><span class="val">${esc(costText(cur.cost))}</span></div>
-    <div class="tile"><span class="lbl">Cost per 100 km</span><span class="val">${curCost ? `${fmt(curCost[1] / cur.distance * 100, 2)}<small>${curCost[0]}</small>` : "–"}</span></div>
-  </div>`;
-  if (groups.length > 1) h += `<div><h3 style="margin-bottom:6px">Liters per 100 km</h3>${chartSvg(groups, per)}</div>`;
-  h += `<div class="tablewrap"><table><thead><tr><th>Period</th><th>Km</th><th>Liters</th><th>L/100 km</th><th>Spent</th><th>Per 100 km</th></tr></thead><tbody>`;
-  for (const g of groups) {
-    const one = Object.keys(g.cost).length === 1 ? Object.entries(g.cost)[0] : null;
-    h += `<tr><td>${esc(g.label)}</td><td>${fmt(g.distance, 0)}</td><td>${fmt(g.liters, 1)}</td>
-      <td class="strong">${fmt(g.liters / g.distance * 100, 2)}</td><td>${esc(costText(g.cost))}</td>
-      <td>${one ? `${fmt(one[1] / g.distance * 100, 2)} ${one[0]}` : "–"}</td></tr>`;
-  }
-  h += `</tbody></table></div>`;
-  if (per === "day" || per === "week") h += `<p class="hint">Fuel is counted on the day you fill up, so days or weeks without a fill-up don't appear.</p>`;
-  el.innerHTML = h;
-}
-
-let pendingDelete = null;
-function renderLog() {
-  const el = $("log");
-  const list = [...records].sort(sortRecs).reverse();
-  if (!list.length) { el.innerHTML = `<li><p class="empty">Your saved fill-ups will be listed here.</p></li>`; return; }
-  el.innerHTML = list.map((r) => {
-    const dist = r.odo - r.prevOdo;
-    const l100 = dist > 0 ? `${fmt(r.liters / dist * 100, 2)} L/100 km` : "";
-    const confirm = pendingDelete === r.id;
-    return `<li>
-      <span class="top"><span class="chip">${VEH[r.vehicle]}</span>${esc(periodOf(r.date, "day")[1])}</span>
-      <span class="det">${fmt(dist, 0)} km · ${fmt(r.liters, 2)} L · ${fmt(r.cost, 2)} ${r.currency}${l100 ? " · " + l100 : ""} · odometer ${fmt(r.odo, 0)}</span>
-      <span class="act">${confirm
-        ? `<button type="button" class="small danger" data-del="${esc(r.id)}">Delete</button><button type="button" class="small" data-cancel>Keep</button>`
-        : `<button type="button" class="small" data-ask="${esc(r.id)}" aria-label="Delete this fill-up">Delete</button>`}</span>
-    </li>`;
-  }).join("");
-}
-
-let firstLoad = true;
-function onRecords() {
-  if (firstLoad) {
-    firstLoad = false;
-    if (records.length) {
-      $("odoEnd").value = ""; $("liters").value = ""; $("amount").value = "";
-      const last = [...records].sort(sortRecs).pop();
-      $("currency").value = last.currency; $("price").value = last.price;
-      document.getElementById(last.vehicle === "bike" ? "veh-bike" : "veh-car").checked = true;
-    }
-    fillPrevOdo();
-  }
-  renderCalc(); renderReport(); renderLog();
-}
-
-$("form").addEventListener("input", (e) => { if (e.target.name === "veh") fillPrevOdo(); $("saveMsg").hidden = true; renderCalc(); });
-$("form").addEventListener("change", renderCalc);
-$("form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const f = readForm(); const r = computeFuel(f);
-  if (r.error || !store) return;
-  const rec = {
-    date: $("date").value, vehicle: radio("veh"), prevOdo: f.odoStart, odo: f.odoEnd,
-    liters: +r.liters.toFixed(3), cost: +r.cost.toFixed(2), price: f.price, currency: $("currency").value,
-    createdAt: Date.now(),
-  };
-  const btn = $("saveBtn"); btn.disabled = true; btn.textContent = "Saving…";
-  try {
-    await store.add(rec);
-    $("saveMsg").className = "msg ok"; $("saveMsg").textContent = "Saved. Your report below is updated.";
-    $("odoStart").value = rec.odo; $("odoEnd").value = ""; $("liters").value = ""; $("amount").value = "";
-    $("odoStartHint").textContent = `From the fill-up you just saved.`;
-  } catch (err) {
-    $("saveMsg").className = "msg err";
-    $("saveMsg").textContent = err && err.code === "quota_exceeded"
-      ? "Storage is full. Delete some old fill-ups and try again."
-      : "This fill-up was not saved. Check your connection and press Save again.";
-  }
-  $("saveMsg").hidden = false; btn.textContent = "Save fill-up"; renderCalc();
-});
-document.addEventListener("change", (e) => { if (e.target.name === "per" || e.target.name === "vf") renderReport(); });
-$("log").addEventListener("click", async (e) => {
-  const b = e.target.closest("button"); if (!b) return;
-  if (b.dataset.ask) { pendingDelete = b.dataset.ask; renderLog(); }
-  else if (b.hasAttribute("data-cancel")) { pendingDelete = null; renderLog(); }
-  else if (b.dataset.del) {
-    const id = b.dataset.del; pendingDelete = null; b.disabled = true;
-    try { await store.remove(id); } catch { b.disabled = false; }
-  }
-});
-
-$("date").value = today();
-renderCalc(); renderReport(); renderLog();
-initStore();
-</script>
+<script src="js/logic.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/native.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
