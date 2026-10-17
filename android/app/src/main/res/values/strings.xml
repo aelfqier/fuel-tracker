@@ -4,4 +4,6 @@
     <string name="title_activity_main">Fuel Tracker</string>
     <string name="package_name">com.fueltracker.app</string>
     <string name="custom_url_scheme">com.fueltracker.app</string>
+    <string name="widget_description">Last consumption and a quick fill-up button</string>
+    <string name="shortcut_add">Add a fill-up</string>
 </resources>
