@@ -23,6 +23,14 @@ android {
         }
     }
     signingConfigs {
+        // Test builds are signed with this shared key (not secret, never used for the stores),
+        // so each new test APK installs over the previous one and keeps its data.
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
         if (uploadKeystore) {
             release {
                 storeFile file(uploadKeystore)

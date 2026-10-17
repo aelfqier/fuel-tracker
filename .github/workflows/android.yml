@@ -44,3 +44,19 @@ jobs:
             --title "Fuel Tracker (latest build)" \
             --notes "Android test build from commit ${GITHUB_SHA::7}. Download fuel-tracker.apk on your phone and open it to install." \
             --latest
+      # Pull requests from this repository publish their APK as the "test" pre-release, so a change can be
+      # tried on a phone before it is merged:
+      # https://github.com/<owner>/<repo>/releases/download/test/fuel-tracker.apk
+      - name: Publish test pre-release
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          gh release delete test --yes --cleanup-tag || true
+          gh release create test fuel-tracker.apk \
+            --target "$HEAD_SHA" \
+            --title "Fuel Tracker (test build)" \
+            --notes "Test build from pull request #$PR_NUMBER (commit ${HEAD_SHA::7}), not merged yet. Download fuel-tracker.apk on your phone and open it to install." \
+            --prerelease --latest=false

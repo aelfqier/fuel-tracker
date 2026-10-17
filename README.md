@@ -53,6 +53,10 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
    `fuel-tracker.apk` from the "latest" release.
 4. Open the downloaded file to install it (allow "install unknown apps" when asked).
 
+Pull requests get the same APK in the "test" pre-release, so a change can be tried before merging.
+Test builds share one signing key (`android/app/debug.keystore`), so a newer one installs over the
+previous one and keeps your data.
+
 ## Publishing on Google Play and the App Store
 
 No Mac needed: see [store/README.md](store/README.md) for the step-by-step guide, the store texts and the screenshots.
