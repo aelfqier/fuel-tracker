@@ -4,7 +4,7 @@ The same Fuel Tracker page, packaged as a native app with Capacitor.
 Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
 - App name: **Fuel Tracker**
-- App ID: `com.fueltracker.app` (change it in `capacitor.config.json` before publishing, e.g. `ma.yourname.fueltracker`)
+- App ID: `io.github.aelfqier.fueltracker` (the ID on Google Play and the App Store; it can't change after the first upload)
 - The app's screen is `www/index.html`, with styles in `www/css/` and code in `www/js/`
   (`logic.js` does the calculations, `i18n.js` holds the English, French and Arabic text,
   `native.js` talks to the phone, `app.js` runs the screens). After editing, run `npx cap sync`.
@@ -53,7 +53,11 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
    `fuel-tracker.apk` from the "latest" release.
 4. Open the downloaded file to install it (allow "install unknown apps" when asked).
 
-## iOS (needs a Mac)
+## Publishing on Google Play and the App Store
+
+No Mac needed: see [store/README.md](store/README.md) for the step-by-step guide, the store texts and the screenshots.
+
+## iOS on your own Mac
 
 1. Install Xcode from the Mac App Store, and CocoaPods (`sudo gem install cocoapods`).
 2. Run `npx cap sync ios`, then `npx cap open ios`. Xcode opens the project.

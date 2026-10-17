@@ -3,7 +3,7 @@ name: Store builds
 # Run it from the Actions tab ("Store builds" > "Run workflow") to get:
 #   - Android: a signed .aab to upload in the Google Play Console (download it from the run's Artifacts)
 #   - iOS: a build sent straight to App Store Connect / TestFlight
-# The secrets it needs are listed in docs/publishing.md. Without them it still checks that both apps compile.
+# The secrets it needs are listed in store/README.md. Without them it still checks that both apps compile.
 # On pull requests it only checks that both release builds compile; nothing is uploaded.
 
 on:
@@ -83,7 +83,7 @@ jobs:
       - name: Read the version from package.json
         run: |
           echo "VERSION_NAME=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
-          xcodebuild -version
+          echo "Built with $(xcodebuild -version | head -n 1)" >> "$GITHUB_STEP_SUMMARY"
       - name: Archive
         run: |
           # The archive is left unsigned; the export below signs it with Apple's cloud-managed distribution certificate.

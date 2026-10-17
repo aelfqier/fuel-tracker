@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 // Store builds get their version from CI: VERSION_CODE must go up with every upload to Google Play.
 def appVersionCode = (System.getenv("VERSION_CODE") ?: "2") as Integer
 def appVersionName = System.getenv("VERSION_NAME") ?: "2.0.0"
-// Release signing with the Google Play upload key, when CI provides it (see docs/publishing.md).
+// Release signing with the Google Play upload key, when CI provides it (see store/README.md).
 def uploadKeystore = System.getenv("ANDROID_KEYSTORE_PATH")
 
 android {
