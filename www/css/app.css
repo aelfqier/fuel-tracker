@@ -610,3 +610,5 @@ dialog h2 { font-size: 1.3rem; }
   .gauge { width: min(100%, 340px); }
 }
 @media print { nav.tabbar, .toast { display: none !important; } }
+/* The first-run screen sits on the page background, so its fields and secondary buttons use the card surface. */
+.welcome .inp input, .welcome .btnrow > button:not(.primary) { background: var(--surface); border-color: var(--line); }
