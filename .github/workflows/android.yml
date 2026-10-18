@@ -39,6 +39,43 @@ jobs:
           name: bnzn-apk
           path: bnzn.apk
 
+  # Installs the built APK on an Android emulator and drives the real app: first run, fill-ups, every tab,
+  # dark mode across a restart, no crashes. Screenshots are kept as the "emulator-screens" artifact.
+  emulator:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: bnzn-apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - run: npm install --no-save --ignore-scripts playwright@1.56.1
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: node tests/e2e/emulator-smoke.mjs bnzn.apk
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: emulator-screens
+          path: e2e-shots/
+
   # Publishing gets write access but never checks out or runs project code: it only takes the built APK.
   # Dependabot pull requests don't publish, so a dependency update never replaces the test APK.
   publish:

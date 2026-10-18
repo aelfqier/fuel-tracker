@@ -9,7 +9,7 @@
   const radio = (name) => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; };
   const today = () => FT.isoDate(new Date());
   const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const COLORS = ["#d97a06", "#2f6fd0", "#2f8a5a", "#c0392b", "#7d4cc2", "#6b7785"];
+  const COLORS = ["#2f6fd0", "#d97a06", "#2f8a5a", "#c0392b", "#7d4cc2", "#6b7785"];
   const CODE = /^[A-Z]{3}$/;
   const PRIVACY_URL = "https://aelfqier.github.io/fuel-tracker/privacy.html";
   // Where "Report a problem" sends its email. Until the owner sets an address, it opens the share sheet instead.
@@ -1055,7 +1055,7 @@
     const y = (v) => top + (H - top - bottom) * (1 - (v - lo) / (hi - lo || 1));
     const raw = points.map((p, i) => [x(i), y(p.l100)]), line = avg.map((v, i) => [x(i), y(v)]);
     const lastI = points.length - 1;
-    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trendAria"))}"><defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a2e" stop-opacity=".38"/><stop offset="1" stop-color="#ff9a2e" stop-opacity="0"/></linearGradient></defs>`;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("trendAria"))}"><defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d8bff" stop-opacity=".38"/><stop offset="1" stop-color="#3d8bff" stop-opacity="0"/></linearGradient></defs>`;
     s += `<path class="area" d="${smoothPath(line)}L${x(lastI).toFixed(1)} ${H - bottom}L${x(0).toFixed(1)} ${H - bottom}Z"/>`;
     s += `<path class="raw" d="${smoothPath(raw)}"/>`;
     s += `<path class="avg" d="${smoothPath(line)}"/>`;
@@ -1122,7 +1122,7 @@
     const bw = (W - padL - padR) / data.length;
     const y = (v) => top + (H - top - bottom) * (1 - v / max);
     const avg = data.reduce((a, g) => a + g[key], 0) / data.length;
-    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("chartAria"))}"><defs><linearGradient id="gCol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffb547"/><stop offset="1" stop-color="#f26b0f"/></linearGradient></defs>`;
+    let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t("chartAria"))}"><defs><linearGradient id="gCol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fc3ff"/><stop offset="1" stop-color="#1f5bff"/></linearGradient></defs>`;
     s += `<line class="grid-line" x1="${padL}" x2="${W - padR}" y1="${H - bottom}" y2="${H - bottom}"/>`;
     data.forEach((g, i) => {
       const v = g[key];
@@ -1303,7 +1303,7 @@
     line(kind, `500 {s}px ${body}`, 44, "#93a1b0", 210);
     line(route, `700 {s}px ${disp}`, 96, "#ffffff", 320);
     line(t("tripCardFuel", { km: fmt(r.distance, 0) }), `500 {s}px ${body}`, 44, "#93a1b0", 470);
-    line(total, `700 {s}px ${disp}`, 200, "#f5a33a", 650);
+    line(total, `700 {s}px ${disp}`, 200, "#4d9bff", 650);
     if (r.people > 1) line(t("tripCardEach", { each, n: r.people }), `600 {s}px ${disp}`, 84, "#ffffff", 780);
     g.fillStyle = "#2a3644"; g.fillRect(96, 900, W - 192, 2);
     line(t("tripCardFoot"), `500 {s}px ${body}`, 38, "#93a1b0", 975);
