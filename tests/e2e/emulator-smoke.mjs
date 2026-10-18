@@ -89,10 +89,12 @@ async function launch() {
   if (!port) {
     adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1");
     // Wait for the app's WebView to open its DevTools socket (debug builds only), then forward it.
+    // pidof exits non-zero until the process exists, and a cold start can take a while.
+    const pidNow = () => { try { return adb("shell", "pidof", PKG).trim(); } catch { return ""; } };
     let sock = "";
-    for (let i = 0; i < 60 && !sock; i++) {
-      await sleep(1000);
-      const pid = adb("shell", "pidof", PKG).trim();
+    for (let i = 0; i < 120 && !sock; i++) {
+      await sleep(500);
+      const pid = pidNow();
       if (pid && adb("shell", "cat", "/proc/net/unix").includes(`webview_devtools_remote_${pid}`)) sock = `webview_devtools_remote_${pid}`;
     }
     assert(sock, "the app's WebView never opened (no DevTools socket)");
@@ -124,6 +126,7 @@ try {
     adb("logcat", "-c");
   }
   await step("the app starts", () => launch());
+  if (failed) throw new Error("stopping: the app never started");
 
   await step("first run: language, vehicle and currency", async () => {
     await sleep(800); await shot("01-welcome");
@@ -177,8 +180,10 @@ try {
     if (!LOCAL_PORT) {
       const log = adb("logcat", "-d", "-b", "crash");
       assert(!log.includes(PKG), "crash in logcat:\n" + log.slice(0, 500));
-      assert(adb("shell", "pidof", PKG).trim(), "app is not running");
+      let pid = ""; try { pid = adb("shell", "pidof", PKG).trim(); } catch { /* not running */ }
+      assert(pid, "app is not running");
     }
+    assert(cdp && (await ev(() => !!window.FT)), "the app page is not connected");
     assert(!errors.length, "script errors: " + errors.slice(0, 3).join(" | "));
   });
 } catch (e) {
