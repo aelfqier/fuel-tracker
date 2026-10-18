@@ -1,19 +1,20 @@
 // Installs the built APK on a running Android emulator and drives the real app through its WebView:
 // first run, two fill-ups, every tab, dark mode kept across a restart, no crashes and no script errors.
-// Run: node tests/e2e/emulator-smoke.mjs bnzn.apk   (needs adb, a booted emulator and the playwright package)
+// It talks to the WebView over adb's DevTools socket, so only adb and the playwright package are needed.
+// Run: node tests/e2e/emulator-smoke.mjs bnzn.apk   (needs adb and a booted emulator)
 // Screenshots go to e2e-shots/.
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 
 const require = createRequire(import.meta.url);
-const { _android } = require("playwright");
+const { chromium } = require("playwright");
 const PKG = "io.github.aelfqier.fueltracker";
 const apk = process.argv[2] || "bnzn.apk";
 const SHOTS = "e2e-shots";
 mkdirSync(SHOTS, { recursive: true });
 
-const adb = (...args) => execFileSync("adb", args, { encoding: "utf8" });
+const adb = (...args) => execFileSync("adb", args, { encoding: "utf8", timeout: 120000 });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let failed = 0;
 async function step(name, fn) {
@@ -22,27 +23,50 @@ async function step(name, fn) {
 }
 function assert(ok, msg) { if (!ok) throw new Error(msg); }
 
-const [device] = await _android.devices();
-assert(device, "no Android device found");
-console.log(`bnzn on ${device.model()} (Android emulator)`);
+// A dropped adb connection must fail with a message, not hang.
+const within = (ms, what, p) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error(`timed out: ${what}`)), ms))]);
+function fail(msg) {
+  try { writeFileSync(`${SHOTS}/logcat.txt`, adb("logcat", "-d")); } catch { /* the emulator may be gone */ }
+  console.log(`  FAIL ${msg}`);
+  process.exit(1);
+}
+process.on("unhandledRejection", (e) => fail(String(e && e.message)));
 
+adb("wait-for-device");
+console.log(`bnzn on ${adb("shell", "getprop", "ro.product.model").trim()}, Android ${adb("shell", "getprop", "ro.build.version.release").trim()} (emulator)`);
 adb("install", "-r", apk);
 adb("shell", "pm", "clear", PKG);
 adb("logcat", "-c");
 
 const errors = [];
+let browser;
 async function launch() {
+  if (browser) await browser.close().catch(() => {});
   adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1");
-  const webview = await device.webView({ pkg: PKG }, { timeout: 60000 });
-  const page = await webview.page();
+  // Wait for the app's WebView to open its DevTools socket (debug builds only), then forward it.
+  let sock = "";
+  for (let i = 0; i < 60 && !sock; i++) {
+    await sleep(1000);
+    const pid = adb("shell", "pidof", PKG).trim();
+    if (pid) sock = adb("shell", "cat", "/proc/net/unix").includes(`webview_devtools_remote_${pid}`) ? `webview_devtools_remote_${pid}` : "";
+  }
+  if (!sock) fail("the app's WebView never opened (no DevTools socket)");
+  adb("forward", "tcp:9333", `localabstract:${sock}`);
+  browser = await within(30000, "connecting to the WebView", chromium.connectOverCDP("http://127.0.0.1:9333"));
+  let page;
+  for (let i = 0; i < 30 && !page; i++) {
+    page = browser.contexts().flatMap((c) => c.pages()).find((p) => p.url().startsWith("https://localhost"));
+    if (!page) await sleep(500);
+  }
+  if (!page) fail("no app page in the WebView");
   page.on("pageerror", (e) => errors.push(String(e && e.message)));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   await page.waitForSelector("#welcome, #view-home", { timeout: 30000 });
   return page;
 }
-const shot = (name) => device.screenshot({ path: `${SHOTS}/${name}.png` });
+const shot = (name) => writeFileSync(`${SHOTS}/${name}.png`, execFileSync("adb", ["exec-out", "screencap", "-p"], { timeout: 60000 }));
 
-let page = await launch();
+let page = await within(150000, "launching the app", launch());
 
 await step("first run: language, vehicle and currency", async () => {
   await page.waitForSelector('#welcomeInner button[data-lang="en"]', { timeout: 20000 });
@@ -89,7 +113,7 @@ await step("dark mode is kept after the app is closed and reopened", async () =>
   await page.click('label[for="theme-dark"]'); await sleep(600);
   adb("shell", "am", "force-stop", PKG);
   await sleep(1500);
-  page = await launch();
+  page = await within(150000, "relaunching the app", launch());
   await page.waitForSelector("#view-home");
   const theme = await page.evaluate(() => document.documentElement.dataset.theme);
   assert(theme === "dark", `theme after restart: ${theme}`);
@@ -104,6 +128,7 @@ await step("no crash and no script errors", async () => {
   assert(!errors.length, "script errors: " + errors.slice(0, 3).join(" | "));
 });
 
-await device.close();
+await browser.close().catch(() => {});
+if (failed) { try { writeFileSync(`${SHOTS}/logcat.txt`, adb("logcat", "-d")); } catch { /* ignore */ } }
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 process.exit(failed ? 1 : 0);
