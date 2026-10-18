@@ -124,6 +124,11 @@ try {
     adb("install", "-r", apk);
     adb("shell", "pm", "clear", PKG);
     adb("logcat", "-c");
+    // Control: if the emulator can't keep the system Settings app open, a failure below isn't bnzn's.
+    adb("shell", "am", "start", "-a", "android.settings.SETTINGS");
+    await sleep(15000);
+    adb("shell", "input", "keyevent", "KEYCODE_HOME");
+    console.log("  ok  emulator stays up with the Settings app open (control)");
   }
   await step("the app starts", () => launch());
   if (failed) throw new Error("stopping: the app never started");
@@ -190,7 +195,7 @@ try {
   failed++; console.log(`  FAIL ${String(e && e.message).split("\n")[0]}`);
 } finally {
   if (cdp) cdp.close();
-  if (failed && !LOCAL_PORT) { try { writeFileSync(`${SHOTS}/logcat.txt`, adb("logcat", "-d")); } catch { /* the emulator may be gone */ } }
+  if (failed && !LOCAL_PORT) { try { writeFileSync(`${SHOTS}/logcat.txt`, execFileSync("adb", ["logcat", "-d"], { encoding: "utf8", timeout: 15000 })); } catch { /* the emulator may be gone */ } }
 }
 console.log(failed ? `\n${failed} failed` : "\nall passed");
 process.exit(failed ? 1 : 0);

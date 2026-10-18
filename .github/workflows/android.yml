@@ -67,14 +67,16 @@ jobs:
           arch: x86_64
           ram-size: 4096M
           heap-size: 576M
-          emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: -no-snapshot -no-window -gpu swangle_indirect -noaudio -no-boot-anim
           disable-animations: true
           script: node tests/e2e/emulator-smoke.mjs bnzn.apk
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: emulator-screens
-          path: e2e-shots/
+          path: |
+            e2e-shots/
+            /tmp/android-runner/emu-crash-*.db
 
   # Publishing gets write access but never checks out or runs project code: it only takes the built APK.
   # Dependabot pull requests don't publish, so a dependency update never replaces the test APK.
