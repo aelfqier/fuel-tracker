@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kept from resource shrinking: Cordova's ConfigXmlParser (used by the Capacitor bridge) finds the config.xml
+     that "cap sync" generates with getIdentifier("config", "xml", ...), so no code references it. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@xml/config" />

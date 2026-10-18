@@ -9,20 +9,27 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
   (`logic.js` does the calculations, `i18n.js` holds the English, French and Arabic text,
   `native.js` talks to the phone, `app.js` runs the screens). After editing, run `npx cap sync`.
 - Run the calculation tests with `npm test`.
+- License: all rights reserved, see [LICENSE](LICENSE). Third-party notices are in `www/licenses.txt`.
 
 ## What the app does
 
 - Fill-ups with full or partial tank, and a "missed a fill-up" switch, so consumption is always
   measured from full tank to full tank. Edit any entry; deleting one can be undone.
-- Named vehicles (cars and motorbikes, petrol or diesel), French, Arabic (right to left) and English.
-- Reminder when Moroccan pump prices change (the 1st and 16th), station memory with your cheapest
-  station, trip cost with sharing between passengers, fill-ups abroad converted to your home currency,
+- Named vehicles (cars and motorbikes; petrol, diesel, electric or plug-in hybrid in kWh), odometer
+  resets and trip-meter vehicles, a warning before saving a number that looks wrong, any currency,
+  French, Arabic (right to left) and English.
+- Optional notification on the days Moroccan pump prices may change (10:00 on the 1st and 16th, off
+  until turned on), station memory with your cheapest station, trip cost with sharing between
+  passengers, fill-ups abroad converted to your home currency,
   driver mode with earnings and profit per km, and reminders for oil change, insurance, technical
   inspection and vignette (with phone notifications).
 - Plain-language insights, monthly budget, trend chart, backup file (Drive, WhatsApp, email),
   CSV export and a PDF history report.
-- Android only: scan the pump display or a receipt (on-device text recognition, works offline),
-  a home-screen widget with a "+ Fill-up" button, and a long-press app shortcut.
+- Scan the pump display or a receipt, read on the phone (Google ML Kit through Google Play services
+  on Android, Apple's Vision on iPhone), an in-app store rating prompt, Report a problem and the
+  open-source licenses screen.
+- Android only: a home-screen widget with a "+ Fill-up" button, and a long-press app shortcut.
+- iPhone only: a "Log a fill-up" shortcut for Siri, Shortcuts and the Action button.
 
 ## First time setup (any computer)
 
@@ -72,7 +79,8 @@ No Mac needed: see [store/README.md](store/README.md) for the step-by-step guide
 
 ## Notes
 
-- Records live in the app's storage on the phone. Uninstalling the app deletes them, so use
-  Settings > Backup to save a file before changing phones.
+- Records live in the app's storage on the phone. Uninstalling the app deletes them (the phone's own
+  backup may keep a copy), so use Settings > Backup to save a file before changing phones.
 - Icons and splash screens were generated from `assets/icon-only.png`. To change the icon,
-  replace that file and run `npx capacitor-assets generate`.
+  replace that file and run `npx capacitor-assets generate` (see the note on install scripts in
+  [MAINTENANCE.md](MAINTENANCE.md) first).

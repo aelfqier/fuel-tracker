@@ -10,7 +10,7 @@
 	<array/>
 	<key>NSPrivacyAccessedAPITypes</key>
 	<array>
-		<!-- @capacitor/preferences keeps the fill-up history in UserDefaults, read only by this app -->
+		<!-- @capacitor/preferences keeps the fill-up history in UserDefaults, and the "Log a fill-up" shortcut leaves its pending action there; read only by this app -->
 		<dict>
 			<key>NSPrivacyAccessedAPIType</key>
 			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
