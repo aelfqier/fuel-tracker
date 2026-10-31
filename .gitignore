@@ -7,3 +7,4 @@ ios/App/Pods/
 ios/App/App/public/
 android/app/src/main/assets/public/
 .DS_Store
+e2e-shots/

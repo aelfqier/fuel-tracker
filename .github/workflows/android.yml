@@ -5,33 +5,94 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # Monthly build so a broken toolchain or dependency shows up before a fix is urgent. Publishes nothing.
+  schedule:
+    - cron: "0 6 1 * *"
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: temurin
           java-version: 21
-      - run: npm ci
+      # No install scripts: a hijacked npm package can't run code at install time.
+      - run: npm ci --ignore-scripts
       - run: npm test
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android
         run: ./gradlew assembleDebug
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk bnzn.apk
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bnzn-apk
           path: bnzn.apk
+
+  # Installs the built APK on an Android emulator and drives the real app: first run, fill-ups, every tab,
+  # dark mode across a restart, no crashes. Screenshots are kept as the "emulator-screens" artifact.
+  emulator:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: bnzn-apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          heap-size: 576M
+          emulator-options: -no-snapshot -no-window -gpu swangle_indirect -noaudio -no-boot-anim
+          disable-animations: true
+          script: node tests/e2e/emulator-smoke.mjs bnzn.apk
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: emulator-screens
+          path: |
+            e2e-shots/
+            /tmp/android-runner/emu-crash-*.db
+
+  # Publishing gets write access but never checks out or runs project code: it only takes the built APK.
+  # Dependabot pull requests don't publish, so a dependency update never replaces the test APK.
+  publish:
+    needs: build
+    if: >-
+      github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]' &&
+      ((github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: bnzn-apk
       # Publish the APK as the "latest" release so it has a direct download link:
       # https://github.com/<owner>/<repo>/releases/latest/download/bnzn.apk
       - name: Publish latest release
@@ -39,8 +100,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release delete latest --yes --cleanup-tag || true
-          gh release create latest bnzn.apk \
+          gh release delete latest --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create latest bnzn.apk --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
             --title "bnzn (latest build)" \
             --notes "Android test build from commit ${GITHUB_SHA::7}. Download bnzn.apk on your phone and open it to install." \
             --latest
@@ -54,8 +116,8 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          gh release delete test --yes --cleanup-tag || true
-          gh release create test bnzn.apk \
+          gh release delete test --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create test bnzn.apk --repo "$GITHUB_REPOSITORY" \
             --target "$HEAD_SHA" \
             --title "bnzn (test build)" \
             --notes "Test build from pull request #$PR_NUMBER (commit ${HEAD_SHA::7}), not merged yet. Download bnzn.apk on your phone and open it to install." \

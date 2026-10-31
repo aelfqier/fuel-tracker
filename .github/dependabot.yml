@@ -1,0 +1,30 @@
+# Weekly dependency update pull requests. Each update waits 7 days after release (30 for a new major
+# version of an npm package), so a hijacked release is usually caught and pulled before it reaches us.
+# Gradle is left out: Dependabot only reads versions from build.gradle files and from applied files
+# with "dependencies" in their name, and this project keeps them in android/variables.gradle. Those
+# versions move as a set with Capacitor in the June upgrade (see MAINTENANCE.md).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
