@@ -54,7 +54,7 @@ jobs:
           cp android/app/build/outputs/bundle/release/app-release.aab out/bnzn-unsigned.aab
           cp android/app/build/outputs/apk/release/app-release-unsigned.apk out/bnzn-unsigned.apk
           echo "### Android $VERSION_NAME (version code $VERSION_CODE) compiles" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-unsigned
           path: out/
@@ -113,7 +113,7 @@ jobs:
           cp unsigned/bnzn-unsigned.aab "out/bnzn-$VERSION_NAME-$VERSION_CODE-unsigned.aab"
           echo "::warning::ANDROID_KEYSTORE_BASE64 is not set, so the bundle is unsigned and Google Play will refuse it."
           echo "### Android $VERSION_NAME (version code $VERSION_CODE) built, but unsigned: add the upload key secrets" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: android-google-play
           path: out/
@@ -153,7 +153,7 @@ jobs:
           # ditto keeps the archive's symlinks and permissions, which a plain zip would break.
           ditto -c -k --keepParent "$RUNNER_TEMP/App.xcarchive" "$RUNNER_TEMP/App.xcarchive.zip"
           echo "### iOS $VERSION_NAME (build $BUILD_NUMBER) compiles" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ios-archive
           path: ${{ runner.temp }}/App.xcarchive.zip

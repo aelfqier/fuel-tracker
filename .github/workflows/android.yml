@@ -34,7 +34,7 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk bnzn.apk
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: bnzn-apk
           path: bnzn.apk
@@ -70,7 +70,7 @@ jobs:
           emulator-options: -no-snapshot -no-window -gpu swangle_indirect -noaudio -no-boot-anim
           disable-animations: true
           script: node tests/e2e/emulator-smoke.mjs bnzn.apk
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: emulator-screens
