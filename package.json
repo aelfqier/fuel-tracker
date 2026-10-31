@@ -1,18 +1,23 @@
 {
   "name": "fuel-tracker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "description": "Fuel Tracker: log fill-ups and track fuel consumption per 1 km and 100 km.",
   "scripts": {
+    "test": "node --test tests/*.test.js",
     "sync": "cap sync",
     "android": "cap open android",
     "ios": "cap open ios"
   },
   "dependencies": {
     "@capacitor/android": "^7.6.9",
+    "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.6.9",
+    "@capacitor/filesystem": "^7.1.9",
     "@capacitor/ios": "^7.6.9",
-    "@capacitor/preferences": "^7.0.4"
+    "@capacitor/local-notifications": "^7.0.7",
+    "@capacitor/preferences": "^7.0.4",
+    "@capacitor/share": "^7.0.4"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

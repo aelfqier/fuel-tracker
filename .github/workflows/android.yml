@@ -3,6 +3,7 @@ name: Build Android APK
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -21,6 +22,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
+      - run: npm test
       - run: npx cap sync android
       - name: Build debug APK
         working-directory: android
@@ -33,6 +35,7 @@ jobs:
       # Publish the APK as the "latest" release so it has a direct download link:
       # https://github.com/<owner>/<repo>/releases/latest/download/fuel-tracker.apk
       - name: Publish latest release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

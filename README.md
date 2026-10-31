@@ -5,7 +5,24 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
 - App name: **Fuel Tracker**
 - App ID: `com.fueltracker.app` (change it in `capacitor.config.json` before publishing, e.g. `ma.yourname.fueltracker`)
-- The app's screen is `www/index.html`. After editing it, run `npx cap sync`.
+- The app's screen is `www/index.html`, with styles in `www/css/` and code in `www/js/`
+  (`logic.js` does the calculations, `i18n.js` holds the English, French and Arabic text,
+  `native.js` talks to the phone, `app.js` runs the screens). After editing, run `npx cap sync`.
+- Run the calculation tests with `npm test`.
+
+## What the app does
+
+- Fill-ups with full or partial tank, and a "missed a fill-up" switch, so consumption is always
+  measured from full tank to full tank. Edit any entry; deleting one can be undone.
+- Named vehicles (cars and motorbikes, petrol or diesel), French, Arabic (right to left) and English.
+- Reminder when Moroccan pump prices change (the 1st and 16th), station memory with your cheapest
+  station, trip cost with sharing between passengers, fill-ups abroad converted to your home currency,
+  driver mode with earnings and profit per km, and reminders for oil change, insurance, technical
+  inspection and vignette (with phone notifications).
+- Plain-language insights, monthly budget, trend chart, backup file (Drive, WhatsApp, email),
+  CSV export and a PDF history report.
+- Android only: scan the pump display or a receipt (on-device text recognition, works offline),
+  a home-screen widget with a "+ Fill-up" button, and a long-press app shortcut.
 
 ## First time setup (any computer)
 
@@ -47,6 +64,7 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
 ## Notes
 
-- Records live in the app's storage on the phone. Uninstalling the app deletes them.
+- Records live in the app's storage on the phone. Uninstalling the app deletes them, so use
+  Settings > Backup to save a file before changing phones.
 - Icons and splash screens were generated from `assets/icon-only.png`. To change the icon,
   replace that file and run `npx capacitor-assets generate`.
