@@ -183,7 +183,8 @@ try {
     await launch();
     const theme = await ev(() => document.documentElement.dataset.theme);
     assert(theme === "dark", `theme after restart: ${theme}`);
-    assert((await count("#log li")) >= 2, "fill-ups lost after restart");
+    // The theme is applied before the page loads, the records only once storage answers, so wait for them.
+    await waitFor(() => document.querySelectorAll("#log li").length >= 2, "the fill-ups after restart (lost?)");
     await sleep(1500); await shot("05-home-dark");
   });
 
