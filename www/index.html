@@ -381,6 +381,19 @@
       <input type="radio" name="vType" id="vt-car" value="car" checked><label for="vt-car" data-i18n="car">Car</label>
       <input type="radio" name="vType" id="vt-bike" value="bike"><label for="vt-bike" data-i18n="bike">Motorbike</label>
     </div>
+    <div class="catpick" id="vCat" hidden>
+      <div class="row">
+        <div class="field">
+          <label for="vBrand" data-i18n="catBrand">Brand</label>
+          <div class="inp"><select id="vBrand"></select></div>
+        </div>
+        <div class="field">
+          <label for="vModel" data-i18n="catModel">Model</label>
+          <div class="inp"><select id="vModel"></select></div>
+        </div>
+      </div>
+      <p class="hint" data-i18n="catHint">Pick your model to fill in its official tank size, or type the size yourself.</p>
+    </div>
     <div class="seg two" role="radiogroup" data-i18n-aria="fuelType">
       <input type="radio" name="vFuel" id="vf-essence" value="essence" checked><label for="vf-essence" data-i18n="essence">Petrol</label>
       <input type="radio" name="vFuel" id="vf-gasoil" value="gasoil"><label for="vf-gasoil" data-i18n="gasoil">Diesel</label>
@@ -397,6 +410,7 @@
         <div class="inp"><select id="vColor"></select></div>
       </div>
     </div>
+    <p class="hint" id="vTankSrc" hidden></p>
     <label class="switch">
       <span class="s-title" data-i18n="tripMeter">No working odometer</span>
       <span class="s-sub" data-i18n="tripMeterSub">Type the kilometers from the trip meter at each fill-up instead.</span>
@@ -510,6 +524,7 @@
 </dialog>
 
 <script src="js/logic.js"></script>
+<script src="js/catalog.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/native.js"></script>
 <script src="js/app.js"></script>

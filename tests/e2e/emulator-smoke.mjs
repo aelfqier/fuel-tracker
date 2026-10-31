@@ -136,6 +136,12 @@ try {
   await step("first run: language, vehicle and currency", async () => {
     await sleep(800); await shot("01-welcome");
     await click('#welcomeInner button[data-lang="en"]');
+    // The model list is data/vehicles.json, read through the WebView's fetch.
+    await waitFor(() => !document.querySelector("#wCat").hidden, "the vehicle catalogue to load");
+    await fill("#wBrand", "Dacia");
+    const logan = await ev(() => [...document.querySelector("#wModel").options].find((o) => o.textContent.startsWith("Logan")).value);
+    await fill("#wModel", logan);
+    assert(/^50 L/.test(await text("#wCatHint")), "picking the Logan didn't show its 50 L tank");
     await fill("#wName", "Logan");
     await click('label[for="wf-essence"]');
     await click('#welcomeInner button[data-w="next"]');

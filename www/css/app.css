@@ -144,6 +144,8 @@ h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
 /* ---------- form fields ---------- */
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.catpick { display: grid; gap: 8px; }
+.catpick .row { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
 .field { display: grid; grid-template-columns: minmax(0, 1fr); gap: 7px; min-width: 0; align-content: start; }
 .field > label, .field > .flabel { font-size: .82rem; font-weight: 650; color: var(--fg-2); }
 .inp { position: relative; }
@@ -591,7 +593,7 @@ dialog h2 { font-size: 1.3rem; }
 
 /* ---------- small phones ---------- */
 @media (max-width: 370px) {
-  .row { grid-template-columns: 1fr; }
+  .row, .catpick .row { grid-template-columns: 1fr; }
   .g-val { font-size: 2.8rem; }
   .c-val { font-size: 1rem; }
 }
