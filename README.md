@@ -18,6 +18,8 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 - Named vehicles (cars and motorbikes; petrol, diesel, electric or plug-in hybrid in kWh), odometer
   resets and trip-meter vehicles, a warning before saving a number that looks wrong, any currency,
   French, Arabic (right to left) and English.
+- A catalogue of car and motorbike models with their official fuel tank size: pick the brand and
+  model when adding a vehicle and the tank size is filled in, or type it yourself.
 - Optional notification on the days Moroccan pump prices may change (10:00 on the 1st and 16th, off
   until turned on), station memory with your cheapest station, trip cost with sharing between
   passengers, fill-ups abroad converted to your home currency,
@@ -76,6 +78,20 @@ No Mac needed: see [store/README.md](store/README.md) for the step-by-step guide
 4. Plug in your iPhone and press Run to install it.
 5. To publish on the App Store: Product > Archive, then upload through Xcode
    (needs an Apple Developer account, 99 USD per year).
+
+## Vehicle catalogue
+
+`www/data/vehicles.json` lists car and motorbike models with their fuel tank size in litres. The app
+loads it when you add or edit a vehicle and on the first-run screen.
+
+- Each entry has `brand`, `model`, `type` (`car` or `bike`), `variant` (engine or version, as the
+  source names it), `years` (only when the source states a model year), `fuel` when the variant
+  tells it, `tank`, the `source` URL and the date it was `checked`.
+- Only figures from the manufacturer's own website or official documents (spec pages, price lists
+  with technical data, owner's manuals, press kits) go in. If a figure can't be found there, the
+  model goes under `gaps` with the reason, and is not guessed.
+- `npm test` checks every entry is complete and that its source is on a manufacturer's domain
+  (the list is in `tests/catalog.test.js`; add a brand's domain there when adding the brand).
 
 ## Notes
 

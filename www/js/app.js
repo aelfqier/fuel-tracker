@@ -419,9 +419,36 @@
     Native.minimize();
   });
 
+  /* ---------- vehicle catalogue: official tank sizes by brand and model (data/vehicles.json) ---------- */
+  let catalog = null;
+  let catalogLoad = null;
+  function loadCatalog() {
+    if (catalog) return Promise.resolve(catalog);
+    if (!catalogLoad) {
+      catalogLoad = fetch("data/vehicles.json")
+        .then((r) => { if (!r.ok) throw new Error("vehicles.json " + r.status); return r.json(); })
+        .then((d) => { const c = Catalog.parse(d); catalog = c.vehicles.length ? c : null; return catalog; })
+        .catch((e) => { logError("catalog", e); return null; })
+        .finally(() => { catalogLoad = null; });
+    }
+    return catalogLoad;
+  }
+  const catOption = (m) => `${Catalog.label(m)} · ${fmt(m.tank, m.tank % 1 ? 1 : 0)} L`;
+  const catSource = (m) => t("catSource", { tank: fmt(m.tank, m.tank % 1 ? 1 : 0), site: Catalog.site(m), date: dayLabel(m.checked) });
+  // The brand list for a vehicle type, and the models of the chosen brand.
+  function fillCatSelects(brandSel, modelSel, type, brand, id) {
+    const bs = Catalog.brands(catalog, type);
+    brandSel.innerHTML = `<option value="">${esc(t("catPickBrand"))}</option>` + bs.map((b) => `<option value="${esc(b)}">${esc(b)}</option>`).join("");
+    brandSel.value = bs.includes(brand) ? brand : "";
+    const ms = brandSel.value ? Catalog.models(catalog, type, brandSel.value) : [];
+    modelSel.innerHTML = `<option value="">${esc(t("catPickModel"))}</option>` + ms.map((m) => `<option value="${esc(m.id)}">${esc(catOption(m))}</option>`).join("");
+    modelSel.value = ms.some((m) => m.id === id) ? id : "";
+    modelSel.disabled = !brandSel.value;
+  }
+
   /* ================= FIRST RUN ================= */
   let wStep = 0;
-  const wDraft = { name: "", type: "car", fuel: "essence", home: "MAD" };
+  const wDraft = { name: "", type: "car", fuel: "essence", home: "MAD", brand: "", pick: null, autoName: "" };
   const FUELS = ["essence", "gasoil", "electric", "hybrid"];
   function renderWelcome() {
     const el = $("welcomeInner");
@@ -443,9 +470,12 @@
     } else if (wStep === 1) {
       el.innerHTML = `${steps}<div class="w-step"><h2>${esc(t("wVehicle"))}</h2><p class="hint">${esc(t("wVehicleHint"))}</p></div>
         <div class="seg cards"><input type="radio" name="wType" id="wt-car" value="car" ${wDraft.type === "car" ? "checked" : ""}><label for="wt-car"><svg><use href="#i-car"/></svg>${esc(t("car"))}</label><input type="radio" name="wType" id="wt-bike" value="bike" ${wDraft.type === "bike" ? "checked" : ""}><label for="wt-bike"><svg><use href="#i-bike"/></svg>${esc(t("bike"))}</label></div>
+        <div class="catpick" id="wCat" hidden><div class="row"><div class="field"><label for="wBrand">${esc(t("catBrand"))}</label><div class="inp"><select id="wBrand"></select></div></div><div class="field"><label for="wModel">${esc(t("catModel"))}</label><div class="inp"><select id="wModel"></select></div></div></div><p class="hint" id="wCatHint"></p></div>
         <div class="field"><label for="wName">${esc(t("vName"))}</label><div class="inp"><input id="wName" class="plain" type="text" maxlength="40" placeholder="${esc(t("vNamePh"))}" value="${esc(wDraft.name)}"></div></div>
         <div class="field"><span class="flabel">${esc(t("fuelType"))}</span><div class="seg two">${FUELS.map((f) => `<input type="radio" name="wFuel" id="wf-${f}" value="${f}" ${wDraft.fuel === f ? "checked" : ""}><label for="wf-${f}">${esc(t(f))}</label>`).join("")}</div></div>
         <div class="btnrow"><button type="button" data-w="back">${esc(t("back"))}</button><button type="button" class="primary" data-w="next">${esc(t("next"))}</button></div>`;
+      renderWelcomeCat();
+      loadCatalog().then(() => { if (wStep === 1 && $("wCat")) renderWelcomeCat(); });
     } else {
       el.innerHTML = `${steps}<div class="w-step"><h2>${esc(t("wCurrency"))}</h2><p class="hint">${esc(t("wCurrencyHint"))}</p></div>
         <div class="bigchoice">
@@ -471,7 +501,8 @@
       const id = newId();
       settings.home = cur;
       settings.rates = FT.defaultRates(settings.home);
-      settings.vehicles = [{ id, name: wDraft.name.trim() || t(wDraft.type === "bike" ? "bike" : "car"), type: wDraft.type, fuel: wDraft.fuel, tank: null, color: COLORS[0], tripMeter: false }];
+      const tank = wDraft.pick && wDraft.fuel !== "electric" ? wDraft.pick.tank : null;
+      settings.vehicles = [{ id, name: wDraft.name.trim() || t(wDraft.type === "bike" ? "bike" : "car"), type: wDraft.type, fuel: wDraft.fuel, tank, color: COLORS[0], tripMeter: false }];
       settings.activeVehicle = id;
       settings.onboarded = true;
       $("welcome").hidden = true;
@@ -485,6 +516,28 @@
     if (wStep !== 1) return;
     wDraft.name = $("wName").value; wDraft.type = radio("wType") || "car"; wDraft.fuel = radio("wFuel") || "essence";
   }
+  // Picking a model from the catalogue fills the name (unless one was typed) and the fuel, and keeps its tank size.
+  function renderWelcomeCat() {
+    $("wCat").hidden = !catalog;
+    if (!catalog) return;
+    fillCatSelects($("wBrand"), $("wModel"), wDraft.type, wDraft.brand, wDraft.pick && wDraft.pick.id);
+    $("wCatHint").textContent = wDraft.pick ? catSource(wDraft.pick) : t("catHint");
+  }
+  function welcomePick(m) {
+    wDraft.pick = m;
+    if (m) {
+      const name = $("wName").value.trim();
+      if (!name || name === wDraft.autoName) $("wName").value = wDraft.autoName = Catalog.fullName(m);
+      const f = m.fuel && $("wf-" + m.fuel); if (f) f.checked = true;
+    }
+    $("wCatHint").textContent = m ? catSource(m) : t("catHint");
+  }
+  $("welcomeInner").addEventListener("change", (e) => {
+    if (wStep !== 1 || !catalog) return;
+    if (e.target.name === "wType") { wDraft.type = e.target.value; wDraft.brand = ""; wDraft.pick = null; renderWelcomeCat(); }
+    else if (e.target.id === "wBrand") { wDraft.brand = e.target.value; wDraft.pick = null; renderWelcomeCat(); }
+    else if (e.target.id === "wModel") welcomePick(Catalog.byId(catalog, e.target.value));
+  });
 
   /* ================= HOME: FILL-UP FORM ================= */
   function renderVehChips() {
@@ -1408,13 +1461,39 @@
   function renderVehList() {
     $("vehList").innerHTML = vehicles().map((v) => {
       const n = fills().filter((r) => r.vehicle === v.id).length;
-      const sub = [t(v.type === "bike" ? "bike" : "car"), t(fuelKey(v.fuel)), v.tank ? `${fmt(v.tank, 0)} ${FT.primaryUnit(v) === "kWh" ? "kWh" : "L"}` : "", v.tripMeter ? t("tripMeterShort") : "", t("nFills", { n })].filter(Boolean).join(" · ");
+      const sub = [t(v.type === "bike" ? "bike" : "car"), t(fuelKey(v.fuel)), v.tank ? `${fmt(v.tank, v.tank % 1 ? 1 : 0)} ${FT.primaryUnit(v) === "kWh" ? "kWh" : "L"}` : "", v.tripMeter ? t("tripMeterShort") : "", t("nFills", { n })].filter(Boolean).join(" · ");
       return `<div><div class="main">${vava(v.id)}<div><div class="name">${esc(v.name)}</div><div class="sub">${esc(sub)}</div></div></div><button type="button" class="iconbtn" data-veh="${esc(v.id)}" aria-label="${esc(t("edit"))}" title="${esc(t("edit"))}"><svg><use href="#i-edit"/></svg></button></div>`;
     }).join("");
   }
   let editingVeh = null;
+  let vehPick = null; // the catalogue model picked in the vehicle editor
+  let vehAutoName = "";
+  function renderVehCat() {
+    $("vCat").hidden = !catalog;
+    if (catalog) fillCatSelects($("vBrand"), $("vModel"), radio("vType"), $("vBrand").value, vehPick && vehPick.id);
+  }
+  function vehPicked(m) {
+    vehPick = m;
+    if (m) {
+      const name = $("vName").value.trim();
+      if (!name || name === vehAutoName) $("vName").value = vehAutoName = Catalog.fullName(m);
+      if (m.fuel) $("vf-" + m.fuel).checked = true;
+      else if (radio("vFuel") === "electric") $("vf-essence").checked = true;
+      vehFuelChanged();
+      $("vTank").value = fmt(m.tank, m.tank % 1 ? 1 : 0);
+    }
+    vehTankSource();
+  }
+  // The official source shows while the tank field holds the picked model's figure.
+  function vehTankSource() {
+    const show = !!vehPick && num("vTank") === vehPick.tank;
+    $("vTankSrc").hidden = !show;
+    if (show) $("vTankSrc").textContent = catSource(vehPick);
+  }
   function openVeh(v) {
     editingVeh = v || null;
+    vehPick = null; vehAutoName = "";
+    $("vBrand").value = "";
     $("vName").value = v ? v.name : "";
     (v && v.type === "bike" ? $("vt-bike") : $("vt-car")).checked = true;
     $("vf-" + fuelKey(v && v.fuel)).checked = true;
@@ -1424,13 +1503,20 @@
     $("vColor").value = (v && v.color) || COLORS[vehicles().length % COLORS.length];
     $("vDelete").hidden = !v || vehicles().length < 2; $("vMsg").hidden = true;
     vehFuelChanged();
+    renderVehCat(); vehTankSource();
+    loadCatalog().then(() => { if ($("vehDialog").open) renderVehCat(); });
     $("vehDialog").showModal();
   }
   function vehFuelChanged() {
     $("vTankUnit").textContent = radio("vFuel") === "electric" ? "kWh" : "L";
     $("vTankLbl").textContent = t(radio("vFuel") === "electric" ? "battery" : "tank");
   }
-  $("vehForm").addEventListener("change", (e) => { if (e.target.name === "vFuel") vehFuelChanged(); });
+  $("vehForm").addEventListener("change", (e) => {
+    if (e.target.name === "vFuel") vehFuelChanged();
+    if (e.target.name === "vType" || e.target.id === "vBrand") { vehPick = null; renderVehCat(); vehTankSource(); }
+    if (e.target.id === "vModel") vehPicked(Catalog.byId(catalog, e.target.value));
+  });
+  $("vTank").addEventListener("input", vehTankSource);
   $("addVeh").addEventListener("click", () => openVeh(null));
   $("vehList").addEventListener("click", (e) => { const b = e.target.closest("button[data-veh]"); if (b) openVeh(vehicleById(b.dataset.veh)); });
   $("vCancel").addEventListener("click", () => $("vehDialog").close());
