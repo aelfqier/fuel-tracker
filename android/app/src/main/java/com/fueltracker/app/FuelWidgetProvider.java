@@ -23,7 +23,7 @@ public class FuelWidgetProvider extends AppWidgetProvider {
 
     static void updateAll(Context ctx, AppWidgetManager mgr, int[] ids) {
         SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        String vehicle = "Fuel Tracker", l100 = "–", month = "", add = "+ Fill-up";
+        String vehicle = "bnzn", l100 = "–", month = "", add = "+ Fill-up";
         try {
             JSONObject o = new JSONObject(prefs.getString(KEY, "{}"));
             vehicle = o.optString("vehicle", vehicle);

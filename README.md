@@ -1,10 +1,10 @@
-# Fuel Tracker: Android and iOS app
+# bnzn: Android and iOS app
 
-The same Fuel Tracker page, packaged as a native app with Capacitor.
+The same bnzn page, packaged as a native app with Capacitor.
 Fill-ups are saved on the phone itself (app storage), so the app works offline.
 
-- App name: **Fuel Tracker**
-- App ID: `com.fueltracker.app` (change it in `capacitor.config.json` before publishing, e.g. `ma.yourname.fueltracker`)
+- App name: **bnzn**
+- App ID: `io.github.aelfqier.fueltracker` (the ID on Google Play and the App Store; it can't change after the first upload)
 - The app's screen is `www/index.html`, with styles in `www/css/` and code in `www/js/`
   (`logic.js` does the calculations, `i18n.js` holds the English, French and Arabic text,
   `native.js` talks to the phone, `app.js` runs the screens). After editing, run `npx cap sync`.
@@ -50,10 +50,18 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 1. Put this folder in a GitHub repository and push it to the `main` branch.
 2. The workflow in `.github/workflows/android.yml` builds a test APK automatically.
 3. When it finishes, open the repository's **Releases** page on your phone and download
-   `fuel-tracker.apk` from the "latest" release.
+   `bnzn.apk` from the "latest" release.
 4. Open the downloaded file to install it (allow "install unknown apps" when asked).
 
-## iOS (needs a Mac)
+Pull requests get the same APK in the "test" pre-release, so a change can be tried before merging.
+Test builds share one signing key (`android/app/debug.keystore`), so a newer one installs over the
+previous one and keeps your data.
+
+## Publishing on Google Play and the App Store
+
+No Mac needed: see [store/README.md](store/README.md) for the step-by-step guide, the store texts and the screenshots.
+
+## iOS on your own Mac
 
 1. Install Xcode from the Mac App Store, and CocoaPods (`sudo gem install cocoapods`).
 2. Run `npx cap sync ios`, then `npx cap open ios`. Xcode opens the project.

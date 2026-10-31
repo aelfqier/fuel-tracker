@@ -2,7 +2,7 @@
 (function (root) {
   "use strict";
   const en = {
-    appName: "Fuel Tracker", loading: "Loading your records…",
+    appName: "bnzn", loading: "Loading your records…",
     storeNative: "Saved on this phone.", storeDb: "Saved to your account, private to you and available on all your devices.",
     storeLocal: "Saved in this browser only. Use the same phone and browser to keep your history.",
     storeError: "Your saved records could not be loaded right now. Reload to try again.",
@@ -92,13 +92,13 @@
     backupNeverLong: "No backup yet. Save a file to Google Drive, WhatsApp or email so a lost phone never costs you your history.",
     backupDb: "Your records are saved to your account. You can still save a file or a spreadsheet.",
     backupDone: "Backup saved.", errExport: "The file could not be created. Try again.",
-    errBackupRead: "This file is not a Fuel Tracker backup.",
+    errBackupRead: "This file is not a bnzn backup.",
     restoreTitle: "Restore this backup?", restoreText: "The file has {n} entries. Replace everything on this phone, or add the file's entries to what is here?",
     restoreReplace: "Replace", restoreMerge: "Add to mine", restoreDone: "{n} entries restored.",
     historyReport: "Car history report", historyReportSub: "Every fill-up, service and your real consumption in one clean page. Handy when you sell the car.",
     makePdf: "Create PDF report", reportTitle: "History report: {name}", reportRange: "{from} to {to}", avgConsumption: "Average consumption",
     byYear: "By year", maintenance: "Maintenance done", allFills: "All fill-ups",
-    reportFoot: "Made with Fuel Tracker on {date}. * partial fill-up. Consumption is measured from full tank to full tank.",
+    reportFoot: "Made with bnzn on {date}. * partial fill-up. Consumption is measured from full tank to full tank.",
     privacy: "Privacy",
     scanTitle: "Use numbers from the photo", scanTarget: "Put the number in", scanReading: "Reading the photo…",
     scanPick: "Choose a field, then tap the number that goes in it. Labeled numbers are already filled in.",
@@ -107,7 +107,7 @@
   };
 
   const fr = {
-    appName: "Fuel Tracker", loading: "Chargement de vos données…",
+    appName: "bnzn", loading: "Chargement de vos données…",
     storeNative: "Enregistré sur ce téléphone.", storeDb: "Enregistré dans votre compte, privé et disponible sur tous vos appareils.",
     storeLocal: "Enregistré dans ce navigateur uniquement. Utilisez le même téléphone et le même navigateur pour garder votre historique.",
     storeError: "Impossible de charger vos données pour le moment. Rechargez pour réessayer.",
@@ -197,13 +197,13 @@
     backupNeverLong: "Aucune sauvegarde. Enregistrez un fichier sur Google Drive, WhatsApp ou par e-mail : un téléphone perdu ne vous coûtera plus votre historique.",
     backupDb: "Vos données sont enregistrées dans votre compte. Vous pouvez quand même enregistrer un fichier ou un tableur.",
     backupDone: "Sauvegarde enregistrée.", errExport: "Le fichier n'a pas pu être créé. Réessayez.",
-    errBackupRead: "Ce fichier n'est pas une sauvegarde Fuel Tracker.",
+    errBackupRead: "Ce fichier n'est pas une sauvegarde bnzn.",
     restoreTitle: "Restaurer cette sauvegarde ?", restoreText: "Le fichier contient {n} entrées. Tout remplacer sur ce téléphone, ou ajouter ses entrées aux vôtres ?",
     restoreReplace: "Remplacer", restoreMerge: "Ajouter aux miennes", restoreDone: "{n} entrées restaurées.",
     historyReport: "Historique du véhicule", historyReportSub: "Tous les pleins, l'entretien et votre consommation réelle sur une page claire. Utile pour vendre la voiture.",
     makePdf: "Créer le rapport PDF", reportTitle: "Historique : {name}", reportRange: "du {from} au {to}", avgConsumption: "Consommation moyenne",
     byYear: "Par année", maintenance: "Entretien effectué", allFills: "Tous les pleins",
-    reportFoot: "Créé avec Fuel Tracker le {date}. * plein partiel. Consommation mesurée de plein complet à plein complet.",
+    reportFoot: "Créé avec bnzn le {date}. * plein partiel. Consommation mesurée de plein complet à plein complet.",
     privacy: "Confidentialité",
     scanTitle: "Utiliser les chiffres de la photo", scanTarget: "Mettre le chiffre dans", scanReading: "Lecture de la photo…",
     scanPick: "Choisissez un champ puis touchez le chiffre qui va dedans. Les chiffres reconnus sont déjà remplis.",
@@ -212,7 +212,7 @@
   };
 
   const ar = {
-    appName: "Fuel Tracker", loading: "جارٍ تحميل بياناتك…",
+    appName: "bnzn", loading: "جارٍ تحميل بياناتك…",
     storeNative: "محفوظ على هذا الهاتف.", storeDb: "محفوظ في حسابك، خاص بك ومتاح على كل أجهزتك.",
     storeLocal: "محفوظ في هذا المتصفح فقط. استعمل نفس الهاتف ونفس المتصفح للحفاظ على سجلك.",
     storeError: "تعذّر تحميل بياناتك الآن. أعد التحميل للمحاولة مجددًا.",
@@ -302,13 +302,13 @@
     backupNeverLong: "لا توجد نسخة احتياطية بعد. احفظ ملفًا في Google Drive أو واتساب أو البريد حتى لا يضيع سجلك إذا ضاع الهاتف.",
     backupDb: "بياناتك محفوظة في حسابك. يمكنك مع ذلك حفظ ملف أو جدول.",
     backupDone: "تم حفظ النسخة الاحتياطية.", errExport: "تعذّر إنشاء الملف. حاول مجددًا.",
-    errBackupRead: "هذا الملف ليس نسخة احتياطية من Fuel Tracker.",
+    errBackupRead: "هذا الملف ليس نسخة احتياطية من bnzn.",
     restoreTitle: "استرجاع هذه النسخة؟", restoreText: "يحتوي الملف على {n} عملية. هل تريد استبدال كل ما في هذا الهاتف، أم إضافة محتوى الملف إلى بياناتك؟",
     restoreReplace: "استبدال", restoreMerge: "إضافة إلى بياناتي", restoreDone: "تم استرجاع {n} عملية.",
     historyReport: "تقرير تاريخ المركبة", historyReportSub: "كل التعبئات والصيانة واستهلاكك الحقيقي في صفحة واحدة واضحة. مفيد عند بيع السيارة.",
     makePdf: "إنشاء تقرير PDF", reportTitle: "تقرير تاريخ: {name}", reportRange: "من {from} إلى {to}", avgConsumption: "متوسط الاستهلاك",
     byYear: "حسب السنة", maintenance: "الصيانة المنجزة", allFills: "كل التعبئات",
-    reportFoot: "أُنشئ بواسطة Fuel Tracker في {date}. * تعبئة جزئية. يُقاس الاستهلاك من تعبئة كاملة إلى تعبئة كاملة.",
+    reportFoot: "أُنشئ بواسطة bnzn في {date}. * تعبئة جزئية. يُقاس الاستهلاك من تعبئة كاملة إلى تعبئة كاملة.",
     privacy: "الخصوصية",
     scanTitle: "استعمال أرقام الصورة", scanTarget: "ضع الرقم في", scanReading: "جارٍ قراءة الصورة…",
     scanPick: "اختر خانة ثم المس الرقم المناسب لها. الأرقام المعروفة مُلئت مسبقًا.",

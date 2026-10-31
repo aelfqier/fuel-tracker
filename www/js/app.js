@@ -895,7 +895,7 @@
     $("backupInfo").textContent = store && store.kind === "db" ? t("backupDb") : lb ? t("backupLast", { date: dayLabel(lb.slice(0, 10)) }) : t("backupNeverLong");
   }
   async function exportBackup() {
-    const name = `fuel-tracker-backup-${today()}.json`;
+    const name = `bnzn-backup-${today()}.json`;
     try {
       const ok = await Native.saveFile(name, JSON.stringify(FT.backupFile(records, settings), null, 1), "application/json", t("saveBackup"));
       if (ok) { settings.lastBackup = new Date().toISOString(); await saveSettings(); toast(t("backupDone")); }
@@ -903,7 +903,7 @@
   }
   $("exportBtn").addEventListener("click", exportBackup);
   $("csvBtn").addEventListener("click", async () => {
-    try { await Native.saveFile(`fuel-tracker-${today()}.csv`, FT.toCsv(records, settings), "text/csv", t("exportCsv")); } catch { toast(t("errExport")); }
+    try { await Native.saveFile(`bnzn-${today()}.csv`, FT.toCsv(records, settings), "text/csv", t("exportCsv")); } catch { toast(t("errExport")); }
   });
   $("importBtn").addEventListener("click", () => $("importFile").click());
   $("importFile").addEventListener("change", async () => {
@@ -972,7 +972,7 @@
   }
   $("pdfBtn").addEventListener("click", async () => {
     const vid = $("pdfVeh").value; if (!vid) return;
-    try { await Native.printHtml(reportHtml(vid), `fuel-tracker-${vehName(vid).replace(/[^\w-]+/g, "-")}-${today()}`, t("historyReport")); }
+    try { await Native.printHtml(reportHtml(vid), `bnzn-${vehName(vid).replace(/[^\w-]+/g, "-")}-${today()}`, t("historyReport")); }
     catch { toast(t("errExport")); }
   });
 

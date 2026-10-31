@@ -73,7 +73,7 @@ public class FuelNativePlugin extends Plugin {
     @PluginMethod
     public void printHtml(PluginCall call) {
         String html = call.getString("html", "");
-        String name = call.getString("name", "Fuel Tracker");
+        String name = call.getString("name", "bnzn");
         getActivity().runOnUiThread(() -> {
             WebView view = new WebView(getActivity());
             view.setWebViewClient(new WebViewClient() {
