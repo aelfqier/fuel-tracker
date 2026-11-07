@@ -102,9 +102,16 @@ async function launch() {
     adb("forward", `tcp:${port}`, `localabstract:${sock}`);
   }
   cdp = await connect(port);
+  // A debug build logs each failed native call as a console error. The exchange rates download is meant to fail
+  // quietly when offline, so Capacitor's log of a failed CapacitorHttp call isn't counted as a script error.
+  let httpLog = false;
   cdp.on((m) => {
     if (m.method === "Runtime.exceptionThrown") errors.push(m.params.exceptionDetails.exception ? m.params.exceptionDetails.exception.description : m.params.exceptionDetails.text);
-    if (m.method === "Runtime.consoleAPICalled" && m.params.type === "error") errors.push(m.params.args.map((a) => a.value || a.description).join(" "));
+    if (m.method !== "Runtime.consoleAPICalled") return;
+    const { type, args } = m.params;
+    if (type === "startGroupCollapsed") httpLog = /CapacitorHttp\./.test(String(args[0] && args[0].value));
+    else if (type === "endGroup") httpLog = false;
+    else if (type === "error" && !httpLog) errors.push(args.map((a) => a.value || a.description).join(" "));
   });
   await cdp.send("Runtime.enable");
   if (LOCAL_PORT) await cdp.send("Page.reload");
@@ -175,6 +182,18 @@ try {
       await sleep(1200); await shot(`04-${tab}`);
     }
     assert((await count("#log li")) >= 2, "history log is missing fill-ups");
+  });
+
+  // Today's exchange rates come over the internet through Capacitor's native HTTP. Reported, never failed:
+  // the emulator's network and the rates service are outside bnzn.
+  await step("exchange rates (reported only)", async () => {
+    let got = "";
+    try {
+      await waitFor(() => /\d{4}/.test(document.querySelector("#ratesInfo").textContent) && !!document.querySelector("#rate-EUR[readonly]"), "the exchange rates", 20000);
+      got = `${(await text("#ratesInfo")).trim()} 1 EUR = ${await ev(() => document.querySelector("#rate-EUR").value)} MAD`;
+    } catch { got = ""; }
+    console.log(got ? `  info  exchange rates downloaded: ${got}` : "  info  exchange rates were not downloaded (no network on the emulator?)");
+    await ev(() => document.querySelector("#homeCur").closest(".card").scrollIntoView({ block: "start" })); await sleep(600); await shot("04-settings-money");
   });
 
   await step("dark mode is kept after the app is closed and reopened", async () => {

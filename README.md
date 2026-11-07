@@ -22,7 +22,8 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
   model when adding a vehicle and the tank size is filled in, or type it yourself.
 - Optional notification on the days Moroccan pump prices may change (10:00 on the 1st and 16th, off
   until turned on), station memory with your cheapest station, trip cost with sharing between
-  passengers, fill-ups abroad converted to your home currency,
+  passengers, fill-ups abroad converted to your home currency at today's exchange rate (downloaded
+  once a day from ExchangeRate-API's free endpoint, kept for offline use, can be turned off in Settings),
   driver mode with earnings and profit per km, and reminders for oil change, insurance, technical
   inspection and vignette (with phone notifications).
 - Plain-language insights, monthly budget, trend chart, backup file (Drive, WhatsApp, email),

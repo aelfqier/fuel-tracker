@@ -130,6 +130,81 @@
     $("currency").insertAdjacentHTML("beforeend", `<option value="${code}">${esc(currencyName(code))}</option>`);
   }
 
+  /* ---------- today's exchange rates: downloaded once a day, kept on the phone for when it is offline ---------- */
+  // The table is a cache, not the user's data: it stays out of backups and is simply downloaded again if lost.
+  // The rates in settings (typed, or saved with a fill-up) are what is used when there is no table.
+  const RATES_KEY = "bnzn-rates";
+  let liveTable = null;
+  let ratesFailedAt = null; // last failed download in this session: the next try waits a little
+  let ratesBusy = null;
+  let ratesStarted = false;
+  async function readRatesCache() {
+    try {
+      const raw = Native.Preferences ? (await Native.Preferences.get({ key: RATES_KEY })).value : localStorage.getItem(RATES_KEY);
+      return raw ? FT.cleanRates(JSON.parse(raw)) : null;
+    } catch { return null; }
+  }
+  async function writeRatesCache(table) {
+    try {
+      const raw = JSON.stringify(table);
+      if (Native.Preferences) await Native.Preferences.set({ key: RATES_KEY, value: raw }); else localStorage.setItem(RATES_KEY, raw);
+    } catch { /* downloaded again next time */ }
+  }
+  // Today's rate for 1 cur in the home currency, when online rates are on and the table has it.
+  const liveFor = (cur) => (settings.ratesAuto ? FT.liveRate(liveTable, cur, settings.home) : null);
+  const rateFor = (cur) => liveFor(cur) || settings.rates[cur] || null;
+  // The currencies Settings shows a rate for: the ones bnzn knows by default, or that a fill-up or the settings use.
+  const rateCurrencies = () => [...new Set([...FT.CURRENCIES, ...Object.keys(settings.rates || {}), ...fills().map((r) => r.currency)])].filter((c) => CODE.test(c) && c !== settings.home);
+  // Copies today's rates into the settings. True when one changed.
+  function applyLiveRates() {
+    let changed = false;
+    for (const c of rateCurrencies()) {
+      const r = liveFor(c);
+      if (r && settings.rates[c] !== r) { settings.rates[c] = r; changed = true; }
+    }
+    return changed;
+  }
+  function onRates() {
+    if (applyLiveRates()) { saveSettingsQuiet(); onData(); } else { renderMoney(); renderCalc(); }
+  }
+  // Downloads the rates when they are due. Quietly does nothing when offline: the last ones stay in use.
+  function refreshRates() {
+    if (!settings.ratesAuto || ratesBusy || !FT.ratesDue(liveTable, ratesFailedAt, Date.now())) return ratesBusy;
+    ratesBusy = (async () => {
+      try {
+        const table = FT.parseRates(await Native.getJson(FT.RATES_URL), Date.now());
+        if (!table) throw Object.assign(new Error("unexpected answer from the rates service"), { odd: true });
+        liveTable = table; ratesFailedAt = null;
+        await writeRatesCache(table);
+      } catch (e) {
+        ratesFailedAt = Date.now();
+        if (e && e.odd) logError("rates", e); // being offline is normal, an answer that can't be read is not
+      }
+    })().finally(() => { ratesBusy = null; onRates(); });
+    renderRatesInfo();
+    return ratesBusy;
+  }
+  // Once the saved settings are read: the rates kept on the phone first, then a download if they are old.
+  async function startRates() {
+    if (ratesStarted) return;
+    ratesStarted = true;
+    liveTable = await readRatesCache();
+    onRates();
+    Native.onResume(() => refreshRates());
+    window.addEventListener("online", () => { ratesFailedAt = null; refreshRates(); });
+    refreshRates();
+  }
+  function renderRatesInfo() {
+    const el = $("ratesInfo");
+    el.hidden = !settings.ratesAuto;
+    if (el.hidden) return;
+    let text;
+    if (liveTable) text = t(Date.now() - liveTable.at > 50 * 36e5 ? "ratesOld" : "ratesOf", { date: dayLabel(FT.isoDate(new Date(liveTable.at))) });
+    else text = t(ratesBusy ? "ratesChecking" : "ratesNone");
+    // ExchangeRate-API asks for this link where its rates are shown.
+    el.innerHTML = `${esc(text)} <a href="${FT.RATES_SOURCE}" target="_blank" rel="noopener">Rates By Exchange Rate API</a>`;
+  }
+
   /* ---------- vehicles and energy ---------- */
   const vehicles = () => settings.vehicles;
   const vehicleById = (id) => vehicles().find((v) => v.id === id) || null;
@@ -501,6 +576,7 @@
       const id = newId();
       settings.home = cur;
       settings.rates = FT.defaultRates(settings.home);
+      applyLiveRates();
       const tank = wDraft.pick && wDraft.fuel !== "electric" ? wDraft.pick.tank : null;
       settings.vehicles = [{ id, name: wDraft.name.trim() || t(wDraft.type === "bike" ? "bike" : "car"), type: wDraft.type, fuel: wDraft.fuel, tank, color: COLORS[0], tripMeter: false }];
       settings.activeVehicle = id;
@@ -614,7 +690,15 @@
     document.querySelectorAll(".homecur").forEach((el) => (el.textContent = sym(settings.home)));
     if (show) {
       $("rateLabel").textContent = t("rateLabel", { cur: sym(cur), home: sym(settings.home) });
-      if (!$("rate").value || $("rate").dataset.cur !== cur) { $("rate").value = settings.rates[cur] || ""; $("rate").dataset.cur = cur; }
+      const el = $("rate");
+      // A rate bnzn filled in itself follows newer rates; one the user typed or saved with a fill-up stays.
+      const ours = el.dataset.auto != null && el.value === el.dataset.auto && !editingId;
+      if (!el.value || el.dataset.cur !== cur || ours) {
+        const r = rateFor(cur);
+        el.value = r > 0 ? String(r) : ""; el.dataset.cur = cur; el.dataset.auto = el.value;
+      }
+      const hint = liveFor(cur) && el.value === String(liveFor(cur)) ? "rateHintLive" : "rateHint";
+      $("rateHint").dataset.i18n = hint; $("rateHint").textContent = t(hint);
     }
   }
 
@@ -708,6 +792,7 @@
     $("full").checked = true; $("missed").checked = false; $("odoReset").checked = false;
     $("date").value = today();
     if (!keepOdo) $("odoStart").value = "";
+    $("rate").value = ""; // filled in again with today's rate
     clearDraft();
     prefill(); renderCalc();
   }
@@ -722,7 +807,7 @@
     (recUnit(rec) === "kWh" ? $("en-k") : $("en-l")).checked = true;
     ensureCurrencyOption(rec.currency);
     $("date").value = rec.date; $("currency").value = rec.currency;
-    $("rate").value = rec.rate || ""; $("rate").dataset.cur = rec.currency;
+    $("rate").value = rec.rate || ""; $("rate").dataset.cur = rec.currency; delete $("rate").dataset.auto;
     const startPoint = rec.prevOdo === rec.odo;
     $("unknownWrap").hidden = !startPoint; $("unknownStart").checked = startPoint;
     $("odoStart").value = rec.reset ? "" : rec.prevOdo; $("odoEnd").value = rec.odo; $("odoStartHint").textContent = "";
@@ -775,7 +860,7 @@
       createdAt: old ? old.createdAt : now, updatedAt: now,
     };
     if (unit === "kWh") rec.unit = "kWh";
-    if (cur !== settings.home) { rec.rate = num("rate"); rec.rateHome = settings.home; settings.rates[cur] = rec.rate; }
+    if (cur !== settings.home) { rec.rate = num("rate"); rec.rateHome = settings.home; settings.rates[cur] = liveFor(cur) || rec.rate; }
     // Which odometer count this reading belongs to; a reset starts the next one.
     const before = FT.lastFill(records, vid, { excludeId: editingId });
     if (old) { if (old.meter) rec.meter = old.meter; if (old.reset) rec.reset = true; }
@@ -855,6 +940,7 @@
       const d = { at: Date.now(), vehicle: formVehicle(), mode: radio("mode"), energy: radio("energy") };
       for (const id of DRAFT_FIELDS) d[id] = $(id).value;
       for (const id of DRAFT_CHECKS) d[id] = $(id).checked;
+      d.rateAuto = $("rate").value === $("rate").dataset.auto;
       localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
     } catch { /* a draft is only a convenience */ }
   }
@@ -874,6 +960,7 @@
     for (const id of DRAFT_CHECKS) if (typeof d[id] === "boolean") $(id).checked = d[id];
     (d.mode === "money" ? $("mode-m") : $("mode-l")).checked = true;
     $("rate").dataset.cur = $("currency").value; // the rate typed with the draft, not the saved one
+    if (d.rateAuto === true) $("rate").dataset.auto = $("rate").value; else delete $("rate").dataset.auto;
     if (pricePrefill && num("price") !== pricePrefill.price) pricePrefill = null;
     renderCalc();
     toast(t("draftBack"), t("discard"), () => resetForm());
@@ -1542,16 +1629,27 @@
 
   function renderMoney() {
     $("homeCur").value = settings.home;
-    // A rate for each currency bnzn knows by default, or that a fill-up or the settings already use.
-    const shown = [...new Set([...FT.CURRENCIES, ...Object.keys(settings.rates || {}), ...fills().map((r) => r.currency)])].filter((c) => CODE.test(c) && c !== settings.home);
-    $("rateInputs").innerHTML = shown.map((c) => `<div class="field"><label for="rate-${c}">${esc(t("rateLabel", { cur: sym(c), home: sym(settings.home) }))}</label><div class="inp"><input id="rate-${c}" data-rate="${c}" type="text" inputmode="decimal" autocomplete="off" value="${esc(settings.rates[c] > 0 ? String(settings.rates[c]) : "")}"><span class="unit">${esc(sym(settings.home))}</span></div></div>`).join("");
+    $("ratesAuto").checked = !!settings.ratesAuto;
+    renderRatesInfo();
+    // An online rate can't be typed over: turning online rates off makes them editable again.
+    $("rateInputs").innerHTML = rateCurrencies().map((c) => {
+      const live = liveFor(c), v = live || settings.rates[c];
+      return `<div class="field"><label for="rate-${c}">${esc(t("rateLabel", { cur: sym(c), home: sym(settings.home) }))}</label><div class="inp"><input id="rate-${c}" data-rate="${c}" type="text" inputmode="decimal" autocomplete="off" value="${esc(v > 0 ? String(v) : "")}"${live ? " readonly" : ""}><span class="unit">${esc(sym(settings.home))}</span></div></div>`;
+    }).join("");
     $("budget").value = settings.budget > 0 ? settings.budget : "";
     $("driverMode").checked = !!settings.driverMode;
   }
   $("homeCur").addEventListener("change", async () => {
     const home = $("homeCur").value; if (!CODE.test(home)) return;
     settings.home = home; settings.rates = FT.defaultRates(settings.home);
+    applyLiveRates();
     await saveSettings(); renderCurrencySelects(); renderCalc();
+  });
+  $("ratesAuto").addEventListener("change", async () => {
+    settings.ratesAuto = $("ratesAuto").checked;
+    if (settings.ratesAuto) { ratesFailedAt = null; applyLiveRates(); }
+    await saveSettings();
+    if (settings.ratesAuto) refreshRates();
   });
   $("rateInputs").addEventListener("change", async (e) => { const c = e.target.dataset.rate; if (!c) return; const v = FT.parseNum(e.target.value); if (v > 0) { settings.rates[c] = v; await saveSettings(); } });
   $("budget").addEventListener("change", async () => { const v = num("budget"); settings.budget = v > 0 ? v : 0; await saveSettings(); });
@@ -1599,6 +1697,7 @@
         }
         if (fileSettings) settings = { ...fileSettings, lang: settings.lang, onboarded: true };
         settings = FT.migrateSettings(settings, records, settings.lang);
+        applyLiveRates();
         await store.saveSettings(settings, !!fileSettings);
         toast(t("restoreDone", { n: data.records.length }));
       } else {
@@ -1607,6 +1706,7 @@
         await store.replaceAll(merged.list);
         if (fileSettings) for (const v of fileSettings.vehicles) if (!vehicleById(v.id)) settings.vehicles.push(v);
         settings = FT.migrateSettings(settings, records, settings.lang);
+        applyLiveRates();
         await store.saveSettings(settings);
         toast(t("restoreMerged", { added: merged.added, updated: merged.updated }));
       }
@@ -1735,6 +1835,7 @@
       $("date").value = today(); $("incDate").value = today();
       prefill(); prefillTrip();
       if (settings.onboarded) restoreDraft();
+      startRates();
       if (restoredAt) toast(t("restoredCopy", { date: dayLabel(restoredAt.slice(0, 10)) }));
       if (pendingAdd) { pendingAdd = false; setTimeout(openAdd, 0); }
     } else if (!editingId) {

@@ -167,6 +167,8 @@ h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .inp input[type="date"] { min-height: 52px; }
 .inp input:focus, .inp select:focus { outline: none; border-color: var(--accent); background-color: var(--surface); box-shadow: var(--ring); }
 .inp input:disabled { opacity: .55; }
+.inp input[readonly] { background: transparent; border-color: var(--line-2); color: var(--fg-2); }
+.hint a { color: inherit; }
 .inp .unit {
   position: absolute; inset-inline-end: 10px; top: 50%; transform: translateY(-50%);
   color: var(--muted); font-size: .72rem; font-weight: 750; letter-spacing: .02em; pointer-events: none;
