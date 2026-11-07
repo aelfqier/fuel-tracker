@@ -60,3 +60,7 @@ files to a newer LTS (Node 24 or later) and check the builds stay green.
 - npm install scripts are off (`.npmrc`). To regenerate icons with `npx capacitor-assets generate`,
   first run `npm rebuild sharp --ignore-scripts=false` on your own computer.
 - Store builds are signed only from a manual run on main, with the secrets in the "store" environment.
+- Exchange rates come from ExchangeRate-API's free open endpoint (`RATES_URL` in `www/js/logic.js`), about once a
+  day per phone. If it ever stops answering, the app keeps the last rates it downloaded and users can turn
+  online rates off and type their own, so nothing breaks; point `RATES_URL` (and the parser next to it) at another
+  service in the next update. The emulator test prints whether the download worked, without failing on it.

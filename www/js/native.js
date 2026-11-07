@@ -160,6 +160,25 @@
     } catch { /* notifications are optional */ }
   }
 
+  /* ---------- small downloads (today's exchange rates) ---------- */
+  // In the app, through Capacitor's own native HTTP, called directly: the page's fetch stays as it is, and the
+  // request doesn't depend on the server's CORS headers. In a browser, fetch.
+  const Http = plugin("CapacitorHttp");
+  async function getJson(url, timeout = 15000) {
+    if (Http) {
+      const res = await Http.get({ url, headers: { Accept: "application/json" }, connectTimeout: timeout, readTimeout: timeout, responseType: "json" });
+      if (!res || res.status !== 200) throw new Error("HTTP " + (res && res.status));
+      return typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+    }
+    const ctl = typeof AbortController === "function" ? new AbortController() : null;
+    const timer = ctl ? setTimeout(() => ctl.abort(), timeout) : null;
+    try {
+      const res = await fetch(url, { signal: ctl ? ctl.signal : undefined, cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } finally { clearTimeout(timer); }
+  }
+
   /* ---------- app events ---------- */
   function onDeepLink(fn) {
     if (!App) return;
@@ -188,6 +207,10 @@
     document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") fn(); });
     if (App) { try { App.addListener("appStateChange", (s) => { if (s && s.isActive === false) fn(); }); } catch { /* ignore */ } }
   }
+  function onResume(fn) {
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") fn(); });
+    if (App) { try { App.addListener("appStateChange", (s) => { if (s && s.isActive === true) fn(); }); } catch { /* ignore */ } }
+  }
   async function appInfo() {
     if (App) { try { const i = await App.getInfo(); return { version: i.version, build: i.build }; } catch { /* below */ } }
     return { version: "web", build: "" };
@@ -213,7 +236,7 @@
 
   root.Native = {
     isNative, platform, Preferences, saveFile, shareImage, shareText, copyText, printHtml, scanAvailable, recognize, refreshWidget,
-    requestReview, canNotify, notifPermission, scheduleReminders, onDeepLink, onLaunchAction, onBack, minimize, onPause, appInfo,
-    haptic, setBarStyle,
+    requestReview, canNotify, notifPermission, scheduleReminders, onDeepLink, onLaunchAction, onBack, minimize, onPause, onResume,
+    appInfo, haptic, setBarStyle, getJson,
   };
 })(typeof self !== "undefined" ? self : this);

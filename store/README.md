@@ -100,6 +100,10 @@ In-App Review library; the answers above still hold:
 - Report a problem and the phone's own Google backup add nothing either: the user sends the report
   themselves from their own email or messaging app, and the backup goes to the user's Google account,
   where the developer can't see it.
+- Exchange rates (added 7 November 2026) add nothing: about once a day the app downloads the same
+  public table of rates from ExchangeRate-API (`open.er-api.com`) that every user gets. The request
+  carries none of the user's data, so there is nothing to tick. The privacy policy describes it, and
+  Settings › Money › Exchange rates online turns it off.
 
 ### 2.4 Store listing (Grow users › Store presence › Main store listing)
 
@@ -227,6 +231,7 @@ Native iPhone features:
 - Apple's rating prompt (SKStoreReviewController), requested after the third full-tank result, then at most once every 120 days.
 - Backup file and CSV export through the share sheet and Files; iCloud device backup includes the app's data.
 Settings > Report a problem prepares a text report the user reads and sends themselves; nothing is sent automatically.
+About once a day the app downloads a public table of exchange rates (open.er-api.com) to convert fill-ups abroad; the request contains no user data, and Settings > Money > Exchange rates online turns it off.
 To see results quickly: add two full-tank fill-ups with increasing odometer readings.
 ```
 

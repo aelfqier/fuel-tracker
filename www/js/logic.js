@@ -96,6 +96,42 @@
     return out;
   }
 
+  /* ---------- online exchange rates: one table of every currency against USD, from ExchangeRate-API ---------- */
+  // The open endpoint needs no key, updates once a day and asks for a link back where its rates are shown.
+  const RATES_URL = "https://open.er-api.com/v6/latest/USD";
+  const RATES_SOURCE = "https://www.exchangerate-api.com";
+  const HOUR = 36e5;
+  // A table is { base, rates: { CODE: units for 1 base }, at, next, fetched }, times in ms. null when unusable.
+  function cleanRates(t) {
+    if (!isObj(t) || !isCur(t.base) || !isObj(t.rates) || !isNum(t.fetched)) return null;
+    const rates = {};
+    for (const [c, v] of Object.entries(t.rates)) if (isCur(c) && isNum(v) && v > 0) rates[c] = v;
+    if (rates[t.base] !== 1 || Object.keys(rates).length < 2) return null;
+    return { base: t.base, rates, at: isNum(t.at) ? t.at : t.fetched, next: isNum(t.next) ? t.next : null, fetched: t.fetched };
+  }
+  // The provider's answer, as a table.
+  function parseRates(data, now) {
+    if (!isObj(data) || data.result !== "success") return null;
+    const sec = (v) => (isNum(v) && v > 0 ? v * 1000 : null);
+    return cleanRates({ base: data.base_code, rates: data.rates, at: sec(data.time_last_update_unix), next: sec(data.time_next_update_unix), fetched: now });
+  }
+  // What 1 cur is worth in home, rounded like a rate typed by hand. null when the table lacks either.
+  function liveRate(table, cur, home) {
+    if (!table || cur === home) return null;
+    const a = table.rates[cur], b = table.rates[home];
+    return a > 0 && b > 0 ? +(b / a).toPrecision(5) : null;
+  }
+  // Time to ask again: no table yet, or the provider's next update has passed (never sooner than an hour after the
+  // last download, never later than a day). After a failed try, wait 20 minutes: that is how long the provider
+  // blocks an address that asks too often.
+  function ratesDue(table, failedAt, now) {
+    if (isNum(failedAt) && now - failedAt < 20 * 60e3 && now >= failedAt) return false;
+    if (!table) return true;
+    if (now < table.fetched) return true; // the phone's clock went back
+    const next = Math.min(Math.max(table.next || table.fetched + 24 * HOUR, table.fetched + HOUR), table.fetched + 24 * HOUR);
+    return now >= next;
+  }
+
   /* ---------- energy units: fuel in liters, electricity in kWh (kept in the liters field) ---------- */
   const unitOf = (r) => (r && r.unit === "kWh" ? "kWh" : "L");
   function primaryUnit(vehicle) { return vehicle && vehicle.fuel === "electric" ? "kWh" : "L"; }
@@ -533,6 +569,7 @@
     return {
       version: 2, lang: lang || "en", home: "MAD", rates: defaultRates("MAD"), vehicles: [], budget: 0, driverMode: false,
       reminders: [], onboarded: false, lastBackup: null, activeVehicle: null, priceAlerts: false, review: null, theme: "auto",
+      ratesAuto: true, // today's exchange rates downloaded once a day; off: the user types them
     };
   }
 
@@ -585,7 +622,7 @@
     }
     if (isNum(s.budget) && s.budget >= 0) out.budget = s.budget;
     out.reminders = (Array.isArray(s.reminders) ? s.reminders : []).map(cleanReminder).filter(Boolean).slice(0, 100);
-    flag("driverMode"); flag("onboarded"); flag("priceAlerts");
+    flag("driverMode"); flag("onboarded"); flag("priceAlerts"); flag("ratesAuto");
     if (typeof s.lastBackup === "string" && !isNaN(Date.parse(s.lastBackup))) out.lastBackup = s.lastBackup;
     if (typeof s.activeVehicle === "string") out.activeVehicle = s.activeVehicle;
     if (["auto", "light", "dark"].includes(s.theme)) out.theme = s.theme;
@@ -705,7 +742,7 @@
 
   const api = {
     MONTHS, pad, isoDate, parseDate, daysBetween, addDays, parseNum,
-    computeFuel, toHome, defaultRates, primaryUnit, sortFills, segments, pendingSinceFull, isoWeek, periodOf, aggregate,
+    computeFuel, toHome, defaultRates, RATES_URL, RATES_SOURCE, cleanRates, parseRates, liveRate, ratesDue, primaryUnit, sortFills, segments, pendingSinceFull, isoWeek, periodOf, aggregate,
     lastPriceChange, priceMayBeStale, priceDays, vehicleAverage, movingAverage, insights, stationStats, stationNames,
     tripCost, reminderStatus, latestOdo, lastFill, rolloverGuess, nextYear, scanFields, plausibility,
     CURRENCIES, BACKUP_FORMAT, sanitizeRecord, validRecord, migrateRecord, defaultSettings, sanitizeSettings, migrateSettings,

@@ -437,3 +437,68 @@ test("a store review is asked after 3 results, then rarely", () => {
   assert.equal(FT.shouldAskReview(5, { at: "2026-01-01", count: 3 }, "2026-10-17"), false); // not enough new results
   assert.equal(FT.shouldAskReview(6, { at: "2026-06-19", count: 3 }, "2026-10-17"), true); // exactly 120 days
 });
+
+/* ---------- online exchange rates ---------- */
+// The shape of ExchangeRate-API's answer (https://www.exchangerate-api.com/docs/free), trimmed.
+const ER = {
+  result: "success", provider: "https://www.exchangerate-api.com", base_code: "USD",
+  time_last_update_unix: 1793836801, time_next_update_unix: 1793923201,
+  rates: { USD: 1, MAD: 9.25, EUR: 0.86, GBP: 0.76, JPY: 153.4, "<b>": 3, XOF: -1, TND: "3" },
+};
+
+test("the rates service's answer becomes a clean table", () => {
+  const t = FT.parseRates(ER, 1793840000000);
+  assert.deepEqual(t, {
+    base: "USD", rates: { USD: 1, MAD: 9.25, EUR: 0.86, GBP: 0.76, JPY: 153.4 },
+    at: 1793836801000, next: 1793923201000, fetched: 1793840000000,
+  });
+  assert.deepEqual(FT.cleanRates(JSON.parse(JSON.stringify(t))), t); // what the phone keeps reads back the same
+  assert.equal(FT.parseRates({ result: "error", "error-type": "unsupported-code" }, 1), null);
+  assert.equal(FT.parseRates({ ...ER, rates: { USD: 1 } }, 1), null);
+  assert.equal(FT.parseRates({ ...ER, rates: { USD: 2, EUR: 1 } }, 1), null); // the base must be worth 1
+  assert.equal(FT.parseRates({ ...ER, base_code: "usd" }, 1), null);
+  assert.equal(FT.parseRates("<html>", 1), null);
+  assert.equal(FT.cleanRates({ base: "USD", rates: { USD: 1, EUR: 0.9 } }), null); // no download time
+  // Missing times fall back to the download time.
+  const bare = FT.parseRates({ result: "success", base_code: "USD", rates: { USD: 1, EUR: 0.9 } }, 5000);
+  assert.equal(bare.at, 5000); assert.equal(bare.next, null);
+});
+
+test("live rates convert through the table into the home currency", () => {
+  const t = FT.parseRates(ER, 1);
+  assert.equal(FT.liveRate(t, "EUR", "MAD"), 10.756); // 9.25 / 0.86, five significant digits
+  assert.equal(FT.liveRate(t, "USD", "MAD"), 9.25);
+  assert.equal(FT.liveRate(t, "MAD", "EUR"), 0.092973);
+  assert.equal(FT.liveRate(t, "JPY", "MAD"), 0.060300);
+  assert.equal(FT.liveRate(t, "MAD", "MAD"), null);
+  assert.equal(FT.liveRate(t, "TND", "MAD"), null); // not in the table: the typed rate is used
+  assert.equal(FT.liveRate(t, "EUR", "XAF"), null);
+  assert.equal(FT.liveRate(null, "EUR", "MAD"), null);
+  // A fill-up abroad converts at the rate it was saved with, which came from the table.
+  const rec = { currency: "EUR", rate: FT.liveRate(t, "EUR", "MAD"), rateHome: "MAD" };
+  close(FT.toHome(50, rec, { home: "MAD", rates: {} }), 537.8);
+});
+
+test("rates are downloaded again after the provider's next update, at most hourly and at least daily", () => {
+  const H = 36e5, t0 = 1793840000000;
+  const t = { base: "USD", rates: { USD: 1, EUR: 0.9 }, at: t0 - 2 * H, next: t0 + 20 * H, fetched: t0 };
+  assert.equal(FT.ratesDue(null, null, t0), true);
+  assert.equal(FT.ratesDue(t, null, t0 + 19 * H), false);
+  assert.equal(FT.ratesDue(t, null, t0 + 20 * H), true);
+  assert.equal(FT.ratesDue({ ...t, next: t0 - H }, null, t0 + 30 * 60e3), false); // the provider is late: wait an hour
+  assert.equal(FT.ratesDue({ ...t, next: t0 - H }, null, t0 + H), true);
+  assert.equal(FT.ratesDue({ ...t, next: t0 + 99 * H }, null, t0 + 24 * H), true); // never older than a day
+  assert.equal(FT.ratesDue({ ...t, next: null }, null, t0 + 23 * H), false);
+  assert.equal(FT.ratesDue(t, null, t0 - 1), true); // the clock went back
+  // After a failed try, 20 minutes' pause.
+  assert.equal(FT.ratesDue(null, t0, t0 + 19 * 60e3), false);
+  assert.equal(FT.ratesDue(null, t0, t0 + 20 * 60e3), true);
+});
+
+test("online rates are on by default and kept as the user set them", () => {
+  assert.equal(FT.defaultSettings().ratesAuto, true);
+  assert.equal(FT.sanitizeSettings({}).ratesAuto, true);
+  assert.equal(FT.sanitizeSettings({ ratesAuto: false }).ratesAuto, false);
+  assert.equal(FT.sanitizeSettings({ ratesAuto: "no" }).ratesAuto, true);
+  assert.equal(FT.migrateSettings({ home: "MAD", ratesAuto: false }, [], "en").ratesAuto, false);
+});

@@ -98,3 +98,31 @@ test("the back button listener is Android only", () => {
   phone({ App }, "android").onBack(() => {});
   assert.deepStrictEqual(added, ["backButton"]);
 });
+
+test("in the app, JSON downloads go through Capacitor's native HTTP", async () => {
+  const calls = [];
+  const CapacitorHttp = { get: async (o) => { calls.push(o); return { status: 200, data: o.url.endsWith("text") ? '{"a":1}' : { a: 2 } }; } };
+  const Native = phone({ CapacitorHttp });
+  assert.deepStrictEqual({ ...(await Native.getJson("https://x.test/obj")) }, { a: 2 });
+  assert.deepStrictEqual({ ...(await Native.getJson("https://x.test/text")) }, { a: 1 }); // a server that says text/plain
+  assert.strictEqual(calls[0].responseType, "json");
+  assert.ok(calls[0].connectTimeout > 0 && calls[0].readTimeout > 0);
+  const limited = phone({ CapacitorHttp: { get: async () => ({ status: 429, data: "" }) } });
+  await assert.rejects(limited.getJson("https://x.test/"), /429/);
+  const offline = phone({ CapacitorHttp: { get: async () => { throw new Error("Unable to resolve host"); } } });
+  await assert.rejects(offline.getJson("https://x.test/"), /resolve/);
+});
+
+test("in a browser, JSON downloads use fetch without cookies or referrer", async () => {
+  const seen = [];
+  const sandbox = {
+    document: {}, setTimeout, clearTimeout, URL, Blob, AbortController,
+    fetch: async (url, opts) => { seen.push([url, opts]); return { ok: url !== "bad", status: url === "bad" ? 503 : 200, json: async () => ({ ok: 1 }) }; },
+  };
+  sandbox.self = sandbox;
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../www/js/native.js"), "utf8"), sandbox);
+  assert.strictEqual((await sandbox.Native.getJson("good")).ok, 1);
+  assert.strictEqual(seen[0][1].credentials, "omit");
+  assert.strictEqual(seen[0][1].referrerPolicy, "no-referrer");
+  await assert.rejects(sandbox.Native.getJson("bad"), /503/);
+});
