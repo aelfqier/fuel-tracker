@@ -4,6 +4,99 @@
  "checked": "2026-11-08",
  "vehicles": [
   {
+   "id": "audi-a3-sedan-30-tdi-85-kw",
+   "brand": "Audi",
+   "model": "A3 Sedan",
+   "type": "car",
+   "variant": "30 TDI 85 kW",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 45,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/276/file_en/bd46610b9594c570478124efddf2315f43230e65/eTD-Audi-A3-Sedan-30-TDI-85kW_240424.pdf?1713949015",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, April 2024"
+  },
+  {
+   "id": "audi-a3-sportback-tfsi-e-200-kw-plug-in-hybrid",
+   "brand": "Audi",
+   "model": "A3 Sportback",
+   "type": "car",
+   "variant": "TFSI e 200 kW plug-in hybrid",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 40,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/1183/file_en/9c8d39ef4ae84402a0683333ddabb044fa2f2d6b/eTD-Audi-A3-Sportback-TFSIe-200kW_250929.pdf",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, Sept 2025",
+   "note": "plug-in hybrid"
+  },
+  {
+   "id": "audi-q2-30-tdi-85-kw",
+   "brand": "Audi",
+   "model": "Q2",
+   "type": "car",
+   "variant": "30 TDI 85 kW",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 50,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/1240/file_en/4a548632c1772afa67bff558c7f6f0d43592796e/eTD-Audi-Q2-30-TDI-85kW_250605.pdf?1749216832=",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, June 2025"
+  },
+  {
+   "id": "audi-q2-35-tfsi-110-kw",
+   "brand": "Audi",
+   "model": "Q2",
+   "type": "car",
+   "variant": "35 TFSI 110 kW",
+   "years": null,
+   "fuel": "essence",
+   "tank": 50,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/834/file_en/e1ca9c9578434c70c128c2b1635601cad96ddcdf/eTD-Audi-Q2-35-TFSI-110kW_250605.pdf?1749216828=",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, June 2025"
+  },
+  {
+   "id": "audi-q3-sportback-tfsi-s-tronic-110-kw",
+   "brand": "Audi",
+   "model": "Q3 Sportback",
+   "type": "car",
+   "variant": "TFSI S tronic 110 kW",
+   "years": null,
+   "fuel": "essence",
+   "tank": 55,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/1590/file_de/7f23ebe27b4dbd010ad9497ff3bf6d408794d430/eTD-Audi-Q3-Sportback-TFSI-S-tronic-110kW_260204.pdf",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, 2026"
+  },
+  {
+   "id": "audi-q5-tdi-quattro-150-kw",
+   "brand": "Audi",
+   "model": "Q5",
+   "type": "car",
+   "variant": "TDI quattro 150 kW",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 65,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/1119/file_en/7f879fa689e6211fe8e08cf0057f508e5cdd9b5b/eTD-Audi-Q5-SUV-TDI-quattro-S_tronic-150kW_251127.pdf?1764339303=&disposition=attachment",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, Nov 2025"
+  },
+  {
+   "id": "audi-q5-tfsi-e-quattro-270-kw-plug-in-hybrid",
+   "brand": "Audi",
+   "model": "Q5",
+   "type": "car",
+   "variant": "TFSI e quattro 270 kW plug-in hybrid",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 55,
+   "source": "https://uploads.audi-mediacenter.com/system/production/car_motorizations/1549/file_en/e1e17621438b5fef01965008385e3d79c65d1596/eTD-Audi-Q5-SUV-TFSI-e-hybrid-quattro-S_tronic-270kW_250612.pdf?1749710547=",
+   "checked": "2026-11-08",
+   "doc": "Audi technical data, June 2025",
+   "note": "plug-in hybrid"
+  },
+  {
    "id": "bajaj-boxer-150-bm-150",
    "brand": "Bajaj",
    "model": "Boxer 150",
@@ -44,6 +137,19 @@
    "doc": "Honduras"
   },
   {
+   "id": "bmw-1-series-120-123-xdrive-m135-xdrive-f70",
+   "brand": "BMW",
+   "model": "1 Series",
+   "type": "car",
+   "variant": "120, 123 xDrive, M135 xDrive (F70)",
+   "years": null,
+   "fuel": "essence",
+   "tank": 49,
+   "source": "https://www.bmw.co.uk/en/all-models/1-series/1-series-5doors/bmw-1-series-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
    "id": "bmw-3-series-320-saloon-320-m-sport-saloon",
    "brand": "BMW",
    "model": "3 Series",
@@ -55,6 +161,20 @@
    "source": "https://www.bmw.co.uk/en/all-models/3-series/3-series-saloon/bmw-3-series-saloon-technical-data.html",
    "checked": "2026-11-08",
    "doc": "UK"
+  },
+  {
+   "id": "bmw-5-series-530e-550e-xdrive-plug-in-hybrid-g60",
+   "brand": "BMW",
+   "model": "5 Series",
+   "type": "car",
+   "variant": "530e, 550e xDrive plug-in hybrid (G60)",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 60,
+   "source": "https://www.bmw.co.uk/en/all-models/5-series/saloon/bmw-5-series-saloon-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK",
+   "note": "plug-in hybrid"
   },
   {
    "id": "bmw-motorrad-c-400-gt",
@@ -111,6 +231,125 @@
    "checked": "2026-10-31",
    "doc": "UK",
    "note": "plug-in hybrid"
+  },
+  {
+   "id": "bmw-x3-20-xdrive-m50-xdrive-g45",
+   "brand": "BMW",
+   "model": "X3",
+   "type": "car",
+   "variant": "20 xDrive, M50 xDrive (G45)",
+   "years": null,
+   "fuel": "essence",
+   "tank": 65,
+   "source": "https://www.bmw.co.uk/en/all-models/x-models/x3/bmw-x3-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "bmw-x3-30e-xdrive-plug-in-hybrid-g45",
+   "brand": "BMW",
+   "model": "X3",
+   "type": "car",
+   "variant": "30e xDrive plug-in hybrid (G45)",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 50,
+   "source": "https://www.bmw.co.uk/en/all-models/x-models/x3/bmw-x3-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK",
+   "note": "plug-in hybrid"
+  },
+  {
+   "id": "bmw-x5-m60i-xdrive",
+   "brand": "BMW",
+   "model": "X5",
+   "type": "car",
+   "variant": "M60i xDrive",
+   "years": null,
+   "fuel": "essence",
+   "tank": 83,
+   "source": "https://www.bmw.co.uk/en/all-models/x-models/x5/bmw-x5-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "bmw-x5-xdrive30d-xdrive40d",
+   "brand": "BMW",
+   "model": "X5",
+   "type": "car",
+   "variant": "xDrive30d, xDrive40d",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.bmw.co.uk/en/all-models/x-models/x5/bmw-x5-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "bmw-x5-xdrive50e-plug-in-hybrid",
+   "brand": "BMW",
+   "model": "X5",
+   "type": "car",
+   "variant": "xDrive50e plug-in hybrid",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 69,
+   "source": "https://www.bmw.co.uk/en/all-models/x-models/x5/bmw-x5-technical-data.html",
+   "checked": "2026-11-08",
+   "doc": "UK",
+   "note": "plug-in hybrid"
+  },
+  {
+   "id": "chery-tiggo-4-1-5-hybrid-2026",
+   "brand": "Chery",
+   "model": "Tiggo 4",
+   "type": "car",
+   "variant": "1.5 Hybrid",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 51,
+   "source": "https://cherymotor.com.au/sites/default/files/2025-07/247_25_Tiggo_4_HEV_Spec_Sheet_v014.pdf",
+   "checked": "2026-11-08",
+   "doc": "Australia, MY26"
+  },
+  {
+   "id": "chery-tiggo-4-1-5-turbo-petrol-2026",
+   "brand": "Chery",
+   "model": "Tiggo 4",
+   "type": "car",
+   "variant": "1.5 turbo petrol",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 51,
+   "source": "https://cherymotor.com.au/sites/default/files/2025-05/207_25_Tiggo_4_Spec_Sheet_2025_v102.pdf",
+   "checked": "2026-11-08",
+   "doc": "Australia, MY26"
+  },
+  {
+   "id": "chery-tiggo-7-1-5-turbo-petrol-2026",
+   "brand": "Chery",
+   "model": "Tiggo 7",
+   "type": "car",
+   "variant": "1.5 turbo petrol",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 51,
+   "source": "https://cherymotor.com.au/sites/default/files/2025-09/139_24_Tiggo_7_ICE_Spec_Sheet_MY26_ver_108.pdf",
+   "checked": "2026-11-08",
+   "doc": "Australia, MY26"
+  },
+  {
+   "id": "chery-tiggo-8-pro-max-2-0-turbo-petrol-2024",
+   "brand": "Chery",
+   "model": "Tiggo 8 Pro Max",
+   "type": "car",
+   "variant": "2.0 turbo petrol",
+   "years": "2024",
+   "fuel": "essence",
+   "tank": 57,
+   "source": "https://cherymotor.com.au/sites/default/files/2025-09/012_24_Tiggo_8_Spec_Sheet_v112.pdf",
+   "checked": "2026-11-08",
+   "doc": "Australia, MY24"
   },
   {
    "id": "citroen-berlingo-1-5-bluehdi-100",
@@ -413,6 +652,71 @@
    "note": "pickup"
   },
   {
+   "id": "ford-ranger-2-0-turbo-diesel",
+   "brand": "Ford",
+   "model": "Ranger",
+   "type": "car",
+   "variant": "2.0 turbo diesel",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.ford.co.za/showroom/future-vehicle/ranger/models-specs/xlt-new/",
+   "checked": "2026-11-08",
+   "doc": "South Africa"
+  },
+  {
+   "id": "ford-ranger-3-0-v6-turbo-diesel",
+   "brand": "Ford",
+   "model": "Ranger",
+   "type": "car",
+   "variant": "3.0 V6 turbo diesel",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.ford.co.za/showroom/future-vehicle/ranger/models-specs/platinum-new/",
+   "checked": "2026-11-08",
+   "doc": "South Africa"
+  },
+  {
+   "id": "ford-tourneo-custom-2-2-tdci-2-0-diesel",
+   "brand": "Ford",
+   "model": "Tourneo Custom",
+   "type": "car",
+   "variant": "2.2 TDCi, 2.0 diesel",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.ford.co.za/content/dam/Ford/website-assets/latam/za/nameplate/tourneo-custom-2018/e-brochure/tourneo-range-brochure-q3-2020-all.pdf",
+   "checked": "2026-11-08",
+   "doc": "South Africa brochure, Q3 2020"
+  },
+  {
+   "id": "ford-transit-2-0-tdci",
+   "brand": "Ford",
+   "model": "Transit",
+   "type": "car",
+   "variant": "2.0 TDCi",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.ford.co.za/showroom/future-vehicle/transit-van/transit-van-350lwb/",
+   "checked": "2026-11-08",
+   "doc": "South Africa"
+  },
+  {
+   "id": "ford-transit-custom-2-2-tdci",
+   "brand": "Ford",
+   "model": "Transit Custom",
+   "type": "car",
+   "variant": "2.2 TDCi",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.ford.co.za/content/dam/Ford/website-assets/latam/za/nameplate/tourneo-custom-2018/e-brochure/tourneo-range-brochure-q3-2020-all.pdf",
+   "checked": "2026-11-08",
+   "doc": "South Africa brochure, Q3 2020"
+  },
+  {
    "id": "geely-emgrand-1-5-cvt",
    "brand": "Geely",
    "model": "Emgrand",
@@ -587,6 +891,19 @@
    "checked": "2026-11-08"
   },
   {
+   "id": "honda-civic-2-0-e-hev",
+   "brand": "Honda",
+   "model": "Civic",
+   "type": "car",
+   "variant": "2.0 e:HEV",
+   "years": null,
+   "fuel": "essence",
+   "tank": 40,
+   "source": "https://www.honda.co.uk/cars/new/civic-hybrid/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
    "id": "honda-cl500-2025",
    "brand": "Honda",
    "model": "CL500",
@@ -609,6 +926,33 @@
    "tank": 11.2,
    "source": "https://www.honda.co.uk/motorcycles/range/street/cmx500-rebel/specifications-and-price.html",
    "checked": "2026-10-31"
+  },
+  {
+   "id": "honda-cr-v-2-0-e-hev-awd",
+   "brand": "Honda",
+   "model": "CR-V",
+   "type": "car",
+   "variant": "2.0 e:HEV AWD",
+   "years": null,
+   "fuel": "essence",
+   "tank": 57,
+   "source": "https://www.honda.co.uk/cars/new/cr-v-hybrid-suv/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "honda-cr-v-2-0-plug-in-hybrid",
+   "brand": "Honda",
+   "model": "CR-V",
+   "type": "car",
+   "variant": "2.0 plug-in hybrid",
+   "years": null,
+   "fuel": "hybrid",
+   "tank": 46.5,
+   "source": "https://www.honda.co.uk/cars/new/plug-in-cr-v-hybrid-suv/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK",
+   "note": "plug-in hybrid"
   },
   {
    "id": "honda-crf1100l-africa-twin-2026",
@@ -657,6 +1001,45 @@
    "tank": 13.2,
    "source": "https://www.honda.co.uk/motorcycles/range/scooter/forza-750/specifications.html",
    "checked": "2026-11-08"
+  },
+  {
+   "id": "honda-hr-v-1-5-e-hev",
+   "brand": "Honda",
+   "model": "HR-V",
+   "type": "car",
+   "variant": "1.5 e:HEV",
+   "years": null,
+   "fuel": "essence",
+   "tank": 40,
+   "source": "https://www.honda.co.uk/cars/new/hr-v-hybrid/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "honda-hr-v-1-5-petrol-cvt",
+   "brand": "Honda",
+   "model": "HR-V",
+   "type": "car",
+   "variant": "1.5 petrol CVT",
+   "years": null,
+   "fuel": "essence",
+   "tank": 40,
+   "source": "https://cdn.honda.co.za/main-03/general/cars/hr-v/HR-V-1.5L-eHEV-CVT-Specification-Sheet.pdf",
+   "checked": "2026-11-08",
+   "doc": "South Africa"
+  },
+  {
+   "id": "honda-jazz-1-5-e-hev",
+   "brand": "Honda",
+   "model": "Jazz",
+   "type": "car",
+   "variant": "1.5 e:HEV",
+   "years": null,
+   "fuel": "essence",
+   "tank": 40,
+   "source": "https://www.honda.co.uk/cars/new/jazz-hybrid/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
   },
   {
    "id": "honda-msx125-grom-2026",
@@ -803,6 +1186,19 @@
    "checked": "2026-10-31"
   },
   {
+   "id": "honda-zr-v-2-0-e-hev",
+   "brand": "Honda",
+   "model": "ZR-V",
+   "type": "car",
+   "variant": "2.0 e:HEV",
+   "years": null,
+   "fuel": "essence",
+   "tank": 57,
+   "source": "https://www.honda.co.uk/cars/new/zr-v-hybrid-suv/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
    "id": "hyundai-accent-1-6-crdi",
    "brand": "Hyundai",
    "model": "Accent",
@@ -840,6 +1236,19 @@
    "source": "https://www.hyundai.com/content/dam/hyundai/ma/fr/data/marketing/brochure/product/creta/Hyundai-Creta-JAnvier-2020.pdf",
    "checked": "2026-10-31",
    "doc": "Morocco sheet Jan 2020"
+  },
+  {
+   "id": "hyundai-elantra-2-0-mpi-1-6-t-gdi",
+   "brand": "Hyundai",
+   "model": "Elantra",
+   "type": "car",
+   "variant": "2.0 MPi, 1.6 T-GDi",
+   "years": null,
+   "fuel": "essence",
+   "tank": 50,
+   "source": "https://www.hyundai.com/content/dam/hyundai/au/en/models/elantra/docs/Hyundai_Elantra_Specifications_Sheet.pdf",
+   "checked": "2026-11-08",
+   "doc": "Australia"
   },
   {
    "id": "hyundai-grand-i10-1-0",
@@ -1069,6 +1478,20 @@
    "note": "plug-in hybrid"
   },
   {
+   "id": "jeep-compass-1-4-multiair-1-6-and-2-0-multijet",
+   "brand": "Jeep",
+   "model": "Compass",
+   "type": "car",
+   "variant": "1.4 MultiAir, 1.6 and 2.0 MultiJet",
+   "years": null,
+   "fuel": null,
+   "tank": 60,
+   "source": "https://www.media.stellantis.com/uploads/em/2017/JEEP/Schede_tecniche/170606_Jeep_Tech_Specs_All_New_Compass.pdf",
+   "checked": "2026-11-08",
+   "doc": "Jeep press data, June 2017",
+   "note": "all-new Compass launched in 2017"
+  },
+  {
    "id": "jetour-t2-1-5t-2-0t",
    "brand": "Jetour",
    "model": "T2",
@@ -1174,6 +1597,19 @@
    "note": "listed as Carburant: Diesel (45L)"
   },
   {
+   "id": "kia-ceed-1-0-t-gdi-1-6-crdi",
+   "brand": "Kia",
+   "model": "Ceed",
+   "type": "car",
+   "variant": "1.0 T-GDi, 1.6 CRDi",
+   "years": null,
+   "fuel": null,
+   "tank": 50,
+   "source": "https://www.kia.com/content/dam/kwcms/kme/ie/en/assets/contents/utilty/brochure/spechsheet/Ceed-Specifications.pdf",
+   "checked": "2026-11-08",
+   "doc": "Ireland"
+  },
+  {
    "id": "kia-niro-1-6-gdi-plug-in-hybrid",
    "brand": "Kia",
    "model": "Niro",
@@ -1212,6 +1648,19 @@
    "source": "https://www.kia.com/uk/new-cars/picanto/specification/",
    "checked": "2026-10-31",
    "doc": "UK"
+  },
+  {
+   "id": "kia-rio-1-2-dpi-2022",
+   "brand": "Kia",
+   "model": "Rio",
+   "type": "car",
+   "variant": "1.2 DPi",
+   "years": "2022",
+   "fuel": "essence",
+   "tank": 45,
+   "source": "https://www.kia.com/content/dam/kwcms/kme/ie/en/assets/contents/utilty/brochure/spechsheet/Rio-Specifications-MY22.pdf",
+   "checked": "2026-11-08",
+   "doc": "Ireland, MY22"
   },
   {
    "id": "kia-seltos-1-5-mpi",
@@ -1439,6 +1888,162 @@
    "doc": "UK"
   },
   {
+   "id": "mazda-cx-3-2wd-2018",
+   "brand": "Mazda",
+   "model": "CX-3",
+   "type": "car",
+   "variant": "2WD",
+   "years": "2018",
+   "fuel": null,
+   "tank": 48,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-3/cx-3_8gt4ee18d/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2018"
+  },
+  {
+   "id": "mazda-cx-3-4wd-2018",
+   "brand": "Mazda",
+   "model": "CX-3",
+   "type": "car",
+   "variant": "4WD",
+   "years": "2018",
+   "fuel": null,
+   "tank": 44,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-3/cx-3_8gt4ee18d/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2018"
+  },
+  {
+   "id": "mazda-cx-30-awd-2020",
+   "brand": "Mazda",
+   "model": "CX-30",
+   "type": "car",
+   "variant": "AWD",
+   "years": "2020",
+   "fuel": "essence",
+   "tank": 48,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-30/cx-30_8jr4eo20f/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-cx-30-fwd-2020",
+   "brand": "Mazda",
+   "model": "CX-30",
+   "type": "car",
+   "variant": "FWD",
+   "years": "2020",
+   "fuel": "essence",
+   "tank": 51,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-30/cx-30_8jr4eo20f/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-cx-5-awd-2020",
+   "brand": "Mazda",
+   "model": "CX-5",
+   "type": "car",
+   "variant": "AWD",
+   "years": "2020",
+   "fuel": null,
+   "tank": 58,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-5/cx-5_8hy1eo20a/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-cx-5-fwd-2020",
+   "brand": "Mazda",
+   "model": "CX-5",
+   "type": "car",
+   "variant": "FWD",
+   "years": "2020",
+   "fuel": null,
+   "tank": 56,
+   "source": "https://owners-manual.mazda.com/gen/en/cx-5/cx-5_8hy1eo20a/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-mazda2-1-3-petrol-2018",
+   "brand": "Mazda",
+   "model": "Mazda2",
+   "type": "car",
+   "variant": "1.3 petrol",
+   "years": "2018",
+   "fuel": "essence",
+   "tank": 35,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda2/mazda2_8gl7ee18c/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2018"
+  },
+  {
+   "id": "mazda-mazda2-1-5-petrol-1-5-diesel-2018",
+   "brand": "Mazda",
+   "model": "Mazda2",
+   "type": "car",
+   "variant": "1.5 petrol, 1.5 diesel",
+   "years": "2018",
+   "fuel": null,
+   "tank": 44,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda2/mazda2_8gl7ee18c/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2018"
+  },
+  {
+   "id": "mazda-mazda3-awd-2020",
+   "brand": "Mazda",
+   "model": "Mazda3",
+   "type": "car",
+   "variant": "AWD",
+   "years": "2020",
+   "fuel": null,
+   "tank": 48,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda3/mazda3_8jr6ee20e/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-mazda3-fwd-2020",
+   "brand": "Mazda",
+   "model": "Mazda3",
+   "type": "car",
+   "variant": "FWD",
+   "years": "2020",
+   "fuel": null,
+   "tank": 51,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda3/mazda3_8jr6ee20e/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2020"
+  },
+  {
+   "id": "mazda-mazda6-2wd-2019",
+   "brand": "Mazda",
+   "model": "Mazda6",
+   "type": "car",
+   "variant": "2WD",
+   "years": "2019",
+   "fuel": null,
+   "tank": 62,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda6/mazda6_8hh3ee19c/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2019"
+  },
+  {
+   "id": "mazda-mazda6-4wd-2019",
+   "brand": "Mazda",
+   "model": "Mazda6",
+   "type": "car",
+   "variant": "4WD",
+   "years": "2019",
+   "fuel": null,
+   "tank": 52,
+   "source": "https://owners-manual.mazda.com/gen/en/mazda6/mazda6_8hh3ee19c/contents/10020104.html",
+   "checked": "2026-11-08",
+   "doc": "owner's manual, 2019"
+  },
+  {
    "id": "mercedes-benz-a-class-a-180-petrol",
    "brand": "Mercedes-Benz",
    "model": "A-Class",
@@ -1464,6 +2069,45 @@
    "checked": "2026-10-31",
    "doc": "EU sheet Jan 2025",
    "note": "PHEV not separately confirmed"
+  },
+  {
+   "id": "mg-mg3-1-5-hybrid",
+   "brand": "MG",
+   "model": "MG3",
+   "type": "car",
+   "variant": "1.5 Hybrid+",
+   "years": null,
+   "fuel": "essence",
+   "tank": 36,
+   "source": "https://cdn.mgmotor.eu/files/Fiche-Produit-MG3-Hybrid-1.pdf",
+   "checked": "2026-11-08",
+   "doc": "France price list, April 2026"
+  },
+  {
+   "id": "mg-zs-1-5-petrol",
+   "brand": "MG",
+   "model": "ZS",
+   "type": "car",
+   "variant": "1.5 petrol",
+   "years": null,
+   "fuel": "essence",
+   "tank": 55,
+   "source": "https://cdn.mgmotor.eu/files/MG_ZS_BROCHURE_22_APRILE_2025_DEF-compressed.pdf",
+   "checked": "2026-11-08",
+   "doc": "Italy brochure, April 2025"
+  },
+  {
+   "id": "mg-zs-hybrid",
+   "brand": "MG",
+   "model": "ZS",
+   "type": "car",
+   "variant": "Hybrid+",
+   "years": null,
+   "fuel": "essence",
+   "tank": 41,
+   "source": "https://cdn.mgmotor.eu/files/MG_ZS_BROCHURE_22_APRILE_2025_DEF-compressed.pdf",
+   "checked": "2026-11-08",
+   "doc": "Italy brochure, April 2025"
   },
   {
    "id": "mitsubishi-l200-triton-2-4-di-d",
@@ -1532,6 +2176,46 @@
    "doc": "UK"
   },
   {
+   "id": "nissan-navara-2-5-ddti-double-cab",
+   "brand": "Nissan",
+   "model": "Navara",
+   "type": "car",
+   "variant": "2.5 DDTi Double Cab",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 80,
+   "source": "https://www.nissan.co.za/vehicles/new/navara/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "South Africa"
+  },
+  {
+   "id": "nissan-patrol-all-new-patrol-3-8-v6-3-5-v6-twin-turbo",
+   "brand": "Nissan",
+   "model": "Patrol",
+   "type": "car",
+   "variant": "All New Patrol, 3.8 V6, 3.5 V6 twin turbo",
+   "years": null,
+   "fuel": "essence",
+   "tank": 97,
+   "source": "https://en.nissan.com.eg/vehicles/new/allnewpatrol/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "Egypt"
+  },
+  {
+   "id": "nissan-patrol-v6-v8-petrol",
+   "brand": "Nissan",
+   "model": "Patrol",
+   "type": "car",
+   "variant": "V6, V8 petrol",
+   "years": null,
+   "fuel": "essence",
+   "tank": 140,
+   "source": "https://en.nissan.com.eg/vehicles/new/patrol/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "Egypt",
+   "note": "100 L main tank plus 40 L sub tank"
+  },
+  {
    "id": "nissan-qashqai-1-3-dig-t-mild-hybrid",
    "brand": "Nissan",
    "model": "Qashqai",
@@ -1597,6 +2281,112 @@
    "doc": "Australia, MY24"
   },
   {
+   "id": "opel-astra-1-5-diesel-130-2026",
+   "brand": "Opel",
+   "model": "Astra",
+   "type": "car",
+   "variant": "1.5 Diesel 130",
+   "years": "2026",
+   "fuel": "gasoil",
+   "tank": 52,
+   "source": "https://www.opel.de/hub/datasheet/astra-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
+   "id": "opel-astra-hybrid-145-2026",
+   "brand": "Opel",
+   "model": "Astra",
+   "type": "car",
+   "variant": "Hybrid 145",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 52,
+   "source": "https://www.opel.de/hub/datasheet/astra-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
+   "id": "opel-astra-plug-in-hybrid-196-2026",
+   "brand": "Opel",
+   "model": "Astra",
+   "type": "car",
+   "variant": "Plug-in Hybrid 196",
+   "years": "2026",
+   "fuel": "hybrid",
+   "tank": 42,
+   "source": "https://www.opel.de/hub/datasheet/astra-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26",
+   "note": "plug-in hybrid"
+  },
+  {
+   "id": "opel-corsa-turbo-100-hybrid-110-145-2026",
+   "brand": "Opel",
+   "model": "Corsa",
+   "type": "car",
+   "variant": "Turbo 100, Hybrid 110/145",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 45,
+   "source": "https://www.opel.de/hub/datasheet/corsa-my26-gb.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
+   "id": "opel-frontera-turbo-100-hybrid-145-2026",
+   "brand": "Opel",
+   "model": "Frontera",
+   "type": "car",
+   "variant": "Turbo 100, Hybrid 145",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 44,
+   "source": "https://www.opel.de/hub/datasheet/frontera-my26-gb.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
+   "id": "opel-grandland-hybrid-145-2026",
+   "brand": "Opel",
+   "model": "Grandland",
+   "type": "car",
+   "variant": "Hybrid 145",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 55,
+   "source": "https://www.opel.de/hub/datasheet/grandland-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
+   "id": "opel-grandland-plug-in-hybrid-225-2026",
+   "brand": "Opel",
+   "model": "Grandland",
+   "type": "car",
+   "variant": "Plug-in Hybrid 225",
+   "years": "2026",
+   "fuel": "hybrid",
+   "tank": 55,
+   "source": "https://www.opel.de/hub/datasheet/grandland-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26",
+   "note": "plug-in hybrid"
+  },
+  {
+   "id": "opel-mokka-turbo-136-hybrid-145-2026",
+   "brand": "Opel",
+   "model": "Mokka",
+   "type": "car",
+   "variant": "Turbo 136, Hybrid 145",
+   "years": "2026",
+   "fuel": "essence",
+   "tank": 44,
+   "source": "https://www.opel.de/hub/datasheet/mokka-my26-de.html",
+   "checked": "2026-11-08",
+   "doc": "Opel datasheet MY26"
+  },
+  {
    "id": "peugeot-2008-hybrid-110-145-turbo-100",
    "brand": "Peugeot",
    "model": "2008",
@@ -1619,6 +2409,20 @@
    "tank": 44,
    "source": "https://www.peugeot.fr/content/dam/peugeot/france/b2c/documentation/catalogues/brochure/old/ct-208-applicable-au-1er-decembre-2025.pdf",
    "checked": "2026-10-31"
+  },
+  {
+   "id": "peugeot-3008-hybrid-136-e-dcs6",
+   "brand": "Peugeot",
+   "model": "3008",
+   "type": "car",
+   "variant": "Hybrid 136 e-DCS6",
+   "years": null,
+   "fuel": "essence",
+   "tank": 55,
+   "source": "https://www.peugeot.fr/content/dam/peugeot/france/b2c/documentation/catalogues/2403/CT_-_Nouveau_3008_-_Applicable_au_04_mars_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "France price list, March 2024",
+   "note": "new 3008 of 2024"
   },
   {
    "id": "peugeot-308-bluehdi-130-eat8",
@@ -1706,6 +2510,19 @@
    "source": "https://www.peugeot.fr/content/dam/peugeot/france/b2c/documentation/catalogues/brochure/ct-5008-applicable-au-04-mai-2026.pdf",
    "checked": "2026-10-31",
    "note": "plug-in hybrid"
+  },
+  {
+   "id": "peugeot-boxer-2-2-bluehdi",
+   "brand": "Peugeot",
+   "model": "Boxer",
+   "type": "car",
+   "variant": "2.2 BlueHDi",
+   "years": null,
+   "fuel": "gasoil",
+   "tank": 90,
+   "source": "https://www.peugeot.ma/content/dam/peugeot/morocco/brochure/new-fiche-technique/fiche-technique-Boxer.pdf",
+   "checked": "2026-11-08",
+   "doc": "Morocco, March 2025"
   },
   {
    "id": "peugeot-expert-bluehdi-120-145-180",
@@ -1866,6 +2683,19 @@
    "checked": "2026-10-31",
    "doc": "Euro 5 sheet, UK, 2021",
    "note": "including 1.5 L reserve"
+  },
+  {
+   "id": "renault-arkana-e-tech-full-hybrid-145",
+   "brand": "Renault",
+   "model": "Arkana",
+   "type": "car",
+   "variant": "E-Tech full hybrid 145",
+   "years": null,
+   "fuel": "essence",
+   "tank": 50,
+   "source": "https://www.renault.ma/vehicules-hybrides/arkana/specifications.html",
+   "checked": "2026-11-08",
+   "doc": "Morocco"
   },
   {
    "id": "renault-austral-full-hybrid-e-tech-200",
@@ -2041,6 +2871,32 @@
    "doc": "spec sheet"
   },
   {
+   "id": "seat-arona-all-engines",
+   "brand": "Seat",
+   "model": "Arona",
+   "type": "car",
+   "variant": "all engines",
+   "years": null,
+   "fuel": null,
+   "tank": 40,
+   "source": "https://mundoseat.seat.com/mediacenter_netstor/seat-media-center/global_site/img/Models/Arona/GD2/TS_New_SEAT_Arona_EN.pdf",
+   "checked": "2026-11-08",
+   "doc": "SEAT press data, launch"
+  },
+  {
+   "id": "seat-ateca-1-4-tsi-150-2-0-tsi-190-2-0-tdi-143-190",
+   "brand": "Seat",
+   "model": "Ateca",
+   "type": "car",
+   "variant": "1.4 TSI 150, 2.0 TSI 190, 2.0 TDI 143/190",
+   "years": null,
+   "fuel": null,
+   "tank": 50,
+   "source": "https://mundoseat.seat.com/mediacenter_netstor/seat-media-center/global_site/documents/Ateca/en/Technical_Specifications_SEAT_ATECA_EN.pdf",
+   "checked": "2026-11-08",
+   "doc": "SEAT press data, launch"
+  },
+  {
    "id": "seat-ibiza-1-0-mpi-75-1-0-tsi-95-115",
    "brand": "Seat",
    "model": "Ibiza",
@@ -2053,6 +2909,58 @@
    "checked": "2026-11-08",
    "doc": "SEAT media centre",
    "note": "fifth-generation Ibiza (2017-)"
+  },
+  {
+   "id": "seat-leon-1-5-tsi-115",
+   "brand": "Seat",
+   "model": "Leon",
+   "type": "car",
+   "variant": "1.5 TSI 115",
+   "years": null,
+   "fuel": "essence",
+   "tank": 45,
+   "source": "https://seat.co.uk/new-cars/leon/technical-data",
+   "checked": "2026-11-08",
+   "doc": "UK"
+  },
+  {
+   "id": "skoda-fabia-3-petrol-engines",
+   "brand": "Skoda",
+   "model": "Fabia 3",
+   "type": "car",
+   "variant": "petrol engines",
+   "years": null,
+   "fuel": "essence",
+   "tank": 45,
+   "source": "https://cdn.skoda-storyboard.com/2019/12/TD-FABIA-petrol-en.pdf",
+   "checked": "2026-11-08",
+   "doc": "Skoda technical data, Nov 2020"
+  },
+  {
+   "id": "skoda-fabia-4-optional-50-l-tank",
+   "brand": "Skoda",
+   "model": "Fabia 4",
+   "type": "car",
+   "variant": "optional 50 L tank",
+   "years": null,
+   "fuel": "essence",
+   "tank": 50,
+   "source": "https://cdn.skoda-storyboard.com/2021/08/Press_Kit_SKODA_FABIA_ML.pdf",
+   "checked": "2026-11-08",
+   "doc": "Skoda press kit, 2021"
+  },
+  {
+   "id": "skoda-fabia-4-standard-tank",
+   "brand": "Skoda",
+   "model": "Fabia 4",
+   "type": "car",
+   "variant": "standard tank",
+   "years": null,
+   "fuel": "essence",
+   "tank": 40,
+   "source": "https://cdn.skoda-storyboard.com/2021/08/Press_Kit_SKODA_FABIA_ML.pdf",
+   "checked": "2026-11-08",
+   "doc": "Skoda press kit, 2021"
   },
   {
    "id": "skoda-kamiq-1-0-1-5-tsi",
@@ -2147,6 +3055,19 @@
    "source": "https://cdn.skoda-storyboard.com/2025/02/Octavia_EN_ed9ab7ae.pdf",
    "checked": "2026-10-31",
    "doc": "Feb 2025"
+  },
+  {
+   "id": "skoda-superb-3-all-petrol-and-diesel-engines-4x4",
+   "brand": "Skoda",
+   "model": "Superb 3",
+   "type": "car",
+   "variant": "all petrol and diesel engines, 4x4",
+   "years": null,
+   "fuel": null,
+   "tank": 66,
+   "source": "https://cdn.skoda-storyboard.com/2017/07/TD-SUPERB-en.pdf.pdf",
+   "checked": "2026-11-08",
+   "doc": "Skoda technical data, May 2017"
   },
   {
    "id": "suzuki-address-110-2026",
@@ -3220,8 +4141,8 @@
   },
   {
    "brand": "Peugeot",
-   "models": "3008",
-   "reason": "official technical PDF row present but value could not be read"
+   "models": "3008 (2016-2023), 301",
+   "reason": "Peugeot Morocco sheets checked list no tank; the new 3008 hybrid comes from the French price list"
   },
   {
    "brand": "Kia",
@@ -3239,9 +4160,9 @@
    "reason": "official sheet does not map 50/55 L values to engines"
   },
   {
-   "brand": "Seat/Cupra",
+   "brand": "Cupra",
    "models": "all",
-   "reason": "seat.co.uk spec pages list no tank capacity; one page failed to load"
+   "reason": "no official page with a readable tank figure found yet (Seat Ibiza, Leon, Arona and Ateca are listed)"
   },
   {
    "brand": "Fiat",
@@ -3249,29 +4170,14 @@
    "reason": "fiat.fr/fiat.ma pages list no tank or failed to load (Tipo, 500 and 500X come from fiat.dz)"
   },
   {
-   "brand": "Suzuki",
-   "models": "Jimny, Vitara",
-   "reason": "official UK PDF value not readable / not checked"
-  },
-  {
    "brand": "Chery",
-   "models": "Tiggo 2/4/7/8 Pro",
-   "reason": "cheryinternational.com and chery.co.za brochures list no tank capacity"
-  },
-  {
-   "brand": "Opel",
-   "models": "all",
-   "reason": "opel.fr technical PDFs blocked to automated reading (robots)"
+   "models": "Tiggo 2 Pro, Moroccan Tiggo 4/7/8 Pro versions",
+   "reason": "cheryinternational.com and chery.co.za brochures list no tank capacity; Tiggo 4, Tiggo 7 and Tiggo 8 Pro Max come from Chery Australia"
   },
   {
    "brand": "Ford",
-   "models": "Ranger, Puma, Kuga",
-   "reason": "ford.co.uk price lists list no tank capacity; Ford media PDFs blocked to automated reading"
-  },
-  {
-   "brand": "Nissan",
-   "models": "Navara",
-   "reason": "official UK page lists no tank capacity"
+   "models": "Puma, Kuga, Focus",
+   "reason": "ford.co.uk price lists list no tank capacity; Ranger, Transit and Tourneo Custom come from Ford South Africa"
   },
   {
    "brand": "Kia",
@@ -3280,28 +4186,28 @@
   },
   {
    "brand": "Toyota",
-   "models": "Hilux Morocco variants, Corolla Cross",
+   "models": "Hilux Morocco variants",
    "reason": "only UK sheets checked"
   },
   {
    "brand": "Audi",
-   "models": "all",
-   "reason": "only old press sheets found (2001-2014 models), not used"
+   "models": "A1, A4, A6, Q7 and other models",
+   "reason": "not checked yet; A3, Q2, Q3 Sportback and Q5 come from Audi technical data sheets"
   },
   {
    "brand": "Mercedes-Benz",
    "models": "other models",
-   "reason": "only A 180 checked"
+   "reason": "mercedes-benz.co.uk model pages list no tank capacity; only A 180 found"
   },
   {
    "brand": "BMW",
-   "models": "other models",
-   "reason": "only X1 plug-in hybrid checked"
+   "models": "petrol X1, diesel 1/3/5 Series, other models",
+   "reason": "not listed on the bmw.co.uk technical data pages checked"
   },
   {
-   "brand": "Jeep, BYD (DM-i)",
+   "brand": "BYD (DM-i)",
    "models": "all",
-   "reason": "official pages checked list no readable tank figure"
+   "reason": "the tank row is unreadable in the official Atto 2 DM-i and Sealion 5 DM-i spec sheets"
   },
   {
    "brand": "Yamaha",
@@ -3335,18 +4241,28 @@
   },
   {
    "brand": "Hyundai",
-   "models": "Accent (2024-), Elantra",
+   "models": "Accent (2024-)",
    "reason": "hyundai.com/ma specification tables did not load; the Gulf brochure lists no tank"
   },
   {
-   "brand": "Opel, Ford, Mercedes-Benz, Audi",
-   "models": "all",
-   "reason": "no official page or document with a readable tank figure found in this pass"
+   "brand": "Mazda",
+   "models": "BT-50, CX-60, new CX-5",
+   "reason": "not found in the Mazda owner's manuals checked"
   },
   {
-   "brand": "Mazda, Honda (cars)",
-   "models": "all",
-   "reason": "not found on the official pages checked"
+   "brand": "Jeep",
+   "models": "Renegade, Avenger, Wrangler, new Compass",
+   "reason": "not found on official pages checked; the 2017 Compass comes from Stellantis press data"
+  },
+  {
+   "brand": "Renault",
+   "models": "Express, Megane Sedan, Taliant",
+   "reason": "renault.ma spec pages list no tank capacity"
+  },
+  {
+   "brand": "Citroën",
+   "models": "C-Elysée, Jumpy, Jumper",
+   "reason": "citroen.ma pages failed to load or list no tank capacity"
   }
  ]
 }
