@@ -94,14 +94,11 @@ b, strong { font-weight: 700; }
 /* ---------- header ---------- */
 header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 2px 2px; }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.mark {
-  width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none;
-  background: radial-gradient(90% 90% at 50% 30%, #1d2433, #111216); border: 1px solid rgba(255, 255, 255, .08);
-  box-shadow: 0 8px 20px -10px rgba(31, 98, 255, .7), inset 0 1px 0 rgba(255, 255, 255, .08);
-}
-.mark svg { width: 30px; height: 30px; }
 .brand-text { display: grid; min-width: 0; }
-h1 { font-weight: 800; font-size: 1.5rem; letter-spacing: -.035em; margin: 0; line-height: 1.05; }
+/* The bnzn wordmark is drawn (#i-wordmark in index.html); the name stays in the h1 for screen readers. */
+.wordmark { --wm-h: 34px; margin: 0 0 5px; line-height: 0; color: var(--fg); }
+.wordmark svg { display: block; height: var(--wm-h); width: calc(var(--wm-h) * 4.997); }
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .status { font-size: .78rem; color: var(--muted); margin: 0; font-weight: 500; line-height: 1.35; }
 .status b { color: var(--ok); font-size: .7em; vertical-align: 1px; margin-inline-end: 2px; }
 
@@ -141,6 +138,8 @@ h3::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 }
 .hico svg { width: 19px; height: 19px; }
 .hico.ok { background: var(--ok-soft); color: var(--ok); }
+.hico.app { background: radial-gradient(90% 90% at 50% 30%, #1d2433, #111216); border: 1px solid rgba(255, 255, 255, .08); }
+.hico.app svg { width: 30px; height: 30px; }
 
 /* ---------- form fields ---------- */
 .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
@@ -540,7 +539,7 @@ dialog h2 { font-size: 1.3rem; }
   box-shadow: 0 26px 56px -18px rgba(31, 98, 255, .8), 0 0 0 10px rgba(80, 150, 255, .08), inset 0 1px 0 rgba(255, 255, 255, .08);
 }
 .welcome .logo svg { width: 80px; height: 80px; }
-.welcome h1 { font-size: 2.6rem; letter-spacing: -.05em; }
+.welcome .wordmark { --wm-h: 58px; margin: 4px 0 0; }
 .welcome .lead { color: var(--fg-2); margin: 0; font-size: 1.04rem; line-height: 1.5; max-width: 30ch; font-weight: 550; }
 .welcome h2 { font-size: 1.5rem; letter-spacing: -.03em; }
 .w-step { display: grid; gap: 4px; }

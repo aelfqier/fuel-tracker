@@ -1,20 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- bnzn: an electric-blue fuel drop under an efficiency dial, on graphite. Rendered to icon-only.png for npx capacitor-assets generate. -->
-  <defs>
-    <radialGradient id="bg" cx="50%" cy="34%" r="80%"><stop offset="0" stop-color="#1b2232"/><stop offset=".55" stop-color="#16181c"/><stop offset="1" stop-color="#0b0c0f"/></radialGradient>
-    <radialGradient id="glow" cx="50%" cy="58%" r="38%"><stop offset="0" stop-color="#2f86ff" stop-opacity=".5"/><stop offset="1" stop-color="#2f86ff" stop-opacity="0"/></radialGradient>
-    <linearGradient id="arc" x1="210" y1="0" x2="814" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3ddc84"/><stop offset=".45" stop-color="#ffc53d"/><stop offset=".75" stop-color="#ff8a1f"/><stop offset="1" stop-color="#ff4d4d"/></linearGradient>
-    <linearGradient id="drop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6fd6ff"/><stop offset=".55" stop-color="#2f86ff"/><stop offset="1" stop-color="#1a4fff"/></linearGradient>
-    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
-  </defs>
-  <rect width="1024" height="1024" fill="url(#bg)"/>
-  <circle cx="512" cy="600" r="360" fill="url(#glow)"/>
-  <g id="mark">
-    <path d="M247.4 712.8 A 302 302 0 1 1 776.6 712.8" fill="none" stroke="#ffffff" stroke-opacity=".09" stroke-width="58" stroke-linecap="round"/>
-    <path d="M247.4 712.8 A 302 302 0 0 1 512 258" fill="none" stroke="url(#arc)" stroke-width="58" stroke-linecap="round"/>
-    <path d="M247.4 712.8 A 302 302 0 0 1 512 258" fill="none" stroke="url(#arc)" stroke-width="58" stroke-linecap="round" filter="url(#soft)" opacity=".7"/>
-    <circle cx="512" cy="258" r="40" fill="#fff" stroke="#4d9bff" stroke-width="16"/>
-    <path d="M512 400 C 512 400 404 528 404 610 A 108 108 0 0 0 620 610 C 620 528 512 400 512 400 Z" fill="url(#drop)"/>
-    <path d="M470 600 a 46 46 0 0 0 30 52" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="16" stroke-linecap="round"/>
-  </g>
+  <!-- bnzn app icon: the slanted b of the wordmark with an electric-blue counter, on graphite. Source of icon-only.png, icon-foreground.png (mark only) and icon-background.png (graphite only); see README. -->
+  <defs><radialGradient id="bg" cx="50%" cy="34%" r="80%"><stop offset="0" stop-color="#1b2232"/><stop offset=".55" stop-color="#16181c"/><stop offset="1" stop-color="#0b0c0f"/></radialGradient><radialGradient id="glow" cx="50%" cy="58%" r="38%"><stop offset="0" stop-color="#2f86ff" stop-opacity=".45"/><stop offset="1" stop-color="#2f86ff" stop-opacity="0"/></radialGradient></defs><rect width="1024" height="1024" fill="url(#bg)"/><circle cx="512" cy="580" r="380" fill="url(#glow)"/>
+  <g id="mark"><defs><linearGradient id="bzig" gradientUnits="userSpaceOnUse" x1="700" y1="-821" x2="1486" y2="-352"><stop offset="0" stop-color="#6fd6ff"/><stop offset=".55" stop-color="#2f86ff"/><stop offset="1" stop-color="#1a4fff"/></linearGradient></defs><g transform="translate(169.3 755.2) scale(0.31671)"><path fill="url(#bzig)" d="M710 -631Q719 -691 860.5 -756Q1002 -821 1158 -821Q1334 -821 1414.5 -757Q1495 -693 1486 -596Q1476 -488 1364.5 -420Q1253 -352 1077 -352Q921 -352 802.5 -418Q684 -484 694 -544L560 -544L580 -631Z"/><g fill="#fff"><path transform="translate(0 0)" d="M40 0H580L628 -156L876 -1570H316Z"/><path transform="translate(0 0)" d="M1183 9Q1507 9 1767.5 -143.5Q2028 -296 2058 -610Q2082 -890 1899.5 -1036.5Q1717 -1183 1393 -1183Q1055 -1183 793.5 -1059.0Q532 -935 521 -871L710 -631Q719 -691 860.5 -756.0Q1002 -821 1158 -821Q1334 -821 1414.5 -757.0Q1495 -693 1486 -596Q1476 -488 1364.5 -420.0Q1253 -352 1077 -352Q921 -352 802.5 -418.0Q684 -484 694 -544L420 -302Q407 -238 626.0 -114.5Q845 9 1183 9Z"/></g></g></g>
 </svg>
