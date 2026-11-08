@@ -1862,6 +1862,19 @@
    "doc": "UK"
   },
   {
+   "id": "kymco-agility-s-125",
+   "brand": "Kymco",
+   "model": "Agility S 125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 7,
+   "source": "https://www.kymco.fr/fr/scooters/agility-s-125/",
+   "checked": "2026-11-08",
+   "doc": "France"
+  },
+  {
    "id": "kymco-dt-x360-125",
    "brand": "Kymco",
    "model": "DT X360 125",
@@ -1873,6 +1886,19 @@
    "source": "https://www.kymco.co.uk/scooters-and-motorcycles-range/dtx-360/dtx-360-125",
    "checked": "2026-10-31",
    "doc": "UK"
+  },
+  {
+   "id": "kymco-people-s-125-150",
+   "brand": "Kymco",
+   "model": "People S",
+   "type": "bike",
+   "variant": "125, 150",
+   "years": null,
+   "fuel": "essence",
+   "tank": 6.2,
+   "source": "https://www.kymco.com/uploads/products/pdf/KYMCO%20People%20S%20125_150%20%E5%9E%8B%E9%8C%84.pdf",
+   "checked": "2026-11-08",
+   "doc": "Kymco press information"
   },
   {
    "id": "kymco-x-town-125",
@@ -3083,6 +3109,19 @@
    "doc": "2026 Australia"
   },
   {
+   "id": "suzuki-address-125",
+   "brand": "Suzuki",
+   "model": "Address 125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 5.3,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2025address125/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
+  },
+  {
    "id": "suzuki-avenis-125-2024",
    "brand": "Suzuki",
    "model": "Avenis 125",
@@ -3107,6 +3146,58 @@
    "source": "https://www.suzukiauto.co.za/cars/baleno/specs",
    "checked": "2026-11-08",
    "doc": "South Africa"
+  },
+  {
+   "id": "suzuki-burgman-200",
+   "brand": "Suzuki",
+   "model": "Burgman 200",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 10.5,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2022burgman200/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
+  },
+  {
+   "id": "suzuki-burgman-400",
+   "brand": "Suzuki",
+   "model": "Burgman 400",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 13.5,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027burgman400/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
+  },
+  {
+   "id": "suzuki-burgman-street-125",
+   "brand": "Suzuki",
+   "model": "Burgman Street 125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 5.5,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027burgman-street-125/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
+  },
+  {
+   "id": "suzuki-burgman-street-125ex",
+   "brand": "Suzuki",
+   "model": "Burgman Street 125EX",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 5.5,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2026burgman-street-125ex/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global, European spec"
   },
   {
    "id": "suzuki-celerio-1-0-vvt",
@@ -3146,6 +3237,19 @@
    "source": "https://suzukimotorcycles.com.au/range/off-road/dr150/",
    "checked": "2026-11-08",
    "doc": "2026 Australia"
+  },
+  {
+   "id": "suzuki-dr200s",
+   "brand": "Suzuki",
+   "model": "DR200S",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 12.5,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2024dr200s/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
   },
   {
    "id": "suzuki-dzire-1-2-z12e",
@@ -3252,6 +3356,19 @@
    "doc": "2024 Australia"
   },
   {
+   "id": "suzuki-gsx-r125",
+   "brand": "Suzuki",
+   "model": "GSX-R125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 11,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027gsx-r125/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global, European spec"
+  },
+  {
    "id": "suzuki-gsx-s1000-2026",
    "brand": "Suzuki",
    "model": "GSX-S1000",
@@ -3263,6 +3380,45 @@
    "source": "https://suzukimotorcycles.com.au/range/road/gsx-s1000/",
    "checked": "2026-11-08",
    "doc": "2026 Australia"
+  },
+  {
+   "id": "suzuki-gsx-s1000gt",
+   "brand": "Suzuki",
+   "model": "GSX-S1000GT",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 19,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027gsx-s1000gt/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global, European spec"
+  },
+  {
+   "id": "suzuki-gsx-s125",
+   "brand": "Suzuki",
+   "model": "GSX-S125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 11,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027gsx-s125/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global, European spec"
+  },
+  {
+   "id": "suzuki-gsx250r",
+   "brand": "Suzuki",
+   "model": "GSX250R",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 15,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2026gsx250r/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
   },
   {
    "id": "suzuki-hayabusa-2027",
@@ -3302,6 +3458,19 @@
    "source": "https://www.suzuki.co.nz/Specifications/Jimny",
    "checked": "2026-11-08",
    "doc": "New Zealand"
+  },
+  {
+   "id": "suzuki-katana",
+   "brand": "Suzuki",
+   "model": "Katana",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 12,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027katana/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
   },
   {
    "id": "suzuki-s-cross-1-4-boosterjet-hybrid",
@@ -3410,6 +3579,19 @@
    "doc": "2025 Australia"
   },
   {
+   "id": "suzuki-v-strom-800",
+   "brand": "Suzuki",
+   "model": "V-Strom 800",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 20,
+   "source": "https://www.globalsuzuki.com/motorcycle/smgs/products/2027v-strom800/",
+   "checked": "2026-11-08",
+   "doc": "Suzuki global"
+  },
+  {
    "id": "suzuki-v-strom-800de-2027",
    "brand": "Suzuki",
    "model": "V-Strom 800DE",
@@ -3434,6 +3616,123 @@
    "source": "https://www.suzuki.co.nz/Specifications/Vitara-Hybrid",
    "checked": "2026-11-08",
    "doc": "New Zealand"
+  },
+  {
+   "id": "sym-cruisym-125-300",
+   "brand": "SYM",
+   "model": "Cruisym α",
+   "type": "bike",
+   "variant": "125, 300",
+   "years": null,
+   "fuel": "essence",
+   "tank": 12,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-fiddle-iv-125-50",
+   "brand": "SYM",
+   "model": "Fiddle IV",
+   "type": "bike",
+   "variant": "125, 50",
+   "years": null,
+   "fuel": "essence",
+   "tank": 6.2,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-jet-14-125-50",
+   "brand": "SYM",
+   "model": "Jet 14",
+   "type": "bike",
+   "variant": "125, 50",
+   "years": null,
+   "fuel": "essence",
+   "tank": 7.5,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-jet-14-evo-125",
+   "brand": "SYM",
+   "model": "Jet 14 EVO 125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 7.2,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-jet-x-125",
+   "brand": "SYM",
+   "model": "Jet X 125",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 7.5,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-joymax-z-125-300",
+   "brand": "SYM",
+   "model": "Joymax Z+",
+   "type": "bike",
+   "variant": "125, 300",
+   "years": null,
+   "fuel": "essence",
+   "tank": 12,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-mio-50",
+   "brand": "SYM",
+   "model": "Mio 50",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 5.2,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-orbit-iii-50",
+   "brand": "SYM",
+   "model": "Orbit III 50",
+   "type": "bike",
+   "variant": "",
+   "years": null,
+   "fuel": "essence",
+   "tank": 6.2,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
+  },
+  {
+   "id": "sym-symphony-st-125-50",
+   "brand": "SYM",
+   "model": "Symphony ST",
+   "type": "bike",
+   "variant": "125, 50",
+   "years": null,
+   "fuel": "essence",
+   "tank": 7,
+   "source": "https://www.symfrance.com/content/dam/moteo/sym/general/catalogue-and-price-list/catalogue-2023-fr/SYM_brochure_2024.pdf",
+   "checked": "2026-11-08",
+   "doc": "SYM France brochure 2024"
   },
   {
    "id": "toyota-aygo-x-1-5-hybrid",
@@ -3972,6 +4271,20 @@
    "note": "earlier NMAX 125 generation"
   },
   {
+   "id": "yamaha-nmax-125-2025",
+   "brand": "Yamaha",
+   "model": "NMAX 125",
+   "type": "bike",
+   "variant": "",
+   "years": "2025",
+   "fuel": "essence",
+   "tank": 7.1,
+   "source": "https://cdn2.yamaha-motor.eu/prod/product-assets/2025/G125YM/Factsheets/2025-G125YM_en.pdf",
+   "checked": "2026-11-08",
+   "doc": "2025 EU factsheet",
+   "note": "current generation"
+  },
+  {
    "id": "yamaha-nmax-155",
    "brand": "Yamaha",
    "model": "NMAX 155",
@@ -4211,18 +4524,13 @@
   },
   {
    "brand": "Yamaha",
-   "models": "NMAX 125 (current), XMAX 125, Tricity",
-   "reason": "yamaha-motor.eu factsheets are not machine-readable; product pages list no tank"
-  },
-  {
-   "brand": "Suzuki (motorcycles)",
-   "models": "Address 125, Burgman Street 125",
-   "reason": "moto.suzuki.fr blocked to automated reading"
+   "models": "XMAX 125, Tricity",
+   "reason": "yamaha-motor.eu factsheets for these are not machine-readable; product pages list no tank"
   },
   {
    "brand": "SYM",
-   "models": "all",
-   "reason": "sym-global.com pages blocked or list no tank"
+   "models": "Maxsym, ADX, NH-X and other models",
+   "reason": "sym-global.com pages blocked or list no tank; the models listed come from the SYM France 2024 brochure"
   },
   {
    "brand": "KTM",
@@ -4231,8 +4539,8 @@
   },
   {
    "brand": "Kymco",
-   "models": "Agility 125, People, Like",
-   "reason": "not found on kymco.co.uk pages checked"
+   "models": "Like, Agility 125 (non-S)",
+   "reason": "not found on the Kymco pages checked"
   },
   {
    "brand": "Docker and other local scooter brands",

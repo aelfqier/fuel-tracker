@@ -20,7 +20,7 @@ const OFFICIAL = [
   "toyotarwanda.com", "suzuki.co.nz", "suzukiauto.co.za", "gwm.co.th", "gwmanz.com", "geelyksa.com",
   "jetourglobal.com", "cherymotor.com.au", "omodajaecoo.com.au",
   "mazda.com", "honda.co.za", "opel.de", "ford.co.za", "audi-mediacenter.com", "nissan.co.za",
-  "media.stellantis.com", "seat.co.uk",
+  "media.stellantis.com", "seat.co.uk", "globalsuzuki.com", "symfrance.com", "kymco.fr", "kymco.com",
 ];
 const official = (url) => { const h = new URL(url).hostname; return OFFICIAL.some((d) => h === d || h.endsWith("." + d)); };
 
