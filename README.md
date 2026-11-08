@@ -97,6 +97,13 @@ loads it when you add or edit a vehicle and on the first-run screen.
 
 - Records live in the app's storage on the phone. Uninstalling the app deletes them (the phone's own
   backup may keep a copy), so use Settings > Backup to save a file before changing phones.
-- Icons and splash screens were generated from `assets/icon-only.png`. To change the icon,
-  replace that file and run `npx capacitor-assets generate` (see the note on install scripts in
+- The bnzn logo is drawn, not typed. `assets/wordmark.svg` is the wordmark: its letters are outlines
+  traced from the Anybody typeface (SIL Open Font License), so no font file ships with the app.
+  `assets/icon.svg` is the app icon and `assets/splash.svg` the splash screen. Inside the app, the same
+  wordmark and icon are the `i-wordmark` and `i-logo` symbols at the top of `www/index.html`.
+- Icons and splash screens are generated from the PNGs in `assets/`: `icon-only.png` is `icon.svg` at
+  1024 px, `icon-foreground.png` is its `mark` group alone on a transparent background,
+  `icon-background.png` is the graphite background alone, and `splash.png` and `splash-dark.png` are
+  `splash.svg` at 2732 px. To change them, export those PNGs again and run
+  `npx capacitor-assets generate --android --ios` (see the note on install scripts in
   [MAINTENANCE.md](MAINTENANCE.md) first).

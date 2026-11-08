@@ -457,7 +457,7 @@
     const choice = (attr, badge, label) => `<button type="button" ${attr}><span class="bc-ico">${badge}</span><span>${label}</span>${chev}</button>`;
     if (wStep === 0) {
       el.innerHTML = `<div class="w-hero"><div class="logo"><svg><use href="#i-logo"/></svg></div>
-        <h1>${esc(t("appName"))}</h1>
+        <h1 class="wordmark"><svg aria-hidden="true"><use href="#i-wordmark"/></svg><span class="vh">${esc(t("appName"))}</span></h1>
         <p class="lead">${esc(t("welcomeLead"))}</p></div>
         <ul class="promise"><li><svg><use href="#i-check"/></svg>${esc(t("p1"))}</li><li><svg><use href="#i-check"/></svg>${esc(t("p2"))}</li><li><svg><use href="#i-check"/></svg>${esc(t("p3"))}</li></ul>
         ${steps}
