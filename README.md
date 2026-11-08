@@ -94,8 +94,12 @@ loads it when you add or edit a vehicle and on the first-run screen.
   source names it), `years` (only when the source states a model year), `fuel` when the variant
   tells it, `tank`, the `source` URL and the date it was `checked`.
 - Only figures from the manufacturer's own website or official documents (spec pages, price lists
-  with technical data, owner's manuals, press kits) go in. If a figure can't be found there, the
-  model goes under `gaps` with the reason, and is not guessed.
+  with technical data, owner's manuals, press kits) go in. A national importer's official site for
+  the brand counts (for example fiat.dz, kia.ma, nissan.com.eg), which is how models sold in North
+  Africa but not in Europe are covered. If a figure can't be found there, the model goes under `gaps`
+  with the reason, and is not guessed.
+- When a model has had several generations with different tanks, the generation goes in the model
+  name the way people say it (`Clio 4`, `Clio 5`), so the picker tells them apart.
 - `npm test` checks every entry is complete and that its source is on a manufacturer's domain
   (the list is in `tests/catalog.test.js`; add a brand's domain there when adding the brand).
 

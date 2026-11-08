@@ -46,7 +46,8 @@
     return out;
   }
 
-  const byName = (a, b) => a.localeCompare(b, "en", { sensitivity: "base", numeric: true });
+  // One collator for every sort: the list has hundreds of models, and localeCompare with options builds a new one each call.
+  const byName = new Intl.Collator("en", { sensitivity: "base", numeric: true }).compare;
 
   function brands(cat, type) {
     const list = ((cat && cat.vehicles) || []).filter((v) => !type || v.type === type).map((v) => v.brand);

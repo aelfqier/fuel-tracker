@@ -15,6 +15,12 @@ const OFFICIAL = [
   "suzuki.co.uk", "mgmotor.eu", "nissan.co.uk", "bmw.co.uk", "mercedes-benz.co.uk",
   "honda.co.uk", "yamaha-motor.eu", "yamaha-motor.com.au", "suzukimotorcycles.com.au", "kymco.co.uk", "piaggio.com",
   "vespa.com", "peugeot-motocycles.fr", "ktmindia.com", "kawasaki.co.uk", "bmw-motorrad.co.uk",
+  "fiat.dz", "group.renault.com", "hyundai.news", "volkswagen-utilitaires.fr", "nissan.com.eg",
+  "mitsubishi-motors.co.za", "isuzu.co.uk", "royalenfield.com", "globalbajaj.com", "seat.com",
+  "toyotarwanda.com", "suzuki.co.nz", "suzukiauto.co.za", "gwm.co.th", "gwmanz.com", "geelyksa.com",
+  "jetourglobal.com", "cherymotor.com.au", "omodajaecoo.com.au",
+  "mazda.com", "honda.co.za", "opel.de", "ford.co.za", "audi-mediacenter.com", "nissan.co.za",
+  "media.stellantis.com", "seat.co.uk", "globalsuzuki.com", "symfrance.com", "kymco.fr", "kymco.com",
 ];
 const official = (url) => { const h = new URL(url).hostname; return OFFICIAL.some((d) => h === d || h.endsWith("." + d)); };
 
@@ -22,7 +28,7 @@ const entry = (o) => ({ id: "x-y", brand: "X", model: "Y", type: "car", variant:
 
 test("every entry in the shipped file is complete and nothing is dropped", () => {
   assert.equal(raw.format, 1);
-  assert.ok(cat.vehicles.length >= 100, `only ${cat.vehicles.length} vehicles`);
+  assert.ok(cat.vehicles.length >= 300, `only ${cat.vehicles.length} vehicles`);
   assert.equal(cat.vehicles.length, raw.vehicles.length, "an entry failed validation");
   assert.equal(new Set(cat.vehicles.map((v) => v.id)).size, cat.vehicles.length);
   assert.ok(cat.vehicles.some((v) => v.type === "car") && cat.vehicles.some((v) => v.type === "bike"));
@@ -37,7 +43,7 @@ test("every figure comes from a manufacturer's site, with the date it was read",
 
 test("tank sizes are in a believable range for cars and motorbikes", () => {
   for (const v of cat.vehicles) {
-    const [lo, hi] = v.type === "bike" ? [3, 30] : [20, 120];
+    const [lo, hi] = v.type === "bike" ? [3, 30] : [20, 150]; // Land Cruiser 79 double cab: 130 L
     assert.ok(v.tank >= lo && v.tank <= hi, `${v.id}: ${v.tank} L`);
   }
 });
