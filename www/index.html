@@ -60,6 +60,19 @@
   <!-- ================= HOME ================= -->
   <section class="view" id="view-home" aria-labelledby="formTitle">
     <div id="insights" class="cluster" hidden></div>
+    <section class="card" id="taxiCard" aria-labelledby="taxiTitle" hidden>
+      <div class="sec-head"><span class="hico ok" aria-hidden="true"><svg><use href="#i-wallet"/></svg></span><h2 id="taxiTitle" data-i18n="taxiTitle">Takings and profit</h2></div>
+      <div class="seg" role="radiogroup" data-i18n-aria="period">
+        <input type="radio" name="tper" id="tper-day" value="day" checked><label for="tper-day" data-i18n="today">Today</label>
+        <input type="radio" name="tper" id="tper-week" value="week"><label for="tper-week" data-i18n="thisWeek">This week</label>
+        <input type="radio" name="tper" id="tper-month" value="month"><label for="tper-month" data-i18n="thisMonth">This month</label>
+      </div>
+      <div id="taxiOut"></div>
+      <div class="btnrow">
+        <button type="button" class="icon" id="addCost"><svg><use href="#i-plus"/></svg><span data-i18n="addCost">Add a cost</span></button>
+        <button type="button" class="primary icon" id="addShift"><svg><use href="#i-plus"/></svg><span data-i18n="addShift">Add a shift</span></button>
+      </div>
+    </section>
     <div id="dueSoon" class="card" hidden></div>
     <div id="insightList" class="card" hidden></div>
 
@@ -186,23 +199,6 @@
       <p class="msg" id="saveMsg" hidden></p>
     </form>
 
-    <form class="card" id="incomeForm" novalidate hidden>
-      <div class="card-head"><h2 id="incomeTitle" data-i18n="addIncome">Add earnings</h2><span class="badge" id="todayIncome"></span></div>
-      <div class="row">
-        <div class="field">
-          <label for="incDate" data-i18n="date">Date</label>
-          <div class="inp"><input id="incDate" type="date"></div>
-        </div>
-        <div class="field">
-          <label for="incAmount" data-i18n="earned">Earned</label>
-          <div class="inp"><input id="incAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="600"><span class="unit homecur">MAD</span></div>
-        </div>
-      </div>
-      <div class="btnrow">
-        <button type="button" id="cancelIncome" hidden data-i18n="cancel">Cancel</button>
-        <button type="submit" class="primary" id="saveIncome" data-i18n="saveIncome">Save earnings</button>
-      </div>
-    </form>
   </section>
 
   <!-- ================= HISTORY ================= -->
@@ -222,6 +218,10 @@
         <div class="inp"><select id="vf"></select></div>
       </div>
       <div id="report"></div>
+    </section>
+    <section class="card" id="driverReportCard" aria-labelledby="drTitle" hidden>
+      <h2 id="drTitle" data-i18n="taxiTitle">Takings and profit</h2>
+      <div id="driverReport"></div>
     </section>
     <section class="card" aria-labelledby="logTitle">
       <h2 id="logTitle" data-i18n="log">Fill-up log</h2>
@@ -313,9 +313,13 @@
       </div>
       <label class="switch">
         <span class="s-title" data-i18n="driverMode">Driver mode</span>
-        <span class="s-sub" data-i18n="driverModeSub">For taxi, delivery and ride-hailing: log earnings and see your profit per km.</span>
+        <span class="s-sub" data-i18n="driverModeSub">For taxi, delivery and ride-hailing: log your shifts and costs, and see your real profit per day and per km.</span>
         <input type="checkbox" id="driverMode">
       </label>
+    </section>
+    <section class="card" id="fixedCard" hidden>
+      <div class="card-head"><div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-calendar"/></svg></span><div><h2 data-i18n="fixedTitle">Costs that repeat</h2><p class="hint" data-i18n="fixedSub">Counted by themselves, so your profit is what you really keep.</p></div></div><button type="button" class="small icon" id="addFixed"><svg><use href="#i-plus"/></svg><span data-i18n="add">Add</span></button></div>
+      <div class="list" id="fixedList"></div>
     </section>
     <section class="card">
       <div class="sec-head"><span class="hico" aria-hidden="true"><svg><use href="#i-download"/></svg></span><h2 data-i18n="backup">Backup</h2></div>
@@ -468,6 +472,155 @@
     <div class="btnrow">
       <button type="button" class="danger" id="rDelete" hidden data-i18n="delete">Delete</button>
       <button type="button" id="rCancel" data-i18n="cancel">Cancel</button>
+      <button type="submit" class="primary" data-i18n="save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Shift: takings, kilometers and rides -->
+<dialog id="shiftDialog">
+  <form method="dialog" id="shiftForm" novalidate>
+    <h2 id="shiftTitle" data-i18n="addShift">Add a shift</h2>
+    <div class="row">
+      <div class="field">
+        <label for="sDate" data-i18n="date">Date</label>
+        <div class="inp"><input id="sDate" type="date"></div>
+      </div>
+      <div class="field" id="sVehField">
+        <label for="sVeh" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="sVeh"></select></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="sCash" data-i18n="cash">Cash</label>
+        <div class="inp"><input id="sCash" type="text" inputmode="decimal" autocomplete="off" placeholder="400"><span class="unit homecur">MAD</span></div>
+      </div>
+      <div class="field">
+        <label for="sApp" data-i18n="appCard">App and card</label>
+        <div class="inp"><input id="sApp" type="text" inputmode="decimal" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"><span class="unit homecur">MAD</span></div>
+      </div>
+    </div>
+    <div class="row" id="sOdoRow">
+      <div class="field">
+        <label for="sStart" data-i18n="shiftStart">Odometer at start</label>
+        <div class="inp"><input id="sStart" type="text" inputmode="numeric" autocomplete="off" placeholder="45200"><span class="unit">km</span></div>
+      </div>
+      <div class="field">
+        <label for="sEnd" data-i18n="shiftEnd">Odometer at end</label>
+        <div class="inp"><input id="sEnd" type="text" inputmode="numeric" autocomplete="off" placeholder="45420"><span class="unit">km</span></div>
+      </div>
+    </div>
+    <div class="field" id="sKmField" hidden>
+      <label for="sKm" data-i18n="shiftKm">Kilometers driven</label>
+      <div class="inp"><input id="sKm" type="text" inputmode="numeric" autocomplete="off" placeholder="220"><span class="unit">km</span></div>
+    </div>
+    <p class="hint" data-i18n="shiftKmHint">Optional, but it makes your profit for each day and per km exact.</p>
+    <div class="row">
+      <div class="field">
+        <label for="sRides" data-i18n="rides">Rides</label>
+        <div class="inp"><input id="sRides" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"></div>
+      </div>
+      <div class="field">
+        <label for="sNote" data-i18n="note">Note</label>
+        <div class="inp"><input id="sNote" class="plain" type="text" maxlength="100" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"></div>
+      </div>
+    </div>
+    <p class="hint strong" id="sOut"></p>
+    <p class="msg" id="sMsg" hidden></p>
+    <div class="btnrow">
+      <button type="button" class="danger" id="sDelete" hidden data-i18n="delete">Delete</button>
+      <button type="button" id="sCancel" data-i18n="cancel">Cancel</button>
+      <button type="submit" class="primary" id="sSave" data-i18n="saveShift">Save shift</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- A cost other than fuel -->
+<dialog id="costDialog">
+  <form method="dialog" id="costForm" novalidate>
+    <h2 id="costTitle" data-i18n="addCost">Add a cost</h2>
+    <div class="row">
+      <div class="field">
+        <label for="cDate" data-i18n="date">Date</label>
+        <div class="inp"><input id="cDate" type="date"></div>
+      </div>
+      <div class="field" id="cVehField">
+        <label for="cVeh" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="cVeh"></select></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="cKind" data-i18n="costKind">What</label>
+        <div class="inp"><select id="cKind"></select></div>
+      </div>
+      <div class="field">
+        <label for="cAmount" data-i18n="amountPaid">Amount paid</label>
+        <div class="inp"><input id="cAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="150"><span class="unit homecur">MAD</span></div>
+      </div>
+    </div>
+    <div class="field">
+      <label for="cNote" data-i18n="note">Note</label>
+      <div class="inp"><input id="cNote" class="plain" type="text" maxlength="100" autocomplete="off" data-i18n-ph="optional" placeholder="Optional"></div>
+    </div>
+    <p class="hint" data-i18n="costHint">Fuel goes in as a fill-up. A cost you pay every day you work or every month can be added once, in Settings under Costs that repeat.</p>
+    <p class="msg err" id="cMsg" hidden></p>
+    <div class="btnrow">
+      <button type="button" class="danger" id="cDelete" hidden data-i18n="delete">Delete</button>
+      <button type="button" id="cCancel" data-i18n="cancel">Cancel</button>
+      <button type="submit" class="primary" data-i18n="save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- A cost that repeats by itself -->
+<dialog id="fixedDialog">
+  <form method="dialog" id="fixedForm" novalidate>
+    <h2 data-i18n="fixedOne">Cost that repeats</h2>
+    <div class="row">
+      <div class="field">
+        <label for="fKind" data-i18n="costKind">What</label>
+        <div class="inp"><select id="fKind"></select></div>
+      </div>
+      <div class="field" id="fVehField">
+        <label for="fVeh" data-i18n="vehicle">Vehicle</label>
+        <div class="inp"><select id="fVeh"></select></div>
+      </div>
+    </div>
+    <div class="field" id="fLabelField" hidden>
+      <label for="fLabel" data-i18n="rLabel">What</label>
+      <div class="inp"><input id="fLabel" class="plain" type="text" maxlength="40" autocomplete="off"></div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="fAmount" data-i18n="amount">Amount</label>
+        <div class="inp"><input id="fAmount" type="text" inputmode="decimal" autocomplete="off" placeholder="150"><span class="unit homecur">MAD</span></div>
+      </div>
+      <div class="field">
+        <label for="fEvery" data-i18n="howOften">How often</label>
+        <div class="inp"><select id="fEvery">
+          <option value="workday" data-i18n="everyWorkday">Each day I work</option>
+          <option value="week" data-i18n="everyWeek">Each week</option>
+          <option value="month" data-i18n="everyMonth">Each month</option>
+        </select></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="fFrom" data-i18n="fixedFrom">From</label>
+        <div class="inp"><input id="fFrom" type="date"></div>
+      </div>
+      <div class="field">
+        <label for="fUntil" data-i18n="fixedUntil">Until (optional)</label>
+        <div class="inp"><input id="fUntil" type="date"></div>
+      </div>
+    </div>
+    <p class="hint" data-i18n="fixedHint">When you stop paying it, set the end date instead of deleting it, so your past profit stays right.</p>
+    <p class="msg err" id="fMsg" hidden></p>
+    <div class="btnrow">
+      <button type="button" class="danger" id="fDelete" hidden data-i18n="delete">Delete</button>
+      <button type="button" id="fCancel" data-i18n="cancel">Cancel</button>
       <button type="submit" class="primary" data-i18n="save">Save</button>
     </div>
   </form>

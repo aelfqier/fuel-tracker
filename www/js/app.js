@@ -4,7 +4,8 @@
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   // Typed numbers accept a comma or a dot and Arabic-Indic digits. Kilometers and whole amounts read "45.650" as 45650.
-  const WHOLE_FIELDS = new Set(["odoStart", "odoEnd", "sinceKm", "resetKm", "rEvery", "rLast", "tripKm", "budget", "incAmount"]);
+  const WHOLE_FIELDS = new Set(["odoStart", "odoEnd", "sinceKm", "resetKm", "rEvery", "rLast", "tripKm", "budget",
+    "sCash", "sApp", "sStart", "sEnd", "sKm", "sRides", "cAmount", "fAmount"]);
   const num = (id) => FT.parseNum($(id).value, { integerish: WHOLE_FIELDS.has(id) });
   const radio = (name) => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : null; };
   const today = () => FT.isoDate(new Date());
@@ -38,7 +39,6 @@
   let store = null;
   let editingId = null;
   let editRec = null;
-  let editingIncomeId = null;
   let firstLoad = true;
   let pricePrefill = null; // { price, date } that we put in the price field ourselves
   let calcL100 = null; // consumption the form would save, for the warnings before saving
@@ -91,6 +91,7 @@
     renderCurrencySelects();
     applyUnitLabels(formUnit());
     renderFormTexts();
+    renderCostKinds();
     const lr = $("lang-" + lang); if (lr) lr.checked = true;
   }
 
@@ -313,7 +314,7 @@
         col.onSnapshot((snap) => {
           const docs = snap.docs.map((d) => ({ ...d.data(), id: d.id }));
           settingsDoc = docs.find((d) => d.kind === "settings") || null;
-          fn(docs.filter((r) => r.kind === "fill" || r.kind === "income"));
+          fn(docs.filter((r) => r.kind === "fill" || r.kind === "income" || r.kind === "expense"));
         }, onErr);
       },
       async getSettings() { return settingsDoc ? settingsDoc.data : null; },
@@ -713,7 +714,8 @@
   }
 
   function startEdit(rec) {
-    if (rec.kind === "income") { startEditIncome(rec); return; }
+    if (rec.kind === "income") { openShift(rec); return; }
+    if (rec.kind === "expense") { openCost(rec); return; }
     editingId = rec.id; editRec = rec;
     switchTab("home");
     renderFormTexts();
@@ -944,37 +946,237 @@
     });
   }
 
-  /* ---------- earnings (driver mode) ---------- */
-  function renderIncomeForm() {
-    $("incomeForm").hidden = !settings.driverMode;
-    if (!settings.driverMode) return;
-    const d = $("incDate").value || today();
-    const sum = records.filter((r) => r.kind === "income" && r.date === d && r.vehicle === settings.activeVehicle).reduce((a, r) => a + (FT.toHome(r.amount, r, settings) || 0), 0);
-    $("todayIncome").textContent = sum ? t("earnedOn", { amount: money(sum), date: dayLabel(d) }) : "";
-    $("saveIncome").disabled = !(num("incAmount") > 0) || !$("incDate").value || !store || store.broken;
+  /* ================= DRIVER MODE: SHIFTS, COSTS AND COSTS THAT REPEAT ================= */
+  const COST_KEYS = { fee: "costFee", repair: "costRepair", wash: "costWash", parking: "costParking", insurance: "costInsurance", phone: "costPhone", other: "costOther" };
+  const costName = (cat, label) => (cat === "other" && label ? label : t(COST_KEYS[cat] || "costOther"));
+  function renderCostKinds() {
+    const html = FT.COST_KINDS.map((k) => `<option value="${k}">${esc(t(COST_KEYS[k]))}</option>`).join("");
+    for (const id of ["cKind", "fKind"]) { const sel = $(id); const prev = sel.value; sel.innerHTML = html; sel.value = prev || "fee"; }
   }
-  function startEditIncome(rec) {
-    editingIncomeId = rec.id; switchTab("home");
-    $("incomeTitle").textContent = t("editIncome"); $("saveIncome").textContent = t("update"); $("cancelIncome").hidden = false;
-    $("incDate").value = rec.date; $("incAmount").value = rec.amount; renderIncomeForm();
-    $("incomeForm").scrollIntoView({ behavior: "smooth", block: "start" });
+  const typed = (id) => $(id).value.trim() !== "";
+  // What fuel costs per km on a vehicle right now, from its recent full tanks.
+  const costPerKmNow = (vid, date) => FT.costPerKmAt(FT.pricedSegments(FT.segments(fills().filter((r) => r.vehicle === vid), settings), settings).get(vid), date);
+
+  /* ---------- a shift: takings in cash and by app, the odometer at the start and the end ---------- */
+  let editingShift = null;
+  const shiftVeh = () => $("sVeh").value || settings.activeVehicle;
+  const shiftTrip = () => { const v = vehicleById(shiftVeh()); return !!(v && v.tripMeter); };
+  function openShift(rec) {
+    editingShift = rec || null;
+    renderVehSelects();
+    $("sVehField").hidden = vehicles().length < 2;
+    $("sVeh").value = rec ? rec.vehicle : settings.activeVehicle;
+    $("shiftTitle").textContent = t(rec ? "editShift" : "addShift");
+    $("sSave").textContent = t(rec ? "update" : "saveShift");
+    $("sDate").value = rec ? rec.date : today();
+    const split = !!rec && (rec.cash != null || rec.app != null);
+    $("sCash").value = rec ? (split ? (rec.cash != null ? rec.cash : "") : rec.amount) : "";
+    $("sApp").value = split && rec.app != null ? rec.app : "";
+    $("sStart").value = rec && rec.odoStart != null ? rec.odoStart : "";
+    $("sEnd").value = rec && rec.odoEnd != null ? rec.odoEnd : "";
+    $("sKm").value = rec && rec.km != null ? rec.km : "";
+    $("sRides").value = rec && rec.rides != null ? rec.rides : "";
+    $("sNote").value = rec ? rec.note || "" : "";
+    if (!rec) prefillShiftOdo();
+    $("sDelete").hidden = !rec;
+    renderShift();
+    $("shiftDialog").showModal();
   }
-  function resetIncome() {
-    editingIncomeId = null; $("incomeTitle").textContent = t("addIncome"); $("saveIncome").textContent = t("saveIncome");
-    $("cancelIncome").hidden = true; $("incAmount").value = ""; $("incDate").value = today(); renderIncomeForm();
+  // A new shift starts where the last fill-up or shift left the odometer.
+  function prefillShiftOdo() {
+    if (shiftTrip()) return;
+    const odo = FT.lastKnownOdo(records, shiftVeh());
+    $("sStart").value = odo != null ? odo : "";
   }
-  $("incomeForm").addEventListener("input", renderIncomeForm);
-  $("cancelIncome").addEventListener("click", resetIncome);
-  $("incomeForm").addEventListener("submit", async (e) => {
+  function readShift() {
+    const cash = typed("sCash") ? num("sCash") : 0, app = typed("sApp") ? num("sApp") : 0;
+    const out = { cash, app, amount: cash + app };
+    if (!(cash >= 0) || !(app >= 0) || !(out.amount > 0)) return { error: "errShiftAmount" };
+    if (shiftTrip()) {
+      if (typed("sKm")) { const km = num("sKm"); if (!(km >= 0)) return { error: "errShiftKm" }; out.km = km; }
+    } else if (typed("sEnd")) {
+      // The start comes filled in, so a shift saved without the end reading simply has no kilometers.
+      const a = num("sStart"), b = num("sEnd");
+      if (!typed("sStart") || !(a >= 0)) return { error: "errShiftStart" };
+      if (!(b > a)) return { error: "errShiftOdo" };
+      Object.assign(out, { odoStart: a, odoEnd: b, km: b - a });
+    }
+    if (typed("sRides")) { const r = num("sRides"); if (!(Number.isInteger(r) && r >= 0 && r < 10000)) return { error: "errRides" }; out.rides = r; }
+    if (!$("sDate").value) return { error: "errDate" };
+    return out;
+  }
+  function renderShift() {
+    const trip = shiftTrip();
+    $("sOdoRow").hidden = trip; $("sKmField").hidden = !trip;
+    const f = readShift();
+    $("sMsg").hidden = !f.error; $("sMsg").textContent = f.error ? t(f.error) : "";
+    $("sSave").disabled = !!f.error || !store || store.broken;
+    if (f.error) { $("sOut").textContent = ""; return; }
+    const parts = [t("shiftTotal", { amount: money(f.amount, null, f.amount % 1 ? 2 : 0) })];
+    if (f.km > 0) {
+      parts.push(`${fmt(f.km, 0)} km`);
+      const cpk = costPerKmNow(shiftVeh(), $("sDate").value);
+      if (cpk != null) parts.push(t("shiftFuel", { amount: money(f.km * cpk, null, 0) }));
+    }
+    $("sOut").textContent = parts.join(" · ");
+  }
+  $("shiftForm").addEventListener("input", (e) => { if (e.target.id !== "sVeh") renderShift(); });
+  $("sVeh").addEventListener("change", () => { if (!editingShift) { $("sStart").value = ""; prefillShiftOdo(); } renderShift(); });
+  $("sCancel").addEventListener("click", () => $("shiftDialog").close());
+  $("shiftForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const amount = num("incAmount"); if (!(amount > 0)) return;
-    const old = editingIncomeId ? records.find((r) => r.id === editingIncomeId) : null;
-    const now = Date.now();
-    const rec = { kind: "income", date: $("incDate").value, vehicle: old ? old.vehicle : settings.activeVehicle, amount, currency: settings.home, createdAt: old ? old.createdAt : now, updatedAt: now };
+    if (!store || store.broken) return;
+    const f = readShift(); if (f.error) return;
+    if (f.km > 1000) {
+      const go = await ask(t("checkTitle"), t("warnShiftKm", { km: fmt(f.km, 0) }), [{ label: t("checkAgain"), value: false, cls: "primary" }, { label: t("saveAnyway"), value: true }]);
+      if (!go) return;
+    }
+    const old = editingShift, now = Date.now();
+    const rec = { kind: "income", date: $("sDate").value, vehicle: shiftVeh(), amount: +f.amount.toFixed(2), currency: settings.home, createdAt: old ? old.createdAt : now, updatedAt: now };
+    if (f.cash > 0) rec.cash = f.cash;
+    if (f.app > 0) rec.app = f.app;
+    for (const k of ["km", "odoStart", "odoEnd", "rides"]) if (f[k] != null) rec[k] = f[k];
+    const note = $("sNote").value.trim(); if (note) rec.note = note;
+    $("sSave").disabled = true;
     try {
       if (old) await store.update(old.id, rec); else await store.add(rec);
-      Native.haptic("success"); toast(t(old ? "updated" : "savedIncome")); resetIncome();
-    } catch (err) { logError("save", err); toast(t("errSave")); }
+      Native.haptic("success"); $("shiftDialog").close(); toast(t(old ? "updatedShift" : "savedShift"));
+    } catch (err) { logError("save", err); $("sMsg").textContent = t("errSave"); $("sMsg").hidden = false; $("sSave").disabled = false; }
+  });
+
+  /* ---------- a cost other than fuel ---------- */
+  let editingCost = null;
+  function openCost(rec) {
+    editingCost = rec || null;
+    renderVehSelects(); renderCostKinds();
+    $("cVehField").hidden = vehicles().length < 2;
+    $("cVeh").value = rec ? rec.vehicle : settings.activeVehicle;
+    $("costTitle").textContent = t(rec ? "editCost" : "addCost");
+    $("cDate").value = rec ? rec.date : today();
+    $("cKind").value = rec ? rec.category || "other" : "fee";
+    $("cAmount").value = rec ? rec.amount : "";
+    $("cNote").value = rec ? rec.note || "" : "";
+    $("cDelete").hidden = !rec; $("cMsg").hidden = true;
+    $("costDialog").showModal();
+  }
+  $("cCancel").addEventListener("click", () => $("costDialog").close());
+  $("costForm").addEventListener("input", () => { $("cMsg").hidden = true; });
+  $("costForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!store || store.broken) return;
+    const amount = num("cAmount");
+    const err = !(amount > 0) ? "errCostAmount" : !$("cDate").value ? "errDate" : null;
+    if (err) { $("cMsg").textContent = t(err); $("cMsg").hidden = false; return; }
+    const old = editingCost, now = Date.now();
+    const rec = { kind: "expense", date: $("cDate").value, vehicle: $("cVeh").value || settings.activeVehicle, amount, currency: settings.home, category: $("cKind").value, createdAt: old ? old.createdAt : now, updatedAt: now };
+    const note = $("cNote").value.trim(); if (note) rec.note = note;
+    try {
+      if (old) await store.update(old.id, rec); else await store.add(rec);
+      Native.haptic("success"); $("costDialog").close(); toast(t(old ? "updatedCost" : "savedCost"));
+    } catch (err2) { logError("save", err2); $("cMsg").textContent = t("errSave"); $("cMsg").hidden = false; }
+  });
+  // Deleting from the shift or cost window: the entry can come back with Undo.
+  async function removeEntry(rec, dialog) {
+    try {
+      await store.remove(rec.id);
+      Native.haptic("warning"); $(dialog).close();
+      toast(t(rec.kind === "income" ? "deletedShift" : "deletedCost"), t("undo"), async () => { try { await store.add({ ...rec }); } catch (err) { logError("save", err); toast(t("errSave")); } });
+    } catch (err) { logError("delete", err); toast(t("errSave")); }
+  }
+  $("sDelete").addEventListener("click", () => { if (editingShift) removeEntry(editingShift, "shiftDialog"); });
+  $("cDelete").addEventListener("click", () => { if (editingCost) removeEntry(editingCost, "costDialog"); });
+
+  /* ---------- the taxi card: today, this week or this month ---------- */
+  function renderTaxi() {
+    const card = $("taxiCard"), vid = settings.activeVehicle;
+    card.hidden = !settings.driverMode || !vid || !vehicleById(vid);
+    if (card.hidden) return;
+    const per = radio("tper") || "day", day = today();
+    const key = FT.periodOf(day, per)[0];
+    const g = FT.aggregate(records, settings, per, vid, day).find((x) => x.key === key);
+    const el = $("taxiOut");
+    if (!g) { el.innerHTML = `<p class="hint">${esc(t("taxiEmpty"))}</p>`; return; }
+    const cur = esc(sym(settings.home));
+    const m = (v) => `${fmt(v, 0)}<small>${cur}</small>`;
+    const tile = (lbl, val) => `<div class="tile"><span class="lbl">${esc(lbl)}</span><span class="val">${val}</span></div>`;
+    const tiles = [
+      tile(t("earned"), m(g.income)),
+      tile(t("fuelCost"), g.workFuelOk ? m(g.workFuel) : "–"),
+      tile(t("otherCosts"), m(g.costs)),
+      tile(t("kmDriven"), `${fmt(g.workKm, 0)}<small>km</small>`),
+      tile(t("profitKm"), g.profitKm != null ? `${fmt(g.profitKm, 2)}<small>${cur}</small>` : "–"),
+      per === "day" ? tile(t("rides"), g.rides ? fmt(g.rides, 0) : "–") : tile(t("daysWorked"), fmt(g.workdays, 0)),
+    ];
+    const notes = [];
+    if (!g.shifts) notes.push(t(per === "day" ? "taxiNoShiftDay" : "taxiNoShift"));
+    if (g.app > 0) notes.push(t("cashApp", { cash: money(g.cash, null, 0), app: money(g.app, null, 0) }));
+    const cats = Object.entries(g.byCat).filter(([, v]) => v > 0.005).sort((a, b) => b[1] - a[1]);
+    if (cats.length) notes.push(cats.map(([k, v]) => `${costName(k)} ${money(v, null, 0)}`).join(" · "));
+    if (g.fromKm && g.costPerKm != null) notes.push(t("fuelFromKm", { v: money(g.costPerKm) }));
+    else if (g.fromPump) notes.push(t("fuelFromPump"));
+    if (g.kmMissing) notes.push(t("kmMissing", { n: g.kmMissing }));
+    el.innerHTML = `<div class="result"><div class="hero${g.profit < 0 ? " neg" : ""}"><span class="lbl">${esc(t("profit"))}</span><span class="val">${m(g.profit)}</span></div>
+      <div class="stats">${tiles.join("")}</div></div><div class="notes">${notes.map((x) => `<p class="hint">${esc(x)}</p>`).join("")}</div>`;
+  }
+  $("taxiCard").addEventListener("change", (e) => { if (e.target.name === "tper") renderTaxi(); });
+  $("addShift").addEventListener("click", () => openShift(null));
+  $("addCost").addEventListener("click", () => openCost(null));
+
+  /* ---------- costs that repeat: the owner's fee each day worked, insurance each month ---------- */
+  let editingFixed = null;
+  function fixedText(fc) {
+    const amount = money(fc.amount, null, fc.amount % 1 ? 2 : 0);
+    const per = t({ workday: "fixedPerWorkday", week: "fixedPerWeek", month: "fixedPerMonth" }[fc.every], { amount });
+    return `${per} · ${fc.until ? t("fixedRange", { from: dayLabel(fc.from), to: dayLabel(fc.until) }) : t("fixedSince", { date: dayLabel(fc.from) })}`;
+  }
+  function renderFixedList() {
+    $("fixedCard").hidden = !settings.driverMode;
+    if (!settings.driverMode) return;
+    const list = settings.fixedCosts || [], multi = vehicles().length > 1;
+    $("fixedList").innerHTML = list.length ? list.map((fc) => `<div><div class="main"><span class="rico"><svg><use href="#i-calendar"/></svg></span><div><div class="name">${esc(costName(fc.category, fc.label))}${multi ? `<span class="chip quiet">${esc(vehName(fc.vehicle))}</span>` : ""}</div><div class="sub">${esc(fixedText(fc))}</div></div></div><button type="button" class="iconbtn" data-fixed="${esc(fc.id)}" aria-label="${esc(t("edit"))}" title="${esc(t("edit"))}"><svg><use href="#i-edit"/></svg></button></div>`).join("")
+      : `<p class="empty">${esc(t("fixedEmpty"))}</p>`;
+  }
+  function openFixed(fc) {
+    editingFixed = fc || null;
+    renderVehSelects(); renderCostKinds();
+    $("fVehField").hidden = vehicles().length < 2;
+    $("fKind").value = fc ? fc.category : "fee";
+    $("fVeh").value = fc ? fc.vehicle : settings.activeVehicle;
+    $("fLabel").value = fc ? fc.label || "" : "";
+    $("fAmount").value = fc ? fc.amount : "";
+    $("fEvery").value = fc ? fc.every : "workday";
+    $("fFrom").value = fc ? fc.from : today();
+    $("fUntil").value = fc && fc.until ? fc.until : "";
+    $("fDelete").hidden = !fc; $("fMsg").hidden = true;
+    $("fLabelField").hidden = $("fKind").value !== "other";
+    $("fixedDialog").showModal();
+  }
+  $("fKind").addEventListener("change", () => {
+    // The usual rhythm for each kind: the owner's fee each day worked, insurance and a phone plan each month.
+    const k = $("fKind").value, usual = { fee: "workday", insurance: "month", phone: "month" }[k];
+    if (!editingFixed && usual) $("fEvery").value = usual;
+    $("fLabelField").hidden = k !== "other";
+  });
+  $("fixedForm").addEventListener("input", () => { $("fMsg").hidden = true; });
+  $("addFixed").addEventListener("click", () => openFixed(null));
+  $("fixedList").addEventListener("click", (e) => { const b = e.target.closest("button[data-fixed]"); if (b) openFixed((settings.fixedCosts || []).find((f) => f.id === b.dataset.fixed)); });
+  $("fCancel").addEventListener("click", () => $("fixedDialog").close());
+  $("fDelete").addEventListener("click", async () => {
+    settings.fixedCosts = (settings.fixedCosts || []).filter((f) => f !== editingFixed);
+    $("fixedDialog").close(); await saveSettings();
+  });
+  $("fixedForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const amount = num("fAmount"), from = $("fFrom").value, until = $("fUntil").value;
+    const err = !(amount > 0) ? "errCostAmount" : !from ? "errFixedFrom" : until && until < from ? "errFixedDates" : null;
+    if (err) { $("fMsg").textContent = t(err); $("fMsg").hidden = false; return; }
+    const k = $("fKind").value;
+    const fc = { ...(editingFixed || { id: newId() }), category: k, vehicle: $("fVeh").value || settings.activeVehicle, label: k === "other" ? $("fLabel").value.trim() : "", amount, every: $("fEvery").value, from };
+    if (until) fc.until = until; else delete fc.until;
+    const list = settings.fixedCosts || [];
+    settings.fixedCosts = editingFixed ? list.map((x) => (x === editingFixed ? fc : x)) : list.concat([fc]);
+    $("fixedDialog").close();
+    await saveSettings();
   });
 
   /* ================= HOME: INSIGHTS AND REMINDERS ================= */
@@ -1070,12 +1272,6 @@
       const proj = ins.monthProjection ? `<small>${esc(t("insProjection", { amount: money(ins.monthProjection, null, 0) }))}</small>` : "";
       rows.push(`<div class="insight">${icon("i-wallet")}<p>${esc(t("insSpent", { amount: money(ins.monthSpent, null, 0) }))}${proj}</p></div>`);
     }
-    if (settings.driverMode) {
-      const m = day.slice(0, 7);
-      const inc = records.filter((r) => r.kind === "income" && r.vehicle === vid && r.date.startsWith(m)).reduce((a, r) => a + (FT.toHome(r.amount, r, settings) || 0), 0);
-      const km = vf.filter((r) => r.date.startsWith(m) && recUnit(r) === unitOfVeh(vid)).reduce((a, r) => a + Math.max(0, r.odo - r.prevOdo), 0);
-      if (inc > 0) rows.push(`<div class="insight good">${icon("i-wallet")}<p>${esc(t("insProfit", { profit: money(inc - ins.monthSpent, null, 0), income: money(inc, null, 0), fuel: money(ins.monthSpent, null, 0) }))}${km > 0 ? `<small>${esc(t("insProfitKm", { v: money((inc - ins.monthSpent) / km) }))}</small>` : ""}</p></div>`);
-    }
     if (ins.yearProjection) rows.push(`<div class="insight info">${icon("i-chart")}<p>${esc(t("insYear", { amount: money(ins.yearProjection, null, 0) }))}</p></div>`);
     const v = vehicleById(vid);
     const st = (ins.stations[recFuel(v, unitOfVeh(vid))] || []);
@@ -1160,7 +1356,7 @@
   /* ================= HISTORY ================= */
   function renderVehSelects() {
     const opts = vehicles().map((v) => `<option value="${esc(v.id)}">${esc(v.name)}</option>`).join("");
-    for (const [id, all] of [["vf", true], ["tripVeh", false], ["pdfVeh", false], ["rVeh", false]]) {
+    for (const [id, all] of [["vf", true], ["tripVeh", false], ["pdfVeh", false], ["rVeh", false], ["sVeh", false], ["cVeh", false], ["fVeh", false]]) {
       const sel = $(id); const prev = sel.value;
       sel.innerHTML = (all ? `<option value="all">${esc(t("allVehicles"))}</option>` : "") + opts;
       if ([...sel.options].some((o) => o.value === prev)) sel.value = prev;
@@ -1193,9 +1389,28 @@
     return s + `</svg>`;
   }
 
+  // Driver mode: takings, fuel, other costs and profit for the same periods, with the kilometers of shifts.
+  function renderDriverReport(all) {
+    const card = $("driverReportCard");
+    card.hidden = !settings.driverMode;
+    if (card.hidden) return;
+    const rows = all.filter((g) => g.shifts || g.costs > 0 || g.workFuel > 0);
+    if (!rows.length) { $("driverReport").innerHTML = `<p class="empty">${esc(t("taxiEmpty"))}</p>`; return; }
+    const th = (k) => `<th>${esc(t(k))}</th>`;
+    let h = `<div class="tablewrap"><table><thead><tr>${th("period")}${th("daysWorked")}<th>km</th>${th("earned")}${th("fuelCost")}${th("otherCosts")}${th("profit")}${th("profitKm")}</tr></thead><tbody>`;
+    for (const g of rows) {
+      h += `<tr><td>${esc(periodLabel(g.label))}</td><td>${fmt(g.workdays, 0)}</td><td>${fmt(g.workKm, 0)}</td><td>${fmt(g.income, 0)}</td><td>${g.workFuelOk ? fmt(g.workFuel, 0) : "–"}</td>` +
+        `<td>${fmt(g.costs, 0)}</td><td class="strong${g.profit < 0 ? " neg" : ""}">${fmt(g.profit, 0)}</td><td>${g.profitKm != null ? fmt(g.profitKm, 2) : "–"}</td></tr>`;
+    }
+    $("driverReport").innerHTML = h + `</tbody></table></div><p class="hint">${esc(t("reportHintDriver", { cur: sym(settings.home) }))}</p>`;
+  }
+
   function renderReport() {
     const per = radio("per"), vf = $("vf").value || "all";
-    const groups = FT.aggregate(records, settings, per, vf);
+    const all = FT.aggregate(records, settings, per, vf, today());
+    renderDriverReport(all);
+    // Consumption: periods with fill-ups (shifts and costs have their own table).
+    const groups = all.filter((g) => g.count > 0);
     const el = $("report");
     if (!records.length) { el.innerHTML = `<p class="empty">${esc(t("emptyReport"))}</p>`; return; }
     if (!groups.length) { el.innerHTML = `<p class="empty">${esc(t("emptyVehicle"))}</p>`; return; }
@@ -1211,19 +1426,18 @@
     if (litAny) tiles.push(tile(t("fuelUsed"), `${fmt(cur.liters, 1)}<small>L</small>`));
     if (kwhAny) tiles.push(tile(t("energyUsed"), `${fmt(cur.kwh || 0, 1)}<small>kWh</small>`));
     tiles.push(tile(t("spent"), cur.spentOk ? m(cur.spent) : "–"), tile(t("cost100"), cur.cost100 != null ? m(cur.cost100) : "–"));
-    if (settings.driverMode) { tiles.push(tile(t("earned"), m(cur.income)), tile(t("profit"), m(cur.profit))); if (cur.distance > 0) tiles.push(tile(t("profitKm"), m(cur.profit / cur.distance))); }
     let h = `<div class="result">
       <div class="hero"><span class="lbl">${esc(periodLabel(cur.label))}</span>
       <span class="val">${cur[key] != null ? `${fmt(cur[key], 2)}<small>${mu}/100 km</small>` : "–"}</span>${cur[key] == null ? `<span class="hint">${esc(t(mainKwh ? "needTwoFullCharge" : "needTwoFull"))}</span>` : ""}</div>
       <div class="stats two">${tiles.join("")}${tiles.length % 2 ? `<div class="tile"></div>` : ""}</div>
     </div>`;
     if (groups.filter((g) => g[key] != null).length > 1) h += `<div class="chartbox"><h3><svg><use href="#i-chart"/></svg><span>${esc(t(mainKwh ? "kwhPer100" : "litersPer100"))}</span></h3>${chartSvg(groups, per, key)}</div>`;
-    h += `<div class="tablewrap"><table><thead><tr><th>${esc(t("period"))}</th><th>km</th>${litAny ? "<th>L</th><th>L/100</th>" : ""}${kwhAny ? "<th>kWh</th><th>kWh/100</th>" : ""}<th>${esc(t("spent"))}</th><th>${esc(t("per100"))}</th>${settings.driverMode ? `<th>${esc(t("earned"))}</th><th>${esc(t("profit"))}</th>` : ""}</tr></thead><tbody>`;
+    h += `<div class="tablewrap"><table><thead><tr><th>${esc(t("period"))}</th><th>km</th>${litAny ? "<th>L</th><th>L/100</th>" : ""}${kwhAny ? "<th>kWh</th><th>kWh/100</th>" : ""}<th>${esc(t("spent"))}</th><th>${esc(t("per100"))}</th></tr></thead><tbody>`;
     for (const g of groups) {
       h += `<tr><td>${esc(periodLabel(g.label))}</td><td>${fmt(g.distance, 0)}</td>`;
       if (litAny) h += `<td>${fmt(g.liters, 1)}</td><td class="strong">${g.l100 != null ? fmt(g.l100, 2) : "–"}</td>`;
       if (kwhAny) h += `<td>${fmt(g.kwh || 0, 1)}</td><td class="strong">${g.kwh100 != null ? fmt(g.kwh100, 2) : "–"}</td>`;
-      h += `<td>${g.spentOk ? fmt(g.spent, 2) : "–"}</td><td>${g.cost100 != null ? fmt(g.cost100, 2) : "–"}</td>${settings.driverMode ? `<td>${fmt(g.income, 2)}</td><td>${fmt(g.profit, 2)}</td>` : ""}</tr>`;
+      h += `<td>${g.spentOk ? fmt(g.spent, 2) : "–"}</td><td>${g.cost100 != null ? fmt(g.cost100, 2) : "–"}</td></tr>`;
     }
     h += `</tbody></table></div><p class="hint">${esc(t("reportHint", { cur: sym(settings.home) }))}</p>`;
     el.innerHTML = h;
@@ -1232,6 +1446,7 @@
   function renderLog() {
     const el = $("log");
     const list = [...records].sort(sortRecs).reverse();
+    $("logTitle").textContent = t(settings.driverMode || records.some((r) => r.kind !== "fill") ? "logAll" : "log");
     if (!list.length) { el.innerHTML = `<li><p class="empty">${esc(t("emptyLog"))}</p></li>`; return; }
     const segMap = new Map(FT.segments(fills(), settings).map((s) => [s.endId, s]));
     const multi = vehicles().length > 1;
@@ -1239,9 +1454,15 @@
       let ava, top, sub, amt, side = "";
       if (r.kind === "income") {
         ava = `<span class="vava money"><svg><use href="#i-wallet"/></svg></span>`;
-        top = `${esc(t("earningsChip"))} · ${esc(dayLabel(r.date))}`;
-        sub = esc(vehName(r.vehicle));
+        top = `${esc(t("shiftChip"))} · ${esc(dayLabel(r.date))}`;
+        sub = [multi ? vehName(r.vehicle) : "", r.km > 0 ? `${fmt(r.km, 0)} km` : "", r.rides ? t("nRides", { n: r.rides }) : "",
+          r.app > 0 ? t("cashApp", { cash: money(r.cash || 0, r.currency, 0), app: money(r.app, r.currency, 0) }) : "", r.note || ""].filter(Boolean).map(esc).join(" · ");
         amt = `<span class="e-amt plus">+${esc(money(r.amount, r.currency))}</span>`;
+      } else if (r.kind === "expense") {
+        ava = `<span class="vava cost"><svg><use href="#i-coins"/></svg></span>`;
+        top = `${esc(costName(r.category))} · ${esc(dayLabel(r.date))}`;
+        sub = [multi ? vehName(r.vehicle) : "", r.note || ""].filter(Boolean).map(esc).join(" · ");
+        amt = `<span class="e-amt">−${esc(money(r.amount, r.currency))}</span>`;
       } else {
         const dist = r.odo - r.prevOdo;
         const seg = segMap.get(r.id);
@@ -1271,7 +1492,7 @@
         await store.remove(r.id);
         Native.haptic("warning");
         if (editingId === r.id) resetForm();
-        toast(t(r.kind === "income" ? "deletedIncome" : "deleted"), t("undo"), async () => { try { await store.add({ ...r }); } catch (err) { logError("save", err); toast(t("errSave")); } });
+        toast(t(r.kind === "income" ? "deletedShift" : r.kind === "expense" ? "deletedCost" : "deleted"), t("undo"), async () => { try { await store.add({ ...r }); } catch (err) { logError("save", err); toast(t("errSave")); } });
       } catch (err) { logError("delete", err); b.disabled = false; toast(t("errSave")); }
     }
   });
@@ -1526,6 +1747,7 @@
     if (n) { $("vMsg").textContent = t("errVehInUse", { n }); $("vMsg").hidden = false; return; }
     settings.vehicles = settings.vehicles.filter((x) => x.id !== v.id);
     settings.reminders = settings.reminders.filter((r) => r.vehicle !== v.id);
+    settings.fixedCosts = (settings.fixedCosts || []).filter((f) => f.vehicle !== v.id);
     if (settings.activeVehicle === v.id) settings.activeVehicle = settings.vehicles[0].id;
     $("vehDialog").close(); await saveSettings();
   });
@@ -1606,6 +1828,7 @@
         const merged = FT.mergeRecords(storedRecords, data.records);
         await store.replaceAll(merged.list);
         if (fileSettings) for (const v of fileSettings.vehicles) if (!vehicleById(v.id)) settings.vehicles.push(v);
+        if (fileSettings) for (const f of fileSettings.fixedCosts) if (!settings.fixedCosts.some((x) => x.id === f.id)) settings.fixedCosts.push(f);
         settings = FT.migrateSettings(settings, records, settings.lang);
         await store.saveSettings(settings);
         toast(t("restoreMerged", { added: merged.added, updated: merged.updated }));
@@ -1627,7 +1850,8 @@
     const spent = vf.reduce((a, r) => a + (FT.toHome(r.cost, r, settings) || 0), 0);
     const avg = FT.vehicleAverage(main, vid);
     const segDist = main.reduce((a, s) => a + s.distance, 0), segCost = main.reduce((a, s) => a + (s.cost || 0), 0);
-    const years = FT.aggregate(records, settings, "year", vid);
+    const years = FT.aggregate(records, settings, "year", vid, today());
+    const work = settings.driverMode ? FT.aggregate(records, settings, "month", vid, today()).filter((g) => g.shifts || g.costs) : [];
     const rems = settings.reminders.filter((r) => r.vehicle === vid);
     const done = rems.flatMap((r) => (r.history || []).map((h) => ({ ...h, what: remTitle(r) }))).sort((a, b) => (a.date < b.date ? 1 : -1));
     const row = (cells) => `<tr>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`;
@@ -1653,6 +1877,8 @@
       </div>
       <h2>${esc(t("byYear"))}</h2><table><thead><tr><th>${esc(t("period"))}</th><th>km</th><th>${mu}</th><th>${mu}/100 km</th><th>${esc(t("spent"))}</th></tr></thead><tbody>
       ${years.map((g) => row([g.label.y, fmt(g.distance, 0), fmt(mu === "kWh" ? g.kwh || 0 : g.liters, 1), (mu === "kWh" ? g.kwh100 : g.l100) != null ? fmt(mu === "kWh" ? g.kwh100 : g.l100, 2) : "–", esc(money(g.spent, null, 0))])).join("")}</tbody></table>
+      ${work.length ? `<h2>${esc(t("reportDriver"))}</h2><table><thead><tr><th>${esc(t("period"))}</th><th>${esc(t("daysWorked"))}</th><th>km</th><th>${esc(t("earned"))}</th><th>${esc(t("fuelCost"))}</th><th>${esc(t("otherCosts"))}</th><th>${esc(t("profit"))}</th><th>${esc(t("profitKm"))}</th></tr></thead><tbody>
+      ${work.map((g) => row([esc(periodLabel(g.label)), fmt(g.workdays, 0), fmt(g.workKm, 0), esc(money(g.income, null, 0)), g.workFuelOk ? esc(money(g.workFuel, null, 0)) : "–", esc(money(g.costs, null, 0)), esc(money(g.profit, null, 0)), g.profitKm != null ? esc(money(g.profitKm)) : "–"])).join("")}</tbody></table>` : ""}
       ${done.length ? `<h2>${esc(t("maintenance"))}</h2><table><thead><tr><th>${esc(t("date"))}</th><th>${esc(t("rKind"))}</th><th>${esc(t("odometer"))}</th></tr></thead><tbody>${done.map((h) => row([esc(dayLabel(h.date)), esc(h.what), h.odo != null ? fmt(h.odo, 0) + " km" : "–"])).join("")}</tbody></table>` : ""}
       <h2>${esc(t("allFills"))}</h2><table><thead><tr><th>${esc(t("date"))}</th><th>${esc(t(v.tripMeter ? "totalKm" : "odometer"))}</th><th>${esc(t("quantity"))}</th><th>${esc(t("pricePerUnit"))}</th><th>${esc(t("amountPaid"))}</th><th>/100 km</th><th>${esc(t("station"))}</th></tr></thead><tbody>
       ${[...vf].reverse().map((r) => { const s = segMap.get(r.id); const u = recUnit(r); return row([esc(dayLabel(r.date)) + (r.full === false ? " *" : "") + (r.reset ? " ↺" : ""), fmt(r.odo, 0), `${fmt(r.liters, 2)} ${u}`, fmt(r.price, 2), esc(money(r.cost, r.currency)), s ? `${fmt(s.l100, 2)} ${u}` : "", esc(r.station || "")]); }).join("")}</tbody></table>
@@ -1732,7 +1958,7 @@
       const last = fills().sort(sortRecs).pop();
       renderCurrencySelects();
       $("currency").value = last ? last.currency : settings.home;
-      $("date").value = today(); $("incDate").value = today();
+      $("date").value = today();
       prefill(); prefillTrip();
       if (settings.onboarded) restoreDraft();
       if (restoredAt) toast(t("restoredCopy", { date: dayLabel(restoredAt.slice(0, 10)) }));
@@ -1742,7 +1968,7 @@
       if (!$("odoEnd").value && !$("sinceKm").value) prefill();
     }
     if (!tripTouched) prefillTrip();
-    renderStations(); renderCalc(); renderIncomeForm();
+    renderStations(); renderCalc(); renderTaxi(); renderFixedList();
     renderInsights(); renderDueSoon(); renderReport(); renderLog();
     renderRemList(); renderVehList(); renderMoney(); renderBackupInfo(); renderTrip();
     scheduleNotifications(); updateWidget();

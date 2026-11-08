@@ -675,6 +675,46 @@ await check("with unreadable records, changing a setting leaves the widget and t
   await close(page);
 });
 
+await check("driver mode: a shift, a cost and a repeating fee are saved on the phone and counted in today's profit", async () => {
+  const phone = new Phone();
+  let page = await open(phone);
+  await onboard(page);
+  await addFill(page, { end: "45000", price: "12", liters: "40", unknown: true });
+  await addFill(page, { end: "45500", price: "12", liters: "40" }); // 480 for 500 km: 0.96 per km
+  await page.click('nav button[data-tab="settings"]');
+  await page.click("#driverMode");
+  await page.waitForTimeout(300);
+  await page.click("#addFixed");
+  await page.fill("#fAmount", "150");
+  await page.click('#fixedForm button[type="submit"]');
+  await page.waitForTimeout(300);
+  await page.click('nav button[data-tab="home"]');
+  assert(await page.isVisible("#taxiCard"), "taxi card hidden");
+  await page.click("#addShift");
+  assert((await page.inputValue("#sStart")) === "45500", "start not filled in: " + (await page.inputValue("#sStart")));
+  await page.fill("#sCash", "500"); await page.fill("#sApp", "100"); await page.fill("#sEnd", "45700"); await page.fill("#sRides", "11");
+  await page.click("#sSave");
+  await page.waitForTimeout(300);
+  await page.click("#addCost");
+  await page.selectOption("#cKind", "wash"); await page.fill("#cAmount", "30");
+  await page.click('#costForm button[type="submit"]');
+  await page.waitForTimeout(300);
+  const recs = records(phone);
+  const sh = recs.find((r) => r.kind === "income"), co = recs.find((r) => r.kind === "expense");
+  assert(sh && sh.amount === 600 && sh.cash === 500 && sh.app === 100 && sh.km === 200 && sh.odoStart === 45500 && sh.rides === 11, "shift: " + JSON.stringify(sh));
+  assert(co && co.amount === 30 && co.category === "wash", "cost: " + JSON.stringify(co));
+  assert(settingsOf(phone).fixedCosts.length === 1 && settingsOf(phone).fixedCosts[0].every === "workday", "fixed: " + JSON.stringify(settingsOf(phone).fixedCosts));
+  // 600 taken in, 200 km at 0.96 = 192 of fuel, 30 wash and 150 owner's fee: 228 profit.
+  const hero = (await page.textContent("#taxiOut .hero .val")).replace(/\D/g, "");
+  assert(hero === "228", "profit: " + (await page.textContent("#taxiOut")));
+  await close(page);
+  // Everything is still there after a restart.
+  phone.reset();
+  page = await open(phone);
+  assert((await page.textContent("#taxiOut .hero .val")).replace(/\D/g, "") === "228", "after restart: " + (await page.textContent("#taxiOut")));
+  await close(page);
+});
+
 await browser.close();
 const failed = results.filter((r) => !r[1]);
 console.log(`\n${results.length - failed.length}/${results.length} passed`);
