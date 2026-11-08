@@ -184,10 +184,53 @@
     }
   }
 
-  function aggregate(records, settings, per, vehicle) {
-    const fills = records.filter((r) => r.kind === "fill" && (vehicle === "all" || r.vehicle === vehicle));
-    const incomes = records.filter((r) => r.kind === "income" && (vehicle === "all" || r.vehicle === vehicle));
+  /* ---------- driver mode: shifts, costs and what fuel really cost per km ---------- */
+  // Full-tank stretches of each vehicle's main energy with a known cost, oldest first.
+  function pricedSegments(segs, settings) {
+    const map = new Map();
+    for (const s of segs) {
+      if (s.unit !== vehUnit(settings, s.vehicle) || s.cost == null || !(s.distance > 0)) continue;
+      if (!map.has(s.vehicle)) map.set(s.vehicle, []);
+      map.get(s.vehicle).push(s);
+    }
+    return map;
+  }
+  // Fuel cost per km around a date: the last three full tanks up to that day (or the first ones after it).
+  function costPerKmAt(list, date) {
+    if (!list || !list.length) return null;
+    let use = list.filter((s) => s.date <= date).slice(-3);
+    if (!use.length) use = list.slice(0, 3);
+    const km = use.reduce((a, s) => a + s.distance, 0);
+    return km > 0 ? use.reduce((a, s) => a + s.cost, 0) / km : null;
+  }
+  const daysInMonth = (date) => { const [y, m] = date.split("-").map(Number); return new Date(y, m, 0).getDate(); };
+  // A repeating cost's share of one day: the whole amount on a day worked, or the week's or month's amount spread over its days.
+  function fixedShare(fc, date, worked) {
+    if (fc.every === "workday") return worked ? fc.amount : 0;
+    if (fc.every === "week") return fc.amount / 7;
+    return fc.amount / daysInMonth(date);
+  }
+
+  /*
+   * Totals per period. For drivers, profit is takings minus fuel minus other costs. Fuel is what was paid at the pump,
+   * counted on the day of the fill-up, until the vehicle has a known cost per km (a full tank to full tank) and a shift
+   * with its kilometers: from that shift on, fuel is the shift's kilometers times the cost per km of the recent tanks,
+   * so each day carries the fuel it really used. Repeating costs from the settings count up to today.
+   */
+  function aggregate(records, settings, per, vehicle, today) {
+    const inVeh = (r) => vehicle === "all" || r.vehicle === vehicle;
+    const fills = records.filter((r) => r.kind === "fill" && inVeh(r));
+    const incomes = records.filter((r) => r.kind === "income" && inVeh(r));
+    const costs = records.filter((r) => r.kind === "expense" && inVeh(r));
     const segs = segments(fills, settings);
+    const priced = pricedSegments(segs, settings);
+    const kmFrom = new Map(); // vehicle -> first day its fuel comes from the kilometers of shifts
+    for (const i of incomes) {
+      const list = priced.get(i.vehicle);
+      if (!(i.km > 0) || !list || i.date < list[0].date) continue;
+      if (!kmFrom.has(i.vehicle) || i.date < kmFrom.get(i.vehicle)) kmFrom.set(i.vehicle, i.date);
+    }
+    const byKm = (r) => kmFrom.has(r.vehicle) && r.date >= kmFrom.get(r.vehicle);
     const groups = new Map();
     const g = (date) => {
       const [key, label] = periodOf(date, per);
@@ -195,7 +238,9 @@
         groups.set(key, {
           key, label, distance: 0, liters: 0, kwh: 0, spent: 0, spentOk: true, count: 0,
           segDist: 0, segLiters: 0, segKwhDist: 0, segKwh: 0, segMainDist: 0, segCost: 0, segCostOk: true,
-          income: 0, incomeOk: true,
+          income: 0, incomeOk: true, cash: 0, app: 0, rides: 0, shifts: 0, workdays: new Set(),
+          workKm: 0, workFuel: 0, workFuelOk: true, kmFuel: 0, kmKm: 0, kmMissing: 0, fromKm: false, fromPump: false,
+          costs: 0, costsOk: true, fixed: 0, byCat: {},
         });
       }
       return groups.get(key);
@@ -204,11 +249,16 @@
       const x = g(f.date), unit = unitOf(f);
       const d = f.odo - f.prevOdo;
       // A plug-in hybrid logs the same kilometers on fuel and on charging: only its primary unit counts them.
-      if (unit === vehUnit(settings, f.vehicle)) x.distance += d > 0 ? d : 0;
+      const main = unit === vehUnit(settings, f.vehicle);
+      if (main) x.distance += d > 0 ? d : 0;
       if (unit === "kWh") x.kwh += f.liters; else x.liters += f.liters;
       x.count++;
       const c = toHome(f.cost, f, settings);
       if (c == null) x.spentOk = false; else x.spent += c;
+      if (byKm(f)) continue;
+      x.fromPump = true;
+      if (main) x.workKm += d > 0 ? d : 0;
+      if (c == null) x.workFuelOk = false; else x.workFuel += c;
     }
     for (const s of segs) {
       const x = g(s.date);
@@ -217,18 +267,66 @@
       x.segMainDist += s.distance;
       if (s.cost == null) x.segCostOk = false; else x.segCost += s.cost;
     }
+    const worked = new Set();
     for (const i of incomes) {
       const x = g(i.date);
       const a = toHome(i.amount, i, settings);
       if (a == null) x.incomeOk = false; else x.income += a;
+      x.cash += toHome(i.cash || 0, i, settings) || 0;
+      x.app += toHome(i.app || 0, i, settings) || 0;
+      x.rides += i.rides || 0;
+      x.shifts++;
+      x.workdays.add(i.vehicle + "|" + i.date);
+      worked.add(i.vehicle + "|" + i.date);
+      if (!byKm(i)) continue;
+      x.fromKm = true;
+      if (i.km > 0) {
+        const fuel = i.km * costPerKmAt(priced.get(i.vehicle), i.date);
+        x.workKm += i.km; x.workFuel += fuel; x.kmKm += i.km; x.kmFuel += fuel;
+      } else x.kmMissing++;
+    }
+    const addCost = (x, cat, v) => { x.costs += v; x.byCat[cat] = (x.byCat[cat] || 0) + v; };
+    for (const e of costs) {
+      const x = g(e.date);
+      const a = toHome(e.amount, e, settings);
+      if (a == null) x.costsOk = false; else addCost(x, COST_KINDS.includes(e.category) ? e.category : "other", a);
+    }
+    if (settings && settings.driverMode) {
+      const end = today || isoDate(new Date());
+      // Nothing is counted before a vehicle's first entry: a start date typed far back would only add empty periods.
+      const first = new Map();
+      for (const r of [...fills, ...incomes, ...costs]) if (!first.has(r.vehicle) || r.date < first.get(r.vehicle)) first.set(r.vehicle, r.date);
+      for (const fc of settings.fixedCosts || []) {
+        if (!inVeh(fc) || !first.has(fc.vehicle)) continue;
+        const last = fc.until && fc.until < end ? fc.until : end;
+        let d = [fc.from, first.get(fc.vehicle), addDays(end, -3660)].sort().pop();
+        for (; d <= last; d = addDays(d, 1)) {
+          const v = fixedShare(fc, d, worked.has(fc.vehicle + "|" + d));
+          if (v > 0) { const x = g(d); addCost(x, fc.category, v); x.fixed += v; }
+        }
+      }
     }
     for (const x of groups.values()) {
       x.l100 = x.segDist > 0 ? x.segLiters / x.segDist * 100 : null;
       x.kwh100 = x.segKwhDist > 0 ? x.segKwh / x.segKwhDist * 100 : null;
       x.cost100 = x.segMainDist > 0 && x.segCostOk ? x.segCost / x.segMainDist * 100 : null;
-      x.profit = x.income - x.spent;
+      x.workdays = x.workdays.size;
+      x.profit = x.income - x.workFuel - x.costs;
+      x.profitKm = x.workKm > 0 ? x.profit / x.workKm : null;
+      x.costPerKm = x.kmKm > 0 ? x.kmFuel / x.kmKm : null;
     }
     return [...groups.values()].sort((a, b) => (a.key < b.key ? 1 : -1));
+  }
+
+  // The odometer a new shift starts from: the latest of the last fill-up and the end of the last shift.
+  function lastKnownOdo(records, vehicle) {
+    const lf = lastFill(records, vehicle);
+    let best = lf ? { date: lf.date, odo: lf.odo } : null;
+    for (const r of records) {
+      if (r.kind !== "income" || r.vehicle !== vehicle || !isNum(r.odoEnd)) continue;
+      if (!best || r.date > best.date || (r.date === best.date && r.odoEnd > best.odo)) best = { date: r.date, odo: r.odoEnd };
+    }
+    return best ? best.odo : null;
   }
 
   /* ---------- Morocco: pump prices change on the 1st and 16th of each month ---------- */
@@ -479,7 +577,12 @@
   const FUELS = ["essence", "gasoil", "electric", "hybrid"];
   const LANGS = ["en", "fr", "ar"];
   const REMINDER_KINDS = ["oil", "insurance", "inspection", "vignette", "other"];
-  const BACKUP_FORMAT = 3;
+  // "income" is a shift's takings, "expense" a cost other than fuel.
+  const RECORD_KINDS = ["fill", "income", "expense"];
+  const COST_KINDS = ["fee", "repair", "wash", "parking", "insurance", "phone", "other"];
+  const FIXED_EVERY = ["workday", "week", "month"];
+  // Format 4 adds costs and repeating costs. A file without them is still written as format 3 for older versions.
+  const BACKUP_FORMAT = 4;
   const isCur = (c) => typeof c === "string" && /^[A-Z]{3}$/.test(c);
   const isStr = (s, max) => typeof s === "string" && s.length >= 1 && s.length <= max;
   const isObj = (o) => !!o && typeof o === "object" && !Array.isArray(o);
@@ -489,9 +592,14 @@
   // Optional record fields: each returns the cleaned value, or undefined to drop it.
   const bool = (v) => (typeof v === "boolean" ? v : undefined);
   const stamp = (v) => (isNum(v) ? v : undefined);
+  const nonNeg = (v) => (isNum(v) && v >= 0 ? v : undefined);
   const RECORD_FIELDS = {
     station: (v) => (typeof v === "string" && v.trim() ? v.trim().slice(0, 60) : undefined),
     note: (v) => (typeof v === "string" ? v.slice(0, 200) : undefined),
+    // A shift: takings split into cash and app, its kilometers (and the odometer readings they came from), rides.
+    cash: nonNeg, app: nonNeg, km: nonNeg, odoStart: nonNeg, odoEnd: nonNeg,
+    rides: (v) => (Number.isInteger(v) && v >= 0 && v < 10000 ? v : undefined),
+    category: (v) => (COST_KINDS.includes(v) ? v : undefined),
     full: bool, missed: bool, reset: bool,
     meter: (v) => (Number.isInteger(v) && v >= 0 ? v : undefined),
     unit: (v) => (v === "L" || v === "kWh" ? v : undefined),
@@ -504,10 +612,10 @@
 
   // Unknown plain values are kept so data written by a newer version survives a round trip.
   function sanitizeRecord(r) {
-    if (!isObj(r) || (r.kind !== "fill" && r.kind !== "income")) return null;
+    if (!isObj(r) || !RECORD_KINDS.includes(r.kind)) return null;
     if (!isDay(r.date) || !isStr(r.vehicle, 64) || !isCur(r.currency)) return null;
     if (r.kind === "fill" && !([r.odo, r.prevOdo, r.liters, r.cost, r.price].every(isNum) && r.liters > 0 && r.price > 0 && r.cost >= 0)) return null;
-    if (r.kind === "income" && !(isNum(r.amount) && r.amount > 0)) return null;
+    if (r.kind !== "fill" && !(isNum(r.amount) && r.amount > 0)) return null;
     const out = {};
     for (const k of Object.keys(r)) {
       if (has(RECORD_FIELDS, k)) { const v = RECORD_FIELDS[k](r[k]); if (v !== undefined) out[k] = v; }
@@ -532,7 +640,7 @@
   function defaultSettings(lang) {
     return {
       version: 2, lang: lang || "en", home: "MAD", rates: defaultRates("MAD"), vehicles: [], budget: 0, driverMode: false,
-      reminders: [], onboarded: false, lastBackup: null, activeVehicle: null, priceAlerts: false, review: null, theme: "auto",
+      fixedCosts: [], reminders: [], onboarded: false, lastBackup: null, activeVehicle: null, priceAlerts: false, review: null, theme: "auto",
     };
   }
 
@@ -557,6 +665,15 @@
     const hist = Array.isArray(r.history) ? r.history : [];
     out.history = hist.filter((h) => isObj(h) && isDay(h.date) && (h.odo == null || isNum(h.odo)))
       .slice(-200).map((h) => ({ date: h.date, odo: isNum(h.odo) ? h.odo : null }));
+    return out;
+  }
+
+  // A cost that repeats by itself, in the home currency: each day worked, each week or each month, from a date.
+  function cleanFixedCost(f) {
+    if (!isObj(f) || !isStr(f.id, 64) || !isStr(f.vehicle, 64) || !COST_KINDS.includes(f.category)) return null;
+    if (!(isNum(f.amount) && f.amount > 0) || !FIXED_EVERY.includes(f.every) || !isDay(f.from)) return null;
+    const out = { id: f.id, vehicle: f.vehicle, category: f.category, label: typeof f.label === "string" ? f.label.slice(0, 40) : "", amount: f.amount, every: f.every, from: f.from };
+    if (isDay(f.until) && f.until >= f.from) out.until = f.until;
     return out;
   }
 
@@ -585,6 +702,7 @@
     }
     if (isNum(s.budget) && s.budget >= 0) out.budget = s.budget;
     out.reminders = (Array.isArray(s.reminders) ? s.reminders : []).map(cleanReminder).filter(Boolean).slice(0, 100);
+    out.fixedCosts = (Array.isArray(s.fixedCosts) ? s.fixedCosts : []).map(cleanFixedCost).filter(Boolean).slice(0, 50);
     flag("driverMode"); flag("onboarded"); flag("priceAlerts");
     if (typeof s.lastBackup === "string" && !isNaN(Date.parse(s.lastBackup))) out.lastBackup = s.lastBackup;
     if (typeof s.activeVehicle === "string") out.activeVehicle = s.activeVehicle;
@@ -608,7 +726,8 @@
   }
 
   function backupFile(records, settings, now) {
-    return { app: "fuel-tracker", format: BACKUP_FORMAT, exportedAt: now || new Date().toISOString(), settings: { ...settings, lastBackup: undefined }, records };
+    const taxi = records.some((r) => r && r.kind === "expense") || !!(settings && settings.fixedCosts && settings.fixedCosts.length);
+    return { app: "fuel-tracker", format: taxi ? BACKUP_FORMAT : 3, exportedAt: now || new Date().toISOString(), settings: { ...settings, lastBackup: undefined }, records };
   }
 
   function parseBackup(text) {
@@ -655,10 +774,15 @@
   }
   function toCsv(records, settings) {
     const name = (id) => (settings.vehicles.find((v) => v.id === id) || {}).name || id;
-    const head = ["date", "type", "vehicle", "odometer_km", "previous_odometer_km", "liters", "price_per_liter", "amount", "currency", "rate_to_" + settings.home, "full_tank", "missed_before", "station", "note", "unit"];
+    // Shift and cost columns come last, so spreadsheets made from older exports keep their columns.
+    const head = ["date", "type", "vehicle", "odometer_km", "previous_odometer_km", "liters", "price_per_liter", "amount", "currency", "rate_to_" + settings.home, "full_tank", "missed_before", "station", "note", "unit",
+      "cash", "app_and_card", "shift_km", "shift_start_km", "shift_end_km", "rides", "cost_type"];
+    const opt = (v) => (v == null ? "" : v);
     const rows = [...records].sort((a, b) => (a.date < b.date ? -1 : 1)).map((r) => r.kind === "income"
-      ? [r.date, "earning", name(r.vehicle), "", "", "", "", r.amount, r.currency, r.rate || "", "", "", "", r.note || "", ""]
-      : [r.date, "fill", name(r.vehicle), r.odo, r.prevOdo, r.liters, r.price, r.cost, r.currency, r.rate || "", r.full === false ? "no" : "yes", r.missed ? "yes" : "no", r.station || "", r.note || "", unitOf(r)]);
+      ? [r.date, "earning", name(r.vehicle), "", "", "", "", r.amount, r.currency, r.rate || "", "", "", "", r.note || "", "", opt(r.cash), opt(r.app), opt(r.km), opt(r.odoStart), opt(r.odoEnd), opt(r.rides), ""]
+      : r.kind === "expense"
+        ? [r.date, "cost", name(r.vehicle), "", "", "", "", r.amount, r.currency, r.rate || "", "", "", "", r.note || "", "", "", "", "", "", "", "", r.category || "other"]
+        : [r.date, "fill", name(r.vehicle), r.odo, r.prevOdo, r.liters, r.price, r.cost, r.currency, r.rate || "", r.full === false ? "no" : "yes", r.missed ? "yes" : "no", r.station || "", r.note || "", unitOf(r), "", "", "", "", "", "", ""]);
     return [head, ...rows].map((row) => row.map(csvCell).join(",")).join("\n") + "\n";
   }
 
@@ -706,6 +830,7 @@
   const api = {
     MONTHS, pad, isoDate, parseDate, daysBetween, addDays, parseNum,
     computeFuel, toHome, defaultRates, primaryUnit, sortFills, segments, pendingSinceFull, isoWeek, periodOf, aggregate,
+    costPerKmAt, pricedSegments, lastKnownOdo, COST_KINDS, FIXED_EVERY,
     lastPriceChange, priceMayBeStale, priceDays, vehicleAverage, movingAverage, insights, stationStats, stationNames,
     tripCost, reminderStatus, latestOdo, lastFill, rolloverGuess, nextYear, scanFields, plausibility,
     CURRENCIES, BACKUP_FORMAT, sanitizeRecord, validRecord, migrateRecord, defaultSettings, sanitizeSettings, migrateSettings,

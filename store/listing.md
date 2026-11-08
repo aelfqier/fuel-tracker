@@ -42,7 +42,7 @@ bnzn: Fuel Cost & L/100 km
 Fuel consumption per km and per 100 km, costs and reminders. No ads, no account.
 ```
 
-**Full description** (2342/4000)
+**Full description** (2406/4000)
 
 ```text
 bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams or any other currency, and the app does the rest.
@@ -66,7 +66,7 @@ SEE WHERE YOUR MONEY GOES
 • This month against your average, a warning on unusual tanks, and an end-of-month projection
 • Monthly budget bar and yearly estimate
 • History by day, week, month, quarter, half-year or year, with a trend chart
-• Driver mode for taxi, delivery and ride-hailing: earnings, profit and profit per km
+• Driver mode for taxi, delivery and ride-hailing: log shifts and costs (owner's fee, repairs, insurance) and see your real profit per day and per km
 
 NEVER MISS THE PAPERWORK
 • Oil change by kilometers
@@ -100,7 +100,7 @@ bnzn : Conso Carburant
 Consommation au km et aux 100 km, dépenses et rappels. Sans pub, sans compte.
 ```
 
-**Full description** (2668/4000)
+**Full description** (2761/4000)
 
 ```text
 bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams ou dans n'importe quelle autre monnaie : l'application fait le reste.
@@ -124,7 +124,7 @@ VOYEZ OÙ PART VOTRE ARGENT
 • Ce mois-ci comparé à votre moyenne, alerte sur un plein inhabituel et projection de fin de mois
 • Barre de budget mensuel et estimation annuelle
 • Historique par jour, semaine, mois, trimestre, semestre ou année, avec courbe de tendance
-• Mode chauffeur pour taxi, livraison et VTC : recettes, bénéfice et bénéfice par km
+• Mode chauffeur pour taxi, livraison et VTC : notez vos services et vos frais (versement au propriétaire, réparations, assurance) et voyez votre vrai bénéfice par jour et au km
 
 N'OUBLIEZ PLUS LES ÉCHÉANCES
 • Vidange selon le kilométrage
@@ -158,7 +158,7 @@ bnzn: استهلاك الوقود
 استهلاك الوقود لكل كم ولكل 100 كم، المصاريف والتذكيرات. بدون إعلانات ولا حساب.
 ```
 
-**Full description** (2114/4000)
+**Full description** (2175/4000)
 
 ```text
 يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو بأي عملة أخرى، والتطبيق يتكفّل بالباقي.
@@ -182,7 +182,7 @@ bnzn: استهلاك الوقود
 • هذا الشهر مقارنة بمعدّلك، تنبيه عند تعبئة غير عادية، وتوقّع لنهاية الشهر
 • شريط الميزانية الشهرية وتقدير سنوي
 • السجل حسب اليوم أو الأسبوع أو الشهر أو الفصل أو نصف السنة أو السنة، مع منحنى الاتجاه
-• وضع السائق لسيارات الأجرة والتوصيل والنقل عبر التطبيقات: المداخيل والربح والربح لكل كيلومتر
+• وضع السائق لسيارات الأجرة والتوصيل والنقل عبر التطبيقات: سجّل نوبات عملك ومصاريفك (حصة المالك، الإصلاح، التأمين) واعرف ربحك الحقيقي لكل يوم ولكل كيلومتر
 
 لا تنسَ المواعيد بعد اليوم
 • تغيير الزيت حسب الكيلومترات
@@ -237,7 +237,7 @@ Consumption, costs, reminders
 Know what every kilometer costs you. Made for Morocco: dirhams, French and Arabic, and an optional alert on the days pump prices may change. No ads, no account.
 ```
 
-**Description** (2289/4000)
+**Description** (2353/4000)
 
 ```text
 bnzn tells you exactly what your car or motorbike consumes and costs, per 1 km and per 100 km. Enter the odometer reading and what you paid at the pump, in dirhams or any other currency, and the app does the rest.
@@ -261,7 +261,7 @@ SEE WHERE YOUR MONEY GOES
 • This month against your average, a warning on unusual tanks, and an end-of-month projection
 • Monthly budget bar and yearly estimate
 • History by day, week, month, quarter, half-year or year, with a trend chart
-• Driver mode for taxi, delivery and ride-hailing: earnings, profit and profit per km
+• Driver mode for taxi, delivery and ride-hailing: log shifts and costs (owner's fee, repairs, insurance) and see your real profit per day and per km
 
 NEVER MISS THE PAPERWORK
 • Oil change by kilometers
@@ -312,7 +312,7 @@ Consommation, budget, rappels
 Ce que vous coûte chaque kilomètre. Pensé pour le Maroc : dirhams, français et arabe, alerte en option les jours où les prix peuvent changer. Sans pub, sans compte.
 ```
 
-**Description** (2623/4000)
+**Description** (2716/4000)
 
 ```text
 bnzn vous dit exactement ce que consomme et coûte votre voiture ou votre moto, au kilomètre et aux 100 km. Entrez le kilométrage du compteur et ce que vous avez payé à la pompe, en dirhams ou dans n'importe quelle autre monnaie : l'application fait le reste.
@@ -336,7 +336,7 @@ VOYEZ OÙ PART VOTRE ARGENT
 • Ce mois-ci comparé à votre moyenne, alerte sur un plein inhabituel et projection de fin de mois
 • Barre de budget mensuel et estimation annuelle
 • Historique par jour, semaine, mois, trimestre, semestre ou année, avec courbe de tendance
-• Mode chauffeur pour taxi, livraison et VTC : recettes, bénéfice et bénéfice par km
+• Mode chauffeur pour taxi, livraison et VTC : notez vos services et vos frais (versement au propriétaire, réparations, assurance) et voyez votre vrai bénéfice par jour et au km
 
 N'OUBLIEZ PLUS LES ÉCHÉANCES
 • Vidange selon le kilométrage
@@ -387,7 +387,7 @@ bnzn: استهلاك الوقود
 اعرف كم يكلّفك كل كيلومتر. مصمَّم للمغرب: بالدرهم، بالعربية والفرنسية، مع تنبيه اختياري في الأيام التي قد تتغيّر فيها أسعار المحروقات. بدون إعلانات ولا حساب.
 ```
 
-**Description** (2094/4000)
+**Description** (2155/4000)
 
 ```text
 يخبرك bnzn بدقة كم تستهلك سيارتك أو دراجتك النارية وكم تكلّفك، لكل كيلومتر ولكل 100 كم. أدخل قراءة العدّاد والمبلغ الذي دفعته في المحطة، بالدرهم أو بأي عملة أخرى، والتطبيق يتكفّل بالباقي.
@@ -411,7 +411,7 @@ bnzn: استهلاك الوقود
 • هذا الشهر مقارنة بمعدّلك، تنبيه عند تعبئة غير عادية، وتوقّع لنهاية الشهر
 • شريط الميزانية الشهرية وتقدير سنوي
 • السجل حسب اليوم أو الأسبوع أو الشهر أو الفصل أو نصف السنة أو السنة، مع منحنى الاتجاه
-• وضع السائق لسيارات الأجرة والتوصيل والنقل عبر التطبيقات: المداخيل والربح والربح لكل كيلومتر
+• وضع السائق لسيارات الأجرة والتوصيل والنقل عبر التطبيقات: سجّل نوبات عملك ومصاريفك (حصة المالك، الإصلاح، التأمين) واعرف ربحك الحقيقي لكل يوم ولكل كيلومتر
 
 لا تنسَ المواعيد بعد اليوم
 • تغيير الزيت حسب الكيلومترات

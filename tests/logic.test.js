@@ -74,6 +74,129 @@ test("aggregate counts money by fill date and consumption by full tank", () => {
   close(m.distance, 1100); close(m.spent, 504 + 420); close(m.l100, 7); close(m.income, 2000); close(m.profit, 2000 - 924);
 });
 
+/* ---------- driver mode: a taxi week ---------- */
+const shift = (o) => ({ id: "s" + ++n, kind: "income", vehicle: "car", currency: "MAD", createdAt: n, ...o });
+const taxiWeek = () => [
+  fill({ date: "2026-03-01", prevOdo: 10000, odo: 10000, liters: 40, cost: 480, price: 12 }),
+  shift({ date: "2026-03-02", amount: 500 }),
+  fill({ date: "2026-03-04", prevOdo: 10000, odo: 10600, liters: 42, cost: 504, price: 12 }), // 0.84 per km
+  shift({ date: "2026-03-05", amount: 600, cash: 400, app: 200, km: 200, odoStart: 10700, odoEnd: 10900, rides: 12 }),
+  shift({ date: "2026-03-06", amount: 550, km: 150 }),
+  { id: "e1", kind: "expense", vehicle: "car", date: "2026-03-06", amount: 30, currency: "MAD", category: "wash" },
+  fill({ date: "2026-03-07", prevOdo: 10600, odo: 11200, liters: 45, cost: 540, price: 12 }), // 0.90 per km
+  shift({ date: "2026-03-07", amount: 520 }),
+  shift({ date: "2026-03-08", amount: 610, km: 210 }),
+];
+const TAXI = {
+  ...S, driverMode: true, fixedCosts: [
+    { id: "f1", vehicle: "car", category: "fee", amount: 150, every: "workday", from: "2026-03-05" },
+    { id: "f2", vehicle: "car", category: "insurance", amount: 620, every: "month", from: "2026-03-01" }, // 20 a day in March
+  ],
+};
+
+test("driver mode: fuel comes from the pump until a shift has its km, then from the km driven", () => {
+  const days = new Map(FT.aggregate(taxiWeek(), TAXI, "day", "car", "2026-03-08").map((g) => [g.key, g]));
+  // Before the first shift with km, a fill-up day carries its whole tank.
+  close(days.get("2026-03-01").profit, -480 - 20);
+  close(days.get("2026-03-02").profit, 500 - 20);
+  close(days.get("2026-03-03").profit, -20); // a day off still carries the month's insurance
+  close(days.get("2026-03-04").profit, -504 - 20);
+  // From then on each shift carries its km at the recent cost per km, and the owner's fee on each day worked.
+  const d5 = days.get("2026-03-05");
+  close(d5.workFuel, 200 * 0.84); close(d5.workKm, 200); close(d5.profit, 600 - 168 - 150 - 20); close(d5.profitKm, 262 / 200);
+  close(d5.cash, 400); close(d5.app, 200); assert.equal(d5.rides, 12); assert.ok(d5.fromKm); assert.ok(!d5.fromPump);
+  close(days.get("2026-03-06").profit, 550 - 126 - 30 - 150 - 20);
+  // A fill-up after the switch is not counted again, and a shift without km is flagged.
+  const d7 = days.get("2026-03-07");
+  close(d7.spent, 540); close(d7.workFuel, 0); close(d7.profit, 520 - 170); assert.equal(d7.kmMissing, 1);
+  // The cost per km moves with the latest full tanks: (504 + 540) / 1200 km.
+  close(days.get("2026-03-08").workFuel, 210 * 0.87); close(days.get("2026-03-08").costPerKm, 0.87);
+});
+
+test("driver mode: the days add up to the month, with every cost counted once", () => {
+  const recs = taxiWeek();
+  const days = FT.aggregate(recs, TAXI, "day", "car", "2026-03-08");
+  const [m] = FT.aggregate(recs, TAXI, "month", "car", "2026-03-08");
+  close(days.reduce((a, g) => a + g.profit, 0), m.profit);
+  close(m.income, 2780); close(m.workFuel, 480 + 504 + 168 + 126 + 182.7); close(m.costs, 30 + 4 * 150 + 8 * 20);
+  close(m.byCat.fee, 600); close(m.byCat.insurance, 160); close(m.byCat.wash, 30); close(m.fixed, 760);
+  close(m.workKm, 600 + 200 + 150 + 210); assert.equal(m.shifts, 5); assert.equal(m.workdays, 5); assert.equal(m.kmMissing, 1);
+  assert.ok(m.fromKm && m.fromPump);
+  const weeks = FT.aggregate(recs, TAXI, "week", "car", "2026-03-08");
+  assert.deepEqual(weeks.map((g) => g.key), ["2026-W10", "2026-W09"]);
+  close(weeks[0].profit + weeks[1].profit, m.profit);
+});
+
+test("driver mode: repeating costs follow their dates and only count in driver mode", () => {
+  const recs = [shift({ date: "2026-04-01", amount: 300 }), shift({ date: "2026-04-03", amount: 300 })];
+  const set = (fixedCosts, extra) => ({ ...S, driverMode: true, fixedCosts, ...extra });
+  const week = [{ id: "w", vehicle: "car", category: "phone", amount: 70, every: "week", from: "2026-04-01", until: "2026-04-05" }];
+  const [a] = FT.aggregate(recs, set(week), "month", "car", "2026-04-30");
+  close(a.costs, 50); // 10 a day for five days, then it stopped
+  const fee = [{ id: "f", vehicle: "car", category: "fee", amount: 100, every: "workday", from: "2026-04-02" }];
+  close(FT.aggregate(recs, set(fee), "month", "car", "2026-04-30")[0].costs, 100); // only 3 April was worked after the start
+  close(FT.aggregate(recs, set(fee), "month", "car", "2026-04-02")[0].costs, 0); // nothing after today
+  close(FT.aggregate(recs, set(fee), "month", "other", "2026-04-30").length, 0); // another vehicle's fee
+  close(FT.aggregate(recs, set(fee, { driverMode: false }), "month", "car", "2026-04-30")[0].costs, 0);
+  // A start date before the vehicle's first entry counts from that entry, and a vehicle with no entries counts nothing.
+  const early = [{ id: "i", vehicle: "car", category: "insurance", amount: 300, every: "month", from: "2026-01-01" }];
+  const months = FT.aggregate(recs, set(early), "month", "car", "2026-04-30");
+  assert.deepEqual(months.map((g) => g.key), ["2026-04"]); close(months[0].costs, 300);
+  assert.equal(FT.aggregate([], set(early), "month", "car", "2026-04-30").length, 0);
+  // Without km on any shift, profit is takings minus what was paid at the pump, as before.
+  const pump = [...recs, fill({ date: "2026-04-02", prevOdo: 0, odo: 400, liters: 30, cost: 360, price: 12 })];
+  const [p] = FT.aggregate(pump, S, "month", "car", "2026-04-30");
+  close(p.profit, 600 - 360); close(p.profitKm, 240 / 400); assert.ok(!p.fromKm);
+});
+
+test("cost per km uses the last three full tanks up to the day", () => {
+  const list = [
+    { date: "2026-01-10", distance: 500, cost: 400 }, { date: "2026-01-20", distance: 500, cost: 450 },
+    { date: "2026-01-30", distance: 500, cost: 500 }, { date: "2026-02-10", distance: 500, cost: 600 },
+  ];
+  close(FT.costPerKmAt(list, "2026-02-01"), 1350 / 1500);
+  close(FT.costPerKmAt(list, "2026-02-15"), 1550 / 1500);
+  close(FT.costPerKmAt(list, "2026-01-01"), 1350 / 1500); // before the first tank: the first ones
+  assert.equal(FT.costPerKmAt([], "2026-01-01"), null);
+});
+
+test("a new shift starts from the latest odometer known", () => {
+  const recs = [fill({ date: "2026-05-01", prevOdo: 1000, odo: 1500, liters: 30, cost: 360, price: 12 }), shift({ date: "2026-05-02", amount: 1, odoStart: 1500, odoEnd: 1720 })];
+  assert.equal(FT.lastKnownOdo(recs, "car"), 1720);
+  recs.push(fill({ date: "2026-05-03", prevOdo: 1500, odo: 1800, liters: 30, cost: 360, price: 12 }));
+  assert.equal(FT.lastKnownOdo(recs, "car"), 1800);
+  assert.equal(FT.lastKnownOdo(recs, "bike"), null);
+});
+
+test("shifts and costs are checked like fill-ups, and repeating costs are cleaned", () => {
+  const e = FT.sanitizeRecord({ id: "e", kind: "expense", vehicle: "car", date: "2026-03-01", amount: 40, currency: "MAD", category: "nope", note: "x" });
+  assert.ok(e && !("category" in e) && e.note === "x");
+  assert.equal(FT.sanitizeRecord({ id: "e", kind: "expense", vehicle: "car", date: "2026-03-01", amount: 0, currency: "MAD" }), null);
+  const s = FT.sanitizeRecord(shift({ date: "2026-03-01", amount: 300, cash: 100, app: 200, km: 120.5, rides: 2.5, odoEnd: -3 }));
+  assert.equal(s.km, 120.5); assert.equal(s.app, 200); assert.ok(!("rides" in s) && !("odoEnd" in s));
+  const out = FT.sanitizeSettings({ fixedCosts: [
+    { id: "a", vehicle: "car", category: "fee", amount: 150, every: "workday", from: "2026-03-01", until: "2026-02-01" },
+    { id: "b", vehicle: "car", category: "fee", amount: 150, every: "daily", from: "2026-03-01" },
+    { id: "c", vehicle: "car", category: "fee", amount: -1, every: "week", from: "2026-03-01" },
+    { id: "d", vehicle: "car", category: "insurance", amount: 900, every: "month", from: "2026-03-01", until: "2026-12-31", extra: "<b>" },
+  ] }).fixedCosts;
+  assert.deepEqual(out.map((f) => f.id), ["a", "d"]);
+  assert.ok(!("until" in out[0])); assert.equal(out[1].until, "2026-12-31"); assert.ok(!("extra" in out[1]));
+  assert.deepEqual(FT.sanitizeSettings({}).fixedCosts, []);
+});
+
+test("CSV lists shifts and costs with their own columns", () => {
+  const csv = FT.toCsv([
+    shift({ date: "2026-03-05", amount: 600, cash: 400, app: 200, km: 200, odoStart: 10700, odoEnd: 10900, rides: 12 }),
+    { id: "e1", kind: "expense", vehicle: "car", date: "2026-03-06", amount: 30, currency: "MAD", category: "wash" },
+  ], { home: "MAD", vehicles: [{ id: "car", name: "Taxi" }] });
+  const [head, a, b] = csv.trim().split("\n").map((l) => l.split(","));
+  const row = (r) => Object.fromEntries(head.map((h, i) => [h, r[i]]));
+  assert.deepEqual([row(a).type, row(a).amount, row(a).cash, row(a).app_and_card, row(a).shift_km, row(a).shift_start_km, row(a).shift_end_km, row(a).rides], ["earning", "600", "400", "200", "200", "10700", "10900", "12"]);
+  assert.deepEqual([row(b).type, row(b).amount, row(b).cost_type], ["cost", "30", "wash"]);
+  assert.equal(a.length, head.length); assert.equal(b.length, head.length);
+});
+
 test("pump prices change on the 1st and the 16th", () => {
   assert.equal(FT.lastPriceChange("2026-10-17"), "2026-10-16");
   assert.equal(FT.lastPriceChange("2026-10-15"), "2026-10-01");
@@ -115,9 +238,11 @@ test("backup files round-trip and reject other files", () => {
 test("CSV quotes cells that need it", () => {
   const csv = FT.toCsv([fill({ date: "2026-01-01", prevOdo: 0, odo: 100, liters: 3, cost: 36, price: 12, station: 'Shell, "Maarif"' })], { home: "MAD", vehicles: [{ id: "car", name: "Logan" }] });
   assert.match(csv, /"Shell, ""Maarif"""/); assert.match(csv, /Logan/);
-  assert.match(csv.split("\n")[0], /,unit$/); assert.match(csv.split("\n")[1], /,L$/);
+  const head = csv.split("\n")[0].split(","), at = head.indexOf("unit");
+  assert.equal(at, 14); assert.equal(head[head.length - 1], "cost_type");
+  assert.equal(csv.split("\n")[1].replace(/"[^"]*"/g, "q").split(",")[at], "L");
   const ev = FT.toCsv([fill({ date: "2026-01-01", prevOdo: 0, odo: 100, liters: 15, cost: 27, price: 1.8, unit: "kWh" })], { home: "MAD", vehicles: [] });
-  assert.match(ev.split("\n")[1], /,kWh$/);
+  assert.equal(ev.split("\n")[1].split(",")[at], "kWh");
 });
 
 test("insights compare this month with the average and flag a spike", () => {
@@ -403,9 +528,13 @@ test("booby-trapped settings come out clean", () => {
 
 test("backups from a newer version are refused instead of half-restored", () => {
   const rec = fill({ date: "2026-01-01", prevOdo: 0, odo: 100, liters: 3, cost: 36, price: 12 });
-  assert.equal(FT.backupFile([rec], S, "x").format, FT.BACKUP_FORMAT);
-  assert.equal(FT.BACKUP_FORMAT, 3);
-  const newer = JSON.stringify({ app: "fuel-tracker", format: 4, records: [rec] });
+  // Without costs the file stays format 3, so an older version of the app can still restore it.
+  assert.equal(FT.backupFile([rec], S, "x").format, 3);
+  assert.equal(FT.BACKUP_FORMAT, 4);
+  const cost = { id: "e1", kind: "expense", vehicle: "car", date: "2026-01-02", amount: 50, currency: "MAD", category: "wash" };
+  assert.equal(FT.backupFile([rec, cost], S, "x").format, 4);
+  assert.equal(FT.backupFile([rec], { ...S, fixedCosts: [{ id: "x" }] }, "x").format, 4);
+  const newer = JSON.stringify({ app: "fuel-tracker", format: 5, records: [rec] });
   assert.deepEqual(FT.parseBackup(newer), { error: "errBackupNewer" });
   const older = FT.parseBackup(JSON.stringify({ app: "fuel-tracker", format: 2, records: [rec, { ...rec, date: "2026-13-01" }], settings: { home: "EUR", rates: { MAD: "x" } } }));
   assert.equal(older.records.length, 1); assert.equal(older.skipped, 1);

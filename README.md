@@ -23,8 +23,14 @@ Fill-ups are saved on the phone itself (app storage), so the app works offline.
 - Optional notification on the days Moroccan pump prices may change (10:00 on the 1st and 16th, off
   until turned on), station memory with your cheapest station, trip cost with sharing between
   passengers, fill-ups abroad converted to your home currency,
-  driver mode with earnings and profit per km, and reminders for oil change, insurance, technical
+  driver mode, and reminders for oil change, insurance, technical
   inspection and vignette (with phone notifications).
+- Driver mode for taxi, delivery and ride-hailing (Settings > Driver mode): shifts with takings in cash and
+  by app, the odometer at the start and end, and rides; other costs (owner's fee, repairs, car wash, parking,
+  insurance, phone); costs that repeat by themselves (each day worked, each week or each month); and profit per
+  day, week and month and per km. Once a vehicle has a full tank to full tank and a shift with its kilometers,
+  fuel is counted as the shift's kilometers times the cost per km of the last three full tanks, so each day
+  carries the fuel it used instead of the day of the fill-up.
 - Plain-language insights, monthly budget, trend chart, backup file (Drive, WhatsApp, email),
   CSV export and a PDF history report.
 - Scan the pump display or a receipt, read on the phone (Google ML Kit through Google Play services
